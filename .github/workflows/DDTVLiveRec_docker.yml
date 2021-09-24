@@ -5,13 +5,15 @@ name: DDTVLiveRec_docker
 #  watch:
 #    types: [started]
 #  push:
-#    branches: [dockerhub]
+#    branches: [master]
 
 on:
   release:
     types: [released]
   watch:
     types: [started]
+  push:
+    branches: [master]
 
 jobs:
   publish:

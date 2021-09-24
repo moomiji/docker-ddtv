@@ -1,6 +1,8 @@
 name: DDTVLiveRec_docker_test
 
-on: workflow_dispatch
+on:
+  push:
+    branches: [test]
 
 jobs:
   publish:
