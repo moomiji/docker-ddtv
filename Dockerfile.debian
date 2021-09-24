@@ -1,0 +1,17 @@
+FROM mcr.microsoft.com/dotnet/aspnet:5.0
+ENV PUID=1000
+ENV PGID=1000
+WORKDIR /DDTVLiveRec
+
+COPY *.sh .
+
+RUN chmod +x *.sh \
+    && apt update \
+    && apt install --no-install-recommends ffmpeg gosu libgdiplus wget unzip -y \
+    && ./install.sh \
+    && apt-get autoremove --purge wget unzip -y && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
+
+VOLUME /DDTVLiveRec/tmp
+EXPOSE 11419
+ENTRYPOINT ["./start.sh"]
