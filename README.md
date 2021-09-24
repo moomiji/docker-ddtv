@@ -81,7 +81,8 @@ docker run -d \
 ```
 
 **！！！不要挂载不存在的文件，不存在的话docker默认创建的是目录不是文件！！！**
-正确做法是挂载空的配置文件（使用`touch filename`创建空文件），脚本会自动改正！
+
+正确做法是挂载空的配置文件（使用`touch filename`创建空文件），脚本会自动写入！
 
 4. docker常用命令
 
@@ -142,3 +143,4 @@ docker cp  [CONTAINER ID]:/DDTVLiveRec/RoomListConfig.json .
 - [ ] 将`/config`中后加的文件通过脚本自动软连接至`/DDTVLiveRec`
 - [ ] 支持上传模块
 - [ ] `<add key="RoomConfiguration" value="./RoomListConfig.json" />`
+- [ ] docker-compose + 标签
