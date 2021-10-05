@@ -1,23 +1,21 @@
 ### 由于开发者的雾操作，Ver2.0.6.1a暂时不支持docker。
 
-请使用`as737345039/ddtvliverec:Ver2.0.5.1c`这个镜像
-
 # Docker-DDTVLiveRec
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/CHKZL/DDTV2?label=DDTVLiveRec&style=flat-square)](https://github.com/CHKZL/DDTV2/releases/latest)
 [![Docker Image Version (latest by date)](https://img.shields.io/docker/v/moomiji/ddtvliverec?label=DockerHub&style=flat-square)](https://hub.docker.com/r/moomiji/ddtvliverec/tags?page=1&ordering=last_updated)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/moomiji/Docker-DDTVLiveRec/DDTVLiveRec_docker?label=Docker%20Build&style=flat-square)](https://github.com/moomiji/Docker-DDTVLiveRec/actions/workflows/DDTVLiveRec_docker.yml)
 
-[源项目地址](https://github.com/CHKZL/DDTV2)　　[本项目地址](https://github.com/moomiji/Docker-DDTVLiveRec)
+　　●[源项目地址](https://github.com/CHKZL/DDTV2)●　　　 ●[本项目地址](https://github.com/moomiji/Docker-DDTVLiveRec)●　　[![浏览人数统计](https://s04.flagcounter.com/mini/xztG/bg_FFFFFF/txt_000000/border_FFFFFF/flags_0/)](http://s04.flagcounter.com/more/xztG)
 
 本项目使用Github Actions自动构建，以[mcr.microsoft.com/dotnet/aspnet](https://hub.docker.com/_/microsoft-dotnet-aspnet)为基础镜像，将DDTVLiveRec的发行版及ffmpeg，打包并上传至[DockerHub](https://hub.docker.com/r/moomiji/ddtvliverec)。
 
 支持的各架构及其基础镜像如下（截至2021/9/23）：
 
-| OS | Tag | ASP.NET Tag | OS Version  | Supported Platform |
-| ---- | ---- | ---- | ---- | ---- |
-| Alpine | `latest` `Version` | 5.0-alpine | Alpine 3.14 | `amd64` `arm64v8` `arm32v7` |
-| Debian | `latest-debian` `Version-debian` | 5.0 | Debian 10 | `amd64` `arm64v8` `arm32v7` |
+| OS | Tag | OS Version  | Supported Platform |
+| ---- | ---- | ---- | ---- |
+| Alpine | `latest` `Version` | Alpine 3.14 | `amd64` `arm64v8` `arm32v7` |
+| Debian | `latest-debian` `Version-debian` | Debian 10 | `amd64` `arm64v8` `arm32v7` |
 
 ## 更新镜像
 
@@ -82,7 +80,7 @@ docker run -d \
 
 **！！！不要挂载不存在的文件，不存在的话docker默认创建的是目录不是文件！！！**
 
-正确做法是挂载空的配置文件（使用`touch filename`创建空文件），脚本会自动写入！
+正确做法是挂载空的配置文件（使用`touch filename`命令创建空文件），脚本会自动写入！
 
 4. docker常用命令
 
@@ -107,7 +105,7 @@ docker cp  [CONTAINER ID]:/DDTVLiveRec/RoomListConfig.json .
 | BiliUser.ini  | 从配置好的DDTV的目录下复制  |
 | DDTVLiveRec.dll.config  | 编辑[DDTVLiveRec.zip](https://github.com/CHKZL/DDTV2/releases/latest)中的DDTVLiveRec.dll.config文件 |
 
-- 详见[源项目使用说明](https://github.com/CHKZL/DDTV2/tree/master/DDTVLiveRec#%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E)
+当然，无特殊需求（如续用配置）可以挂载空的配置文件（使用`touch filename`命令创建空文件）
 
 ## 常用的环境变量
 
@@ -134,13 +132,3 @@ docker cp  [CONTAINER ID]:/DDTVLiveRec/RoomListConfig.json .
 - [uchuhimo的ddtv_live_rec项目](https://hub.docker.com/r/uchuhimo/ddtv_live_rec)
 
 - 拉取源项目源码进行构建，详见[源项目使用说明](https://github.com/CHKZL/DDTV2/tree/master/DDTVLiveRec#%E5%A6%82%E6%9E%9C%E4%BD%BF%E7%94%A8docker%E6%9E%84%E5%BB%BA)、[官网说明](https://ddtv.pro/install/Docker.html)
-
-## Todo List
-
-下次功能性更新：今年末来年初
-
-- [ ] 将原有的配置文件通过软连接至`/config`，方便配置
-- [ ] 将`/config`中后加的文件通过脚本自动软连接至`/DDTVLiveRec`
-- [ ] 支持上传模块
-- [ ] `<add key="RoomConfiguration" value="./RoomListConfig.json" />`
-- [ ] docker-compose + 标签
