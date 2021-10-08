@@ -4,8 +4,6 @@ name: DDTVLiveRec_docker
 #删去：
 #  watch:
 #    types: [started]
-#  push:
-#    branches: [master]
 
 on:
   release:
@@ -14,10 +12,18 @@ on:
     types: [started]
   push:
     branches: [master]
+    paths:
+      - Dockerfile.alpine
+      - Dockerfile.debian
+      - install.sh
+      - start.sh
+      - .github/workflows/DDTVLiveRec_docker.yml
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ddtvliverec
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -25,8 +31,7 @@ jobs:
       - name: Prepare
         id: prepare
         run: |
-          IMAGE=ddtvliverec
-          IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE}"
+          IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}"
           VERSION=$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV2/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
           TAG_VERSION="${IMAGE_NAME}:${VERSION}"
           TAG_LATEST="${IMAGE_NAME}:latest"
@@ -48,18 +53,6 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
 #构建各架构镜像
-      - name: Build and push alpine os
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./Dockerfile.alpine
-          platforms: linux/amd64, linux/arm64, linux/arm/v7
-          push: true
-          build-args: ${{ steps.prepare.outputs.build_args }}
-          tags: |
-            ${{ steps.prepare.outputs.tag_version }}
-            ${{ steps.prepare.outputs.tag_latest }}
-
       - name: Build and push debian os
         uses: docker/build-push-action@v2
         with:
@@ -71,3 +64,15 @@ jobs:
           tags: |
             ${{ steps.prepare.outputs.tag_version }}-debian
             ${{ steps.prepare.outputs.tag_latest }}-debian
+
+      - name: Build and push alpine os
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile.alpine
+          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          push: true
+          build-args: ${{ steps.prepare.outputs.build_args }}
+          tags: |
+            ${{ steps.prepare.outputs.tag_version }}
+            ${{ steps.prepare.outputs.tag_latest }}
