@@ -1,5 +1,3 @@
-### 由于开发者的雾操作，Ver2.0.6.1a暂时不支持docker。
-
 # Docker-DDTVLiveRec
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/CHKZL/DDTV2?label=DDTVLiveRec&style=flat-square)](https://github.com/CHKZL/DDTV2/releases/latest)
@@ -31,7 +29,7 @@
 
 ```shell
 docker volume create ddtv_data
-docker run -d -p 11419:11419 -v ddtv_data:/DDTVLiveRec/tmp --name ddtv moomiji/ddtvliverec:latest
+docker run -itd -p 11419:11419 -v ddtv_data:/DDTVLiveRec/tmp --name ddtv moomiji/ddtvliverec:latest
 ```
 访问`http://IP:11419`进入DDTVLiveRec，默认用户名`ami`，默认密码`ddtv`。
 
@@ -49,7 +47,7 @@ docker volume create ddtv_data
 设置`用户名` `密码` `PUID` `PGID` `RoomListConfig.json(建议保存)` `挂载目录`
 
 ```shell
-docker run -d \
+docker run -itd \
     --restart always \
     -p 11419:11419 \
     -e WebUserName=ami \
@@ -65,7 +63,7 @@ docker run -d \
 3. 使用配置好的配置文件
 
 ```shell
-docker run -d \
+docker run -itd \
     --restart always \
     -p 11419:11419 \
     -e PUID=$(id -u) \
