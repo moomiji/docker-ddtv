@@ -14,3 +14,4 @@ RUN chmod +x *.sh \
 
 VOLUME /DDTVLiveRec/tmp
 EXPOSE 11419
+ENTRYPOINT ["./start.sh"]
