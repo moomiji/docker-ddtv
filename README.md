@@ -43,9 +43,9 @@ docker stop ddtv && docker rm ddtv
 docker volume create ddtv_data
 ```
 
-2. 一般配置
+2. 一般配置（可使用更多的变量，见常用的环境变量）
 
-设置`用户名` `密码` `PUID` `PGID` `RoomListConfig.json(建议保存)` `挂载目录`
+设置`用户名` `密码` `PUID` `PGID` `RoomListConfig.json(建议保存)` `BiliUser.ini(方便登录)` `挂载目录`
 
 ```shell
 docker run -itd \
@@ -55,13 +55,14 @@ docker run -itd \
     -e WebPassword=ddtv \
     -e PUID=$(id -u) \
     -e PGID=$(id -g) \
-    -v ${DOWNLOAD_DIR}/RoomListConfig.json:/DDTVLiveRec/RoomListConfig.json \
     -v ${DOWNLOAD_DIR}:/DDTVLiveRec/tmp \
+    -v ${DOWNLOAD_DIR}/BiliUser.ini:/DDTVLiveRec/BiliUser.ini \
+    -v ${DOWNLOAD_DIR}/RoomListConfig.json:/DDTVLiveRec/RoomListConfig.json \
     --name ddtv \
     moomiji/ddtvliverec:latest
 ```
 
-3. 使用配置好的配置文件
+3. 使用配置好的配置文件（只可使用`PUID` `PGID`变量）
 
 ```shell
 docker run -itd \
@@ -71,8 +72,8 @@ docker run -itd \
     -e PGID=$(id -g) \
     -v ${DOWNLOAD_DIR}:/DDTVLiveRec/tmp \
     -v ${CONFIG_DIR}/BiliUser.ini:/DDTVLiveRec/BiliUser.ini \
-    -v ${CONFIG_DIR}/DDTVLiveRec.dll.config:/DDTVLiveRec/DDTVLiveRec.dll.config \
     -v ${CONFIG_DIR}/RoomListConfig.json:/DDTVLiveRec/RoomListConfig.json \
+    -v ${CONFIG_DIR}/DDTVLiveRec.dll.config:/DDTVLiveRec/DDTVLiveRec.dll.config \
     --name ddtv \
     moomiji/ddtvliverec:latest
 ```
@@ -120,7 +121,9 @@ docker cp  [CONTAINER ID]:/DDTVLiveRec/RoomListConfig.json .
 | LiveRecWebServerDefaultIP | `*.*.*.*` | WEB详情页IP地址 | DDTVLiveRec.dll.config |
 | Port | `num` | WEB详情页端口 | DDTVLiveRec.dll.config |
 | AutoTranscoding | `1`开启 \ `0`关闭（默认） | 自动转码（会消耗大量CPU资源） | DDTVLiveRec.dll.config |
+| AutoTranscodingDelFile | `1`开启 \ `0`关闭（默认） | 自动转码并删除文件（会消耗大量CPU资源） | DDTVLiveRec.dll.config |
 | RecordDanmu | `1`开启 \ `0`关闭（默认） | 录制弹幕信息(可能导致房间监控失效，建议只放目标房间) | DDTVLiveRec.dll.config |
+| DefaultFileName | 咨询原项目开发者 | 文件名的格式，默认`{date}_{title}_{time}` | DDTVLiveRec.dll.config |
 
 - 注：变量值太奇怪要转义哟（使用`\`转义）
 
