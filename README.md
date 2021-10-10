@@ -3,8 +3,7 @@
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/CHKZL/DDTV2?label=DDTVLiveRec&style=flat-square)](https://github.com/CHKZL/DDTV2/releases/latest)
 [![Docker Image Version (latest by date)](https://img.shields.io/docker/v/moomiji/ddtvliverec?label=DockerHub&sort=semver&style=flat-square)](https://hub.docker.com/r/moomiji/ddtvliverec/tags?page=1&ordering=last_updated)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/moomiji/Docker-DDTVLiveRec/DDTVLiveRec_docker?label=Docker%20Build&style=flat-square)](https://github.com/moomiji/Docker-DDTVLiveRec/actions/workflows/DDTVLiveRec_docker.yml)
-
-　　●[源项目地址](https://github.com/CHKZL/DDTV2)●　　　 ●[本项目地址](https://github.com/moomiji/Docker-DDTVLiveRec)●　　[![浏览人数统计](https://s04.flagcounter.com/mini/xztG/bg_FFFFFF/txt_000000/border_FFFFFF/flags_0/)](http://s04.flagcounter.com/more/xztG)
+[![浏览人数统计](https://s04.flagcounter.com/mini/xztG/bg_FFFFFF/txt_000000/border_FFFFFF/flags_0/)](http://s04.flagcounter.com/more/xztG)
 
 本项目使用Github Actions自动构建，以[mcr.microsoft.com/dotnet/aspnet](https://hub.docker.com/_/microsoft-dotnet-aspnet)为基础镜像，将DDTVLiveRec的发行版及ffmpeg，打包并上传至[DockerHub](https://hub.docker.com/r/moomiji/ddtvliverec)。
 
@@ -18,7 +17,7 @@
 ## 更新镜像
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/CHKZL/DDTV2?label=DDTVLiveRec&style=flat-square)](https://github.com/CHKZL/DDTV2/releases/latest)
-[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/moomiji/ddtvliverec?label=DockerHub&style=flat-square)](https://hub.docker.com/r/moomiji/ddtvliverec/tags?page=1&ordering=last_updated)
+[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/moomiji/ddtvliverec?label=DockerHub&sort=semver&style=flat-square)](https://hub.docker.com/r/moomiji/ddtvliverec/tags?page=1&ordering=last_updated)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/moomiji/Docker-DDTVLiveRec/DDTVLiveRec_docker?label=Docker%20Build&style=flat-square)](https://github.com/moomiji/Docker-DDTVLiveRec/actions/workflows/DDTVLiveRec_docker.yml)
 
 若上面两个蓝黑色徽章的版本不同，在github中Star[本项目](https://github.com/moomiji/Docker-DDTVLiveRec)进行自动更新，在[Action](https://github.com/moomiji/Docker-DDTVLiveRec/actions/workflows/DDTVLiveRec_docker.yml)中查看进度。
