@@ -122,6 +122,10 @@ docker cp  [CONTAINER ID]:/DDTVLiveRec/RoomListConfig.json .
 | AutoTranscoding | `1`开启 \ `0`关闭（默认） | 自动转码（会消耗大量CPU资源） | DDTVLiveRec.dll.config |
 | RecordDanmu | `1`开启 \ `0`关闭（默认） | 录制弹幕信息(可能导致房间监控失效，建议只放目标房间) | DDTVLiveRec.dll.config |
 
+- 注：变量值太奇怪要转义哟（使用`\`转义）
+
+- 再注：路径里必有`/`，所以sed命令已经调整为使用`|`分割了
+
 其他变量详见[DDTVLiveRec.dll.config](https://github.com/CHKZL/DDTV2/blob/master/DDTVLiveRec/App.config)，虽然做了支持，但不保证能用和不出现bug（这种情况请不要使用docker了，根据[官网说明](https://ddtv.pro/install/DDTVLiveRecForLinux.html)进行安装，你的需求我暂时无能为力（（）。
 
 ## 其他镜像

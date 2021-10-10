@@ -85,18 +85,12 @@ s = '''<?xml version="1.0" encoding="utf-8"?>
 </configuration>'''
 
 
-path = "$FILEPATH"
 tree = ET.fromstring(s)
 
 for node in tree.iter('add'):
-    key = node.attrib['key']
-    value = node.attrib['value'].replace("/", "\/")
-    key2 = '$' + key
-    if not value:
-        key2 = r'\"{}\"'.format(key2)
-        value = r'\"\"'
-    
-    print("""    if [ ! "${0}" ]; then
-        sed -i "/{0}/s/{1}/{2}/" {3}
-    fi""".format(key, value, key2, path)
+    keyname = node.attrib['key']
+    envname = '$' + keyname
+    print(r"""    if [ -n "${0}" ]; then
+        sed -i "/{0}/s|value=\".*\"|value=\"{1}\"|" {2}
+    fi""".format(keyname, envname, "$FILEPATH")
     )
