@@ -11,4 +11,4 @@ RUN chmod +x *.sh \
 
 VOLUME /DDTV/Rec
 EXPOSE 11419
-ENTRYPOINT ["/bin/bash", "./start.sh"]
+ENTRYPOINT ["./start.sh"]
