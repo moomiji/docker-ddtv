@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 echo '           ____  ____  _______    __   _____  ____
           / __ \/ __ \/_  __/ |  / /  |__  / / __ \
          / / / / / / / / /  | | / /    /_ < / / / /
@@ -12,7 +12,7 @@ echo '           ____  ____  _______    __   _____  ____
 |__/|__/_____/_____/   /____/\___/_/    |___/\___/_/
 '
 echo ""
-echo "Running as PID ${PUID:=0} and GID ${PGID:=$PUID}."
+echo "Running as PID ${PUID:=$UID} and GID ${PGID:=$PUID}."
 echo ""
 
 Backups_Path=/DDTV_Backups
