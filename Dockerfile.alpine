@@ -6,7 +6,7 @@ WORKDIR /DDTVLiveRec
 COPY *.sh .
 
 RUN chmod +x *.sh \
-    && apk update && apk add --no-cache ffmpeg su-exec tzdata \
+    && apk update && apk add --no-cache ffmpeg su-exec bash tzdata \
     && apk add libgdiplus --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted \
     && ./install.sh \
     && apk del --purge tzdata \

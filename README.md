@@ -1,29 +1,30 @@
 # Docker-DDTVLiveRec
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/CHKZL/DDTV2?label=DDTVLiveRec&style=flat-square)](https://github.com/CHKZL/DDTV2/releases/latest)
-[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/moomiji/ddtvliverec?label=DockerHub&style=flat-square)](https://hub.docker.com/r/moomiji/ddtvliverec/tags?page=1&ordering=last_updated)
+[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/moomiji/ddtvliverec?label=DockerHub&sort=semver&style=flat-square)](https://hub.docker.com/r/moomiji/ddtvliverec/tags?page=1&ordering=last_updated)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/moomiji/Docker-DDTVLiveRec/DDTVLiveRec_docker?label=Docker%20Build&style=flat-square)](https://github.com/moomiji/Docker-DDTVLiveRec/actions/workflows/DDTVLiveRec_docker.yml)
+[![浏览人数统计](https://s04.flagcounter.com/mini/xztG/bg_FFFFFF/txt_000000/border_FFFFFF/flags_0/)](http://s04.flagcounter.com/more/xztG)
 
-　　●[源项目地址](https://github.com/CHKZL/DDTV2)●　　　 ●[本项目地址](https://github.com/moomiji/Docker-DDTVLiveRec)●　　[![浏览人数统计](https://s04.flagcounter.com/mini/xztG/bg_FFFFFF/txt_000000/border_FFFFFF/flags_0/)](http://s04.flagcounter.com/more/xztG)
-
-本项目使用Github Actions自动构建，以[mcr.microsoft.com/dotnet/aspnet](https://hub.docker.com/_/microsoft-dotnet-aspnet)为基础镜像，将DDTVLiveRec的发行版及ffmpeg，打包并上传至[DockerHub](https://hub.docker.com/r/moomiji/ddtvliverec)。
-
-支持的各架构及其基础镜像如下（截至2021/9/23）：
+本项目使用Github Actions自动构建，以[mcr.microsoft.com/dotnet/aspnet](https://hub.docker.com/_/microsoft-dotnet-aspnet)为基础镜像，将DDTVLiveRec的发行版及ffmpeg，打包并上传至[DockerHub](https://hub.docker.com/r/moomiji/ddtvliverec)和[ghcr.io](https://github.com/users/moomiji/packages/container/package/ddtvliverec)。
 
 | OS | Tag | OS Version  | Supported Platform |
 | ---- | ---- | ---- | ---- |
 | Alpine | `latest` `Version` | Alpine 3.14 | `amd64` `arm64v8` `arm32v7` |
 | Debian | `latest-debian` `Version-debian` | Debian 10 | `amd64` `arm64v8` `arm32v7` |
 
+（截至2021/9/23）
+
 ## 更新镜像
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/CHKZL/DDTV2?label=DDTVLiveRec&style=flat-square)](https://github.com/CHKZL/DDTV2/releases/latest)
-[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/moomiji/ddtvliverec?label=DockerHub&style=flat-square)](https://hub.docker.com/r/moomiji/ddtvliverec/tags?page=1&ordering=last_updated)
+[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/moomiji/ddtvliverec?label=DockerHub&sort=semver&style=flat-square)](https://hub.docker.com/r/moomiji/ddtvliverec/tags?page=1&ordering=last_updated)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/moomiji/Docker-DDTVLiveRec/DDTVLiveRec_docker?label=Docker%20Build&style=flat-square)](https://github.com/moomiji/Docker-DDTVLiveRec/actions/workflows/DDTVLiveRec_docker.yml)
 
 若上面两个蓝黑色徽章的版本不同，在github中Star[本项目](https://github.com/moomiji/Docker-DDTVLiveRec)进行自动更新，在[Action](https://github.com/moomiji/Docker-DDTVLiveRec/actions/workflows/DDTVLiveRec_docker.yml)中查看进度。
 
 ## 使用方法
+
+镜像名`moomiji/ddtvliverec`可替换成`ghcr.io/moomiji/ddtvliverec`，如果DockerHub下载不畅的话。
 
 1. 尝鲜使用
 
@@ -42,9 +43,9 @@ docker stop ddtv && docker rm ddtv
 docker volume create ddtv_data
 ```
 
-2. 一般配置
+2. 一般配置（可使用更多的变量，见常用的环境变量）
 
-设置`用户名` `密码` `PUID` `PGID` `RoomListConfig.json(建议保存)` `挂载目录`
+设置`用户名` `密码` `PUID` `PGID` `RoomListConfig.json(建议保存)` `BiliUser.ini(方便登录)` `挂载目录`
 
 ```shell
 docker run -itd \
@@ -54,13 +55,14 @@ docker run -itd \
     -e WebPassword=ddtv \
     -e PUID=$(id -u) \
     -e PGID=$(id -g) \
-    -v ${DOWNLOAD_DIR}/RoomListConfig.json:/DDTVLiveRec/RoomListConfig.json \
     -v ${DOWNLOAD_DIR}:/DDTVLiveRec/tmp \
+    -v ${DOWNLOAD_DIR}/BiliUser.ini:/DDTVLiveRec/BiliUser.ini \
+    -v ${DOWNLOAD_DIR}/RoomListConfig.json:/DDTVLiveRec/RoomListConfig.json \
     --name ddtv \
     moomiji/ddtvliverec:latest
 ```
 
-3. 使用配置好的配置文件
+3. 使用配置好的配置文件（只可使用`PUID` `PGID`变量）
 
 ```shell
 docker run -itd \
@@ -70,8 +72,8 @@ docker run -itd \
     -e PGID=$(id -g) \
     -v ${DOWNLOAD_DIR}:/DDTVLiveRec/tmp \
     -v ${CONFIG_DIR}/BiliUser.ini:/DDTVLiveRec/BiliUser.ini \
-    -v ${CONFIG_DIR}/DDTVLiveRec.dll.config:/DDTVLiveRec/DDTVLiveRec.dll.config \
     -v ${CONFIG_DIR}/RoomListConfig.json:/DDTVLiveRec/RoomListConfig.json \
+    -v ${CONFIG_DIR}/DDTVLiveRec.dll.config:/DDTVLiveRec/DDTVLiveRec.dll.config \
     --name ddtv \
     moomiji/ddtvliverec:latest
 ```
@@ -119,7 +121,13 @@ docker cp  [CONTAINER ID]:/DDTVLiveRec/RoomListConfig.json .
 | LiveRecWebServerDefaultIP | `*.*.*.*` | WEB详情页IP地址 | DDTVLiveRec.dll.config |
 | Port | `num` | WEB详情页端口 | DDTVLiveRec.dll.config |
 | AutoTranscoding | `1`开启 \ `0`关闭（默认） | 自动转码（会消耗大量CPU资源） | DDTVLiveRec.dll.config |
+| AutoTranscodingDelFile | `1`开启 \ `0`关闭（默认） | 自动转码并删除文件（会消耗大量CPU资源） | DDTVLiveRec.dll.config |
 | RecordDanmu | `1`开启 \ `0`关闭（默认） | 录制弹幕信息(可能导致房间监控失效，建议只放目标房间) | DDTVLiveRec.dll.config |
+| DefaultFileName | 咨询原项目开发者 | 文件名的格式，默认`{date}_{title}_{time}` | DDTVLiveRec.dll.config |
+
+- 注：变量值太奇怪要转义哟（使用`\`转义）
+
+- 再注：路径里必有`/`，所以sed命令已经调整为使用`|`分割了
 
 其他变量详见[DDTVLiveRec.dll.config](https://github.com/CHKZL/DDTV2/blob/master/DDTVLiveRec/App.config)，虽然做了支持，但不保证能用和不出现bug（这种情况请不要使用docker了，根据[官网说明](https://ddtv.pro/install/DDTVLiveRecForLinux.html)进行安装，你的需求我暂时无能为力（（）。
 

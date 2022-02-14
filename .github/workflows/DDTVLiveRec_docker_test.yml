@@ -3,20 +3,24 @@ name: DDTVLiveRec_docker_test
 on:
   workflow_dispatch:
   push:
-    branches: [test]
+    branches: 
+      - test
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ddtvliverec
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: test
 
       - name: Prepare
         id: prepare
         run: |
-          IMAGE=ddtvliverec
-          IMAGE_NAME="${{ secrets.DOCKERHUB_TEST_USERNAME }}/${IMAGE}"
+          IMAGE_NAME="${{ secrets.DOCKERHUB_TEST_USERNAME }}/${{ env.IMAGE_NAME }}"
           echo ::set-output name=image_name::${IMAGE_NAME}
 
       - name: Set up QEMU
