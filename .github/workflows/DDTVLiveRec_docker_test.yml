@@ -5,11 +5,6 @@ on:
   push:
     branches: 
       - test
-    paths:
-      - Dockerfile.test
-      - install.sh
-      - start.sh
-      - .github/workflows/DDTVLiveRec_docker_test.yml
 
 jobs:
   publish:
@@ -19,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: test
 
       - name: Prepare
         id: prepare
