@@ -1,16 +1,14 @@
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine
-ENV PUID=1000
-ENV PGID=1000
-WORKDIR /DDTVLiveRec
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine
+WORKDIR /DDTV
 
 COPY *.sh .
 
 RUN chmod +x *.sh \
-    && apk update && apk add --no-cache ffmpeg su-exec tzdata \
-    && apk add libgdiplus --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted \
+    && apk add --no-cache ffmpeg su-exec tzdata \
+    && apk add libgdiplus --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted \
     && ./install.sh \
-    && apk del --purge tzdata \
     && rm -rf /var/cache/apk/* /root/.cache /tmp/*
 
-VOLUME /DDTVLiveRec/tmp
+VOLUME /DDTV/Rec
 EXPOSE 11419
+ENTRYPOINT ["/bin/bash", "./start.sh"]
