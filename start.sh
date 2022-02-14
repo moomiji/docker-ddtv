@@ -63,10 +63,10 @@ ${ServerAID:+ServerAID=$ServerAID}
 ${ServerName:+ServerName=$ServerName}" > $DDTV_Config
 fi
 
-ID=`awk -F= '/^ID=/{print $2}' /etc/os-release`
 dotnet DDTV_Update.dll docker
-
+ID=`awk -F= '/^ID=/{print $2}' /etc/os-release`
 chown -R $PUID:$PGID /DDTV $DownloadPath $TmpPath
+
 if [ "$ID" = "debian" ]; then
     gosu $PUID:$PGID dotnet DDTV_WEB_Server.dll
 elif [ "$ID" = "alpine" ]; then
