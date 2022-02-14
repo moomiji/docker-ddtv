@@ -4,6 +4,8 @@ name: DDTVLiveRec_docker
 #删去：
 #  watch:
 #    types: [started]
+#  push:
+#    branches: [master]
 
 on:
   release:
