@@ -4,7 +4,7 @@ WORKDIR /DDTV
 COPY *.sh .
 
 RUN chmod +x *.sh \
-    && apk add --no-cache ffmpeg su-exec tzdata \
+    && apk add --no-cache ffmpeg su-exec bash tzdata \
     && apk add libgdiplus --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted \
     && ./install.sh \
     && rm -rf /var/cache/apk/* /root/.cache /tmp/*
