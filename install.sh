@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 Tmp_File=DDTV_Tmp
 Backups_Path=/DDTV_Backups
 Download_Url=$(wget -qO - https://api.github.com/repos/CHKZL/DDTV/releases/latest | awk '/\/DDTV_W/{print $4;exit}' FS='"')
