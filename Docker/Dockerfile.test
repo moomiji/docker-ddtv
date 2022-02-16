@@ -7,8 +7,9 @@ RUN chmod +x *.sh \
     && apk add libgdiplus --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted \
     && apk del --purge wget unzip \
     && rm -rf /var/cache/apk/* /root/.cache /tmp/* \
-    && cd /DDTV_Backups/runtimes && echo "$TARGETPLATFORM" \
-    if [ "$TARGETPLATFORM" = "linux/amd64" ]; then rm -rf linux*; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then rm -rf linux-arm *x64; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then rm -rf *64; else echo "ERROR TARGETPLATFORM" && exit 1; fi
+    && cd /DDTV_Backups/runtimes \
+    && echo "$TARGETPLATFORM" \
+    && if [ "$TARGETPLATFORM" = "linux/amd64" ]; then rm -rf linux*; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then rm -rf linux-arm *x64; elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then rm -rf *64; else echo "ERROR TARGETPLATFORM" && exit 1; fi
 
 EXPOSE 11419
 VOLUME /DDTV/Rec
