@@ -3,5 +3,8 @@ File_Path=$(unzip -l *.zip | awk "/dll/{print \$4;exit}" FS=' ')
 unzip *.zip
 mkdir root/DDTV root/DDTV_Backups
 mv -f ${File_Path%/*}/* root/DDTV_Backups
+
 cd root/DDTV_Backups && dotnet DDTV_Update.dll docker
 rm *.exe
+cd runtimes/
+rm -rf osx* win* unix linux-s390x linux-x86 linux-m* linux-armel
