@@ -11,21 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: test
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.0.x'
-      - name: prepare
+      - name: Prepare
         id: prepare
         run: |
           echo ::set-output name=ddtv_version::$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
-          wget "https://github.com/CHKZL/DDTV/releases/latest/download/$(wget -qO - https://api.github.com/repos/CHKZL/DDTV/releases/latest | awk '/[Ss]erver/{print $4;exit}' FS='"')"
-          File_Path=$(unzip -l *.zip | awk "/dll/{print \$4;exit}" FS=' ')
-          unzip *.zip
-          mkdir root/DDTV root/DDTV_Backups
-          mv -f ${File_Path%/*}/* root/DDTV_Backups
-          cd root/DDTV_Backups && dotnet DDTV_Update.dll docker
+          chmod +x perpare.sh && ./perpare.sh
 
       - name: Extract Docker metadata for test images
         id: test
@@ -37,7 +34,7 @@ jobs:
             latest=false
           tags: |
             type=raw,value=test
-            type=match,pattern=\d.\d,group=1,value=test
+            type=match,pattern=(\d.\d),group=1,value=test
 
 # 登录至仓库
       - name: Login to DockerHub
@@ -54,6 +51,6 @@ jobs:
           context: .
           file: ./Dockerfile.test
           platforms: linux/amd64 #, linux/arm64, linux/arm/v7
-          push: false #${{ github.event_name != 'pull_request' }}
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.test.outputs.tags }}
           labels: ${{ steps.test.outputs.labels }}
