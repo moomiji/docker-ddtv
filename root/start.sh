@@ -23,12 +23,12 @@ RoomListConfig=${RoomListConfig:-"./RoomListConfig.json"}
 
 if [ "$(ls -A $Backups_DIR)" ]; then
     for i in $Backups_DIR/*; do
-        [ ! -e ${i##*/} ] && cp -vur $i ${i##*/}
+        [ ! -e "${i##*/}" ] && cp -vur $i ${i##*/}
     done
 fi
 
 if [ ! -e "$RoomListConfig" ]; then
-    if [ -n ${roomlist:-} ]; then
+    if [ -n "${roomlist:-}" ]; then
         echo $roomlist > $RoomListConfig
     fi
 fi
