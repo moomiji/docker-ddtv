@@ -4,3 +4,4 @@ unzip *.zip
 mkdir root/DDTV root/DDTV_Backups
 mv -f ${File_Path%/*}/* root/DDTV_Backups
 cd root/DDTV_Backups && dotnet DDTV_Update.dll docker
+rm *.exe

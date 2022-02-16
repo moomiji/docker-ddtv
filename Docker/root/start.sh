@@ -1,10 +1,11 @@
 #!/bin/bash
 set -e; set -u
-echo '           ____  ____  _______    __   _____  ____
-          / __ \/ __ \/_  __/ |  / /  |__  / / __ \
-         / / / / / / / / /  | | / /    /_ < / / / /
-        / /_/ / /_/ / / /   | |/ /   ___/ // /_/ /
-       /_____/_____/ /_/    |___/   /____(_)____/
+echo '
+          ____  ____  _______    __     _____  ____
+         / __ \/ __ \/_  __/ |  / /    |__  / / __ \
+        / / / / / / / / /  | | / /      /_ < / / / /
+       / /_/ / /_/ / / /   | |/ /     ___/ // /_/ /
+      /_____/_____/ /_/    |___/     /____(_)____/
 
  _       ____________     _____
 | |     / / ____/ __ )   / ___/___  ______   _____  _____
@@ -12,17 +13,16 @@ echo '           ____  ____  _______    __   _____  ____
 | |/ |/ / /___/ /_/ /   ___/ /  __/ /   | |/ /  __/ /
 |__/|__/_____/_____/   /____/\___/_/    |___/\___/_/
 '
-echo ""
 echo "Running as UID ${PUID:=$UID} and GID ${PGID:=$PUID}."
 echo ""
 cd /DDTV
 
-Backups_DIR=/DDTV_Backups
+Backups_Path=/DDTV_Backups
 DDTV_Config=${DDTV_Config:-"./DDTV_Config.ini"}
 RoomListConfig=${RoomListConfig:-"./RoomListConfig.json"}
 
-if [ "$(ls -A $Backups_DIR)" ]; then
-    for i in $Backups_DIR/*; do
+if [ "$(ls -A $Backups_Path)" ]; then
+    for i in $Backups_Path/*; do
         [ ! -e "${i##*/}" ] && cp -vur $i ${i##*/}
     done
 fi
@@ -67,7 +67,7 @@ fi
 
 dotnet DDTV_Update.dll docker
 ID=`awk -F= '/^ID=/{print $2}' /etc/os-release`
-chown -R $PUID:$PGID /DDTV $DownloadPath $TmpPath
+chown -R $PUID:$PGID /DDTV ${DownloadPath:-} ${TmpPath:-}
 
 if [ "$ID" = "debian" ]; then
     gosu $PUID:$PGID dotnet DDTV_WEB_Server.dll
