@@ -22,7 +22,7 @@ jobs:
         id: prepare
         run: |
           echo ::set-output name=ddtv_version::$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
-          chmod +x perpare.sh && ./perpare.sh
+          chmod +x prepare.sh && ./prepare.sh
 
       - name: Extract Docker metadata for test images
         id: test
