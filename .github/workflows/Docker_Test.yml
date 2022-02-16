@@ -34,7 +34,11 @@ jobs:
             latest=false
           tags: |
             type=raw,value=test
-            type=match,pattern=(\d.\d),group=1,value=test
+            type=match,pattern=(\d.\d),group=1
+            type=match,pattern=v(\d.\d),group=1
+            type=match,pattern=V(\d.\d),group=1
+            type=match,pattern=Ver(\d.\d),group=1
+            type=match,pattern=VER(\d.\d),group=1
 
 # 登录至仓库
       - name: Login to DockerHub
