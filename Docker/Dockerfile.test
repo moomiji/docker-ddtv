@@ -8,7 +8,7 @@ RUN chmod +x *.sh \
     && apk del --purge wget unzip \
     && rm -rf /var/cache/apk/* /root/.cache /tmp/* \
     && cd /DDTV_Backups/runtimes && \
-    if [ "$TARGETPLATFORM" = "linux/armd64" ]; then rm -rf linux*; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then rm -rf linux-arm *x64; elif [ "TARGETPLATFORM" = "linux/arm/v7" ]; then rm -rf *64; else echo "ERROR TARGETPLATFORM" && exit 1; fi
+    if [ "$TARGETPLATFORM" = "linux/amd64" ]; then rm -rf linux*; elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then rm -rf linux-arm *x64; elif [ "TARGETPLATFORM" = "linux/arm/v7" ]; then rm -rf *64; else echo "ERROR TARGETPLATFORM" && exit 1; fi
 
 EXPOSE 11419
 VOLUME /DDTV/Rec
