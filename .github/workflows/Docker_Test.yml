@@ -1,0 +1,33 @@
+name: DDTV_Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: 
+      - test
+    paths:
+      - Dockerfile.test
+      - install.sh
+      - start.sh
+      - .github/workflows/DDTV_Test.yml
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+      - name: prepare
+        id: prepare
+        run: |
+          echo ::set-output name=ddtv_version::$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
+          wget "https://github.com/CHKZL/DDTV/releases/latest/download/$(wget -qO - https://api.github.com/repos/CHKZL/DDTV/releases/latest | awk '/[Ss]erver/{print $4;exit}' FS='"')"
+          File_Path=$(unzip -l *.zip | awk "/dll/{print \$4;exit}" FS=' ')
+          unzip *.zip && mv -f ${File_Path%/*}/* install/
+          ls -al install
+          dotnet install/DDTV_Update.dll docker
+
