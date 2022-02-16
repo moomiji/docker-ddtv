@@ -1,0 +1,39 @@
+version: '3'
+# 用于前后端同源的docker部署
+
+services:
+  service.DDTV_WEB_Server:
+    image: moomiji/ddtvwebserver
+    restart: always
+    environment:
+#      WebUserName: ami
+#      WebPassword: ddtv
+#      PUID: 1000
+#      PGID: 1000
+#      IsAutoTranscod: true # 启用自动转码 flv to mp4
+#      roomlist: {"data":[]}
+#      TZ: Asia/Shanghai # 默认东八区
+    volumes:
+#      - ${CONFIG_DIR}:/DDTV
+      - DDTV_Rec:/DDTV/Rec # 按需修改
+    networks:
+      - service_only
+
+  service.DDTV_WEB_Views:
+    image: moomiji/ddtvwebviews
+    restart: always
+    depends_on:
+      - service.DDTV_WEB_Server
+    ports:
+      - "11419:11419"
+    networks:
+      - public_access
+      - service_only
+
+volumes: # 按需修改
+  DDTV_Rec:
+
+networks:
+  public_access: # Provide the access for DDTV WEB Views
+  service_only: # Provide the communication network between services only
+    internal: true

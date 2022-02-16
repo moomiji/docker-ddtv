@@ -27,7 +27,38 @@ jobs:
           echo ::set-output name=ddtv_version::$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
           wget "https://github.com/CHKZL/DDTV/releases/latest/download/$(wget -qO - https://api.github.com/repos/CHKZL/DDTV/releases/latest | awk '/[Ss]erver/{print $4;exit}' FS='"')"
           File_Path=$(unzip -l *.zip | awk "/dll/{print \$4;exit}" FS=' ')
-          unzip *.zip && mv -f ${File_Path%/*}/* install/
-          ls -al install
-          dotnet install/DDTV_Update.dll docker
+          unzip *.zip
+          mkdir root/DDTV root/DDTV_Backups
+          mv -f ${File_Path%/*}/* root/DDTV_Backups
+          cd root/DDTV_Backups && dotnet DDTV_Update.dll docker
 
+      - name: Extract Docker metadata for alpine images
+        id: alpine
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/ddtvliverec
+          flavor: |
+            latest=false
+          tags: |
+            type=raw,value=test
+            type=match,pattern=\d.\d,group=1,value=test
+
+# 登录至仓库
+      - name: Login to DockerHub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+# 构建各架构镜像
+      - name: Build and push alpine os
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile.alpine
+          platforms: linux/amd64 #, linux/arm64, linux/arm/v7
+          push: false #${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.alpine.outputs.tags }}
+          labels: ${{ steps.alpine.outputs.labels }}

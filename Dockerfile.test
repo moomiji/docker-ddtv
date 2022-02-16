@@ -1,14 +1,13 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine
-WORKDIR /DDTV
-
-COPY *.sh .
+ENV TZ=Asia/Shanghai
+COPY root/ /
 
 RUN chmod +x *.sh \
-    && apk add --no-cache ffmpeg su-exec bash tzdata \
+    && apk add --no-cache ffmpeg bash tzdata wget unzip su-exec \
     && apk add libgdiplus --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted \
-    && ./install.sh \
+    && apk del --purge wget unzip \
     && rm -rf /var/cache/apk/* /root/.cache /tmp/*
 
-VOLUME /DDTV/Rec
 EXPOSE 11419
+VOLUME /DDTV/Rec
 ENTRYPOINT ["./start.sh"]
