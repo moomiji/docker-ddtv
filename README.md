@@ -32,8 +32,8 @@
 docker volume create DDTV_Rec
 docker run -itd -p 11419:11419 \
     -v DDTV_Rec:/DDTV/Rec \ # 当前版本暂未有前端，下面两个环境变量为必须，否则不能正常录制
-    -e RoomList=$RoomList \ # 房间配置文件，详见 常用的环境变量
-    -e BiliUser=$BiliUser \ # 用户本地加密缓存扫码登陆bilibili信息
+    -e RoomList="${RoomList}" \ # 房间配置文件，详见 常用的环境变量
+    -e BiliUser="${BiliUser}" \ # 用户本地加密缓存扫码登陆bilibili信息
     --name DDTV_WEB_Server moomiji/ddtv:latest
 ```
 
@@ -61,8 +61,8 @@ docker run -itd \
     -e WebPassword=ddtv \
     -e PUID=$(id -u) \
     -e PGID=$(id -g) \
-    -e RoomList=$RoomList \
-    -e BiliUser=$BiliUser \
+    -e RoomList="${RoomList}" \
+    -e BiliUser="${BiliUser}" \
     -v ${DOWNLOAD_DIR}:/DDTV/Rec \
     --name DDTV_WEB_Server \
     moomiji/ddtv:latest
@@ -127,8 +127,8 @@ docker cp [DDTV CONTAINER ID]:/DDTV/* .
 | PUID | `num` | `0` | 用户ID |
 | PGID | `num` | `0` | 用户组ID |
 | TZ | `州/城市` | `Asia/Shanghai` | 时区 |
-| RoomList | `json` | `{"data":[]}` 来自文件 `RoomListConfig.json` | [官网说明](https://ddtv.pro/config/RoomListConfig.json.html)，食用方法：`RoomList='{"data":[]}'; -e RoomList=$RoomList` |
-| BiliUser | `ini` | 来自文件 `BiliUser.ini` | 食用方法：`BiliUser='cookie=...'; -e BiliUser=$BiliUser` |
+| RoomList | `json` | `{"data":[]}` 来自文件 `RoomListConfig.json` | [官网说明](https://ddtv.pro/config/RoomListConfig.json.html)，食用方法：`RoomList='{"data":[]}'; -e RoomList="${RoomList}"` |
+| BiliUser | `ini` | 来自文件 `BiliUser.ini` | 食用方法：`BiliUser='cookie=...'; -e BiliUser="${BiliUser}"` |
 | DownloadDirectoryName | `{KEY}_{KEY}` | `{ROOMID}_{NAME}` | 默认下载文件夹名字格式 |
 | DownloadFileName | `{KEY}_{KEY}` | `{DATE}_{TIME}_{TITLE}` | 默认下载文件名格式 |
 | TranscodParmetrs | ffmpeg 参数 带 `{After}` `{Before}` | `-i {Before} -vcodec copy -acodec copy {After}` | 转码默认参数 |
