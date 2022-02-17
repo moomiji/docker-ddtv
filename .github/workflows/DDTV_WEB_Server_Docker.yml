@@ -3,8 +3,8 @@ name: DDTV_WEB_Server_Docker
 #  watch:
 #    types: [started]
 #          echo ::set-output name=ddtv_version::${Version}
-#            ${{ secrets.DOCKERHUB_USERNAME }}/ddtvliverec
-#            ghcr.io/${{ github.actor }}/ddtvliverec --> ghcr.io/${{ github.repository }}
+#            ${{ secrets.DOCKERHUB_USERNAME }}/ddtv
+#            ghcr.io/${{ github.actor }}/ddtv --> ghcr.io/${{ github.repository }}
 #            type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
 
 on:
@@ -45,8 +45,8 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/ddtvliverec
-            ghcr.io/${{ github.actor }}/ddtvliverec
+            ${{ secrets.DOCKERHUB_USERNAME }}/ddtv
+            ghcr.io/${{ github.actor }}/DDTV
           flavor: |
             latest=true
           tags: |
@@ -58,8 +58,8 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/ddtvliverec
-            ghcr.io/${{ github.actor }}/ddtvliverec
+            ${{ secrets.DOCKERHUB_USERNAME }}/ddtv
+            ghcr.io/${{ github.actor }}/ddtv
           flavor: |
             latest=true
             suffix=-debian,onlatest=true

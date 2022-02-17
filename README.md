@@ -1,11 +1,11 @@
-# Docker-DDTVLiveRec
+# Docker-DDTV
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/CHKZL/DDTV2?label=DDTVLiveRec&style=flat-square)](https://github.com/CHKZL/DDTV2/releases/latest)
-[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/moomiji/ddtvliverec?label=DockerHub&sort=semver&style=flat-square)](https://hub.docker.com/r/moomiji/ddtvliverec/tags?page=1&ordering=last_updated)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/moomiji/docker-ddtvliverec/DDTV_WEB_Server_Docker?label=Docker%20Build&style=flat-square)](https://github.com/moomiji/docker-ddtvliverec/actions/workflows/DDTV_WEB_Server_Docker.yml)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/CHKZL/DDTV?label=DDTV&style=flat-square)](https://github.com/CHKZL/DDTV/releases/latest)
+[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/moomiji/ddtv?label=DockerHub&sort=semver&style=flat-square)](https://hub.docker.com/r/moomiji/ddtv/tags?page=1&ordering=last_updated)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/moomiji/docker-ddtv/DDTV_WEB_Server_Docker?label=Docker%20Build&style=flat-square)](https://github.com/moomiji/docker-ddtv/actions/workflows/DDTV_WEB_Server_Docker.yml)
 [![浏览人数统计](https://s04.flagcounter.com/mini/xztG/bg_FFFFFF/txt_000000/border_FFFFFF/flags_0/)](http://s04.flagcounter.com/more/xztG)
 
-本项目使用Github Actions自动构建，以[mcr.microsoft.com/dotnet/aspnet](https://hub.docker.com/_/microsoft-dotnet-aspnet)为基础镜像，将DDTVLiveRec的发行版及ffmpeg，打包并上传至[DockerHub](https://hub.docker.com/r/moomiji/ddtvliverec)和[ghcr.io](https://github.com/users/moomiji/packages/container/package/ddtvliverec)。
+本项目使用Github Actions自动构建，以[mcr.microsoft.com/dotnet/aspnet](https://hub.docker.com/_/microsoft-dotnet-aspnet)为基础镜像，将DDTV的发行版及ffmpeg，打包并上传至[DockerHub](https://hub.docker.com/r/moomiji/ddtv)和[ghcr.io](https://github.com/users/moomiji/packages/container/package/ddtv)。
 
 | OS | Tag | OS Version  | Supported Platform |
 | ---- | ---- | ---- | ---- |
@@ -16,21 +16,21 @@
 
 ## 更新镜像
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/CHKZL/DDTV2?label=DDTVLiveRec&style=flat-square)](https://github.com/CHKZL/DDTV2/releases/latest)
-[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/moomiji/ddtvliverec?label=DockerHub&sort=semver&style=flat-square)](https://hub.docker.com/r/moomiji/ddtvliverec/tags?page=1&ordering=last_updated)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/moomiji/docker-ddtvliverec/DDTV_WEB_Server_Docker?label=Docker%20Build&style=flat-square)](https://github.com/moomiji/docker-ddtvliverec/actions/workflows/DDTV_WEB_Server_Docker.yml)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/CHKZL/DDTV?label=DDTV&style=flat-square)](https://github.com/CHKZL/DDTV/releases/latest)
+[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/moomiji/ddtv?label=DockerHub&sort=semver&style=flat-square)](https://hub.docker.com/r/moomiji/ddtv/tags?page=1&ordering=last_updated)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/moomiji/docker-ddtv/DDTV_WEB_Server_Docker?label=Docker%20Build&style=flat-square)](https://github.com/moomiji/docker-ddtv/actions/workflows/DDTV_WEB_Server_Docker.yml)
 
-若上面两个蓝黑色徽章的版本不同，在github中Star[本项目](https://github.com/moomiji/Docker-DDTVLiveRec)进行自动更新，在[Action](https://github.com/moomiji/Docker-DDTVLiveRec/actions/workflows/DDTVLiveRec_docker.yml)中查看进度。
+若上面两个蓝黑色徽章的版本不同，在github中Star[本项目](https://github.com/moomiji/Docker-DDTV)进行自动更新，在[Action](https://github.com/moomiji/Docker-DDTV/actions/workflows/DDTV_docker.yml)中查看进度。
 
 ## 使用方法（推荐第4个）
 
-镜像名`moomiji/ddtvliverec`可替换成`ghcr.io/moomiji/ddtvliverec`，如果DockerHub下载不畅的话。
+镜像名`moomiji/ddtv`可替换成`ghcr.io/moomiji/ddtv`，如果DockerHub下载不畅的话。
 
 1. 尝鲜使用
 
 ```shell
 docker volume create DDTV_Rec
-docker run -itd -p 11419:11419 -v DDTV_Rec:/DDTV/Rec --name DDTV_WEB_Server moomiji/ddtvliverec:latest
+docker run -itd -p 11419:11419 -v DDTV_Rec:/DDTV/Rec --name DDTV_WEB_Server moomiji/ddtv:latest
 ```
 
 ~~访问`http://IP:11419`进入DDTV_WEB_Server，默认用户名`ami`，默认密码`ddtv`。~~
@@ -59,7 +59,7 @@ docker run -itd \
     -e PGID=$(id -g) \
     -v ${DOWNLOAD_DIR}:/DDTV/Rec \
     --name DDTV_WEB_Server \
-    moomiji/ddtvliverec:latest
+    moomiji/ddtv:latest
 ```
 
 3. 单独挂载配置好的配置文件
@@ -81,7 +81,7 @@ docker run -itd \
     -v ${CONFIG_DIR}/DDTV_Config.ini:/DDTV/DDTV_Config.ini \
     -v ${CONFIG_DIR}/RoomListConfig.json:/DDTV/RoomListConfig.json \
     --name DDTV_WEB_Server \
-    moomiji/ddtvliverec:latest
+    moomiji/ddtv:latest
 ```
 
 4. 将某一目录挂载至容器内的DDTV目录
@@ -101,7 +101,7 @@ docker run -itd \
     -v ${DOWNLOAD_DIR}:/DDTV/Rec \
     -v ${CONFIG_DIR}:/DDTV
     --name DDTV_WEB_Server \
-    moomiji/ddtvliverec:latest
+    moomiji/ddtv:latest
 ```
 
 **！！！不要挂载不存在的文件，不存在的话docker默认创建的是目录不是文件！！！**
