@@ -1,0 +1,13 @@
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+ENV TZ=Asia/Shanghai
+COPY root/ /
+
+RUN chmod +x *.sh \
+    && apt update \
+    && apt install --no-install-recommends ffmpeg bash tzdata wget unzip gosu libgdiplus -y \
+    && apt-get autoremove --purge wget unzip -y && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/* /root/.cache /tmp/*
+
+EXPOSE 11419
+VOLUME /DDTV/Rec
+ENTRYPOINT ["./start.sh"]
