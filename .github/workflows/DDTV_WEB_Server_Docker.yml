@@ -1,4 +1,11 @@
 name: DDTV_WEB_Server_Docker
+# 合并删去 debian DockerHub
+#  watch:
+#    types: [started]
+#          echo ::set-output name=ddtv_version::${Version}
+#            ${{ secrets.DOCKERHUB_USERNAME }}/ddtvliverec
+#            ghcr.io/${{ github.actor }}/ddtvliverec --> ghcr.io/${{ github.repository }}
+#            type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
 
 on:
   release:
@@ -9,7 +16,7 @@ on:
     branches: [master]
     paths:
       - 'Docker/**'
-      - 'Docker/README.md'
+      - '!Docker/README.md'
       - '.github/workflows/DDTV_WEB_Server_Docker.yml'
 
 jobs:
@@ -22,10 +29,15 @@ jobs:
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.0.x'
-      - name: Prepare
-        id: prepare
+
+      - name: Prepare # 输出
+        id: prepare 
         run: |
-          echo ::set-output name=ddtv_version::$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
+          Version=$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
+          Version_major=${Version%%.*} && Version_major=${Version_major:0-1}
+          Version_minor=${Version#*.}  && Version_minor=${Version_minor:0:1}
+          echo ::set-output name=ddtv_version::${Version}
+          echo ::set-output name=ddtv_version_major::${Version_major}.${Version_minor}
           cd Docker/ && chmod +x prepare.sh && ./prepare.sh
 
       - name: Metadata for alpine images
@@ -39,6 +51,7 @@ jobs:
             latest=true
           tags: |
             type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
 
       - name: Metadata for debian images
         id: debian
@@ -52,6 +65,7 @@ jobs:
             suffix=-debian,onlatest=true
           tags: |
             type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
 
 # 登录至仓库
       - name: Login to DockerHub
