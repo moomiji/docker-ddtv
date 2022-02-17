@@ -22,7 +22,7 @@
 
 若上面两个蓝黑色徽章的版本不同，在github中Star[本项目](https://github.com/moomiji/Docker-DDTV)进行自动更新，在[Action](https://github.com/moomiji/Docker-DDTV/actions/workflows/DDTV_docker.yml)中查看进度。
 
-## 使用方法（推荐第4个）
+## 使用方法（推荐方法3）
 
 镜像名`moomiji/ddtv`可替换成`ghcr.io/moomiji/ddtv`，如果DockerHub下载不畅的话。
 
@@ -30,18 +30,22 @@
 
 ```shell
 docker volume create DDTV_Rec
-docker run -itd -p 11419:11419 -v DDTV_Rec:/DDTV/Rec --name DDTV_WEB_Server moomiji/ddtv:latest
+docker run -itd -p 11419:11419 \
+    -v DDTV_Rec:/DDTV/Rec \ # 当前版本暂未有前端，下面两个环境变量为必须，否则不能正常录制
+    -e RoomList=$RoomList \ # 房间配置文件，详见 常用的环境变量
+    -e BiliUser=$BiliUser \ # 用户本地加密缓存扫码登陆bilibili信息
+    --name DDTV_WEB_Server moomiji/ddtv:latest
 ```
 
 ~~访问`http://IP:11419`进入DDTV_WEB_Server，默认用户名`ami`，默认密码`ddtv`。~~
 
-~~访问`http://IP:11419/loginqr`以扫码登录B站账号。~~
+~~访问`http://IP:11419/loginqr`以扫码登录B站账号。~~ 当前版本暂未有前端，不能使用
 
 删除容器
 
 ```shell
-docker stop ddtv 
-docker rm ddtv
+docker stop DDTV_WEB_Server
+docker rm DDTV_WEB_Server
 docker volume rm DDTV_Rec
 ```
 
@@ -57,40 +61,22 @@ docker run -itd \
     -e WebPassword=ddtv \
     -e PUID=$(id -u) \
     -e PGID=$(id -g) \
+    -e RoomList=$RoomList \
+    -e BiliUser=$BiliUser \
     -v ${DOWNLOAD_DIR}:/DDTV/Rec \
     --name DDTV_WEB_Server \
     moomiji/ddtv:latest
 ```
 
-3. 单独挂载配置好的配置文件
+3. 将某一目录挂载至容器内的DDTV目录
 
-- `RoomListConfig.json` 存在时，变量 `roomlist` 不起作用。
+- `BiliUser.ini` 存在时，变量 `BiliUser` 不起作用。
 
-- `DDTV_Config.ini` 存在时，除 `PUID` `PGID` `roomlist` 外的其他变量不起作用。
+- `RoomListConfig.json` 存在时，变量 `RoomList` 不起作用。
 
-准备好一个目录放入 `DDTV_Config.ini` `BiliUser.ini` `RoomListConfig.json` 。
+- `DDTV_Config.ini` 存在时，除 `PUID` `PGID` `RoomList` `BiliUser` 外的其他变量不起作用。
 
-```shell
-docker run -itd \
-    --restart always \
-    -p 11419:11419 \
-    -e PUID=$(id -u) \
-    -e PGID=$(id -g) \
-    -v ${DOWNLOAD_DIR}:/DDTV/Rec \
-    -v ${CONFIG_DIR}/BiliUser.ini:/DDTV/BiliUser.ini \
-    -v ${CONFIG_DIR}/DDTV_Config.ini:/DDTV/DDTV_Config.ini \
-    -v ${CONFIG_DIR}/RoomListConfig.json:/DDTV/RoomListConfig.json \
-    --name DDTV_WEB_Server \
-    moomiji/ddtv:latest
-```
-
-4. 将某一目录挂载至容器内的DDTV目录
-
-- `RoomListConfig.json` 存在时，变量 `roomlist` 不起作用。
-
-- `DDTV_Config.ini` 存在时，除 `PUID` `PGID` `roomlist` 外的其他变量不起作用。
-
-准备好一个目录放入（或不放入） `DDTV_Config.ini` `BiliUser.ini` `RoomListConfig.json` 。
+准备好一个目录放入（或不放入，无前端时必须放入） `DDTV_Config.ini` `BiliUser.ini` `RoomListConfig.json` 。
 
 ```shell
 docker run -itd \
@@ -141,8 +127,8 @@ docker cp [DDTV CONTAINER ID]:/DDTV/* .
 | PUID | `num` | `0` | 用户ID |
 | PGID | `num` | `0` | 用户组ID |
 | TZ | `州/城市` | `Asia/Shanghai` | 时区 |
-| roomlist | `json` | `{"data":[]}` | [官网说明](https://ddtv.pro/config/RoomListConfig.json.html)，请压缩至一行或使用 `\` 换行 |
-| RoomListConfig | 路径 | `./RoomListConfig.json` | 房间配置文件路径 |
+| RoomList | `json` | `{"data":[]}` 来自文件 `RoomListConfig.json` | [官网说明](https://ddtv.pro/config/RoomListConfig.json.html)，食用方法：`RoomList='{"data":[]}'; -e RoomList=$RoomList` |
+| BiliUser | `ini` | 来自文件 `BiliUser.ini` | 食用方法：`BiliUser='cookie=...'; -e BiliUser=$BiliUser` |
 | DownloadDirectoryName | `{KEY}_{KEY}` | `{ROOMID}_{NAME}` | 默认下载文件夹名字格式 |
 | DownloadFileName | `{KEY}_{KEY}` | `{DATE}_{TIME}_{TITLE}` | 默认下载文件名格式 |
 | TranscodParmetrs | ffmpeg 参数 带 `{After}` `{Before}` | `-i {Before} -vcodec copy -acodec copy {After}` | 转码默认参数 |

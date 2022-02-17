@@ -46,7 +46,7 @@ jobs:
         with:
           images: |
             ${{ secrets.DOCKERHUB_USERNAME }}/ddtv
-            ghcr.io/${{ github.actor }}/DDTV
+            ghcr.io/${{ github.actor }}/ddtv
           flavor: |
             latest=true
           tags: |
