@@ -18,21 +18,32 @@ echo ""
 cd /DDTV
 
 Backups_Path=/DDTV_Backups
+BiliUser_Path=./BiliUser.ini
 DDTV_Config=${DDTV_Config:-"./DDTV_Config.ini"}
 RoomListConfig=${RoomListConfig:-"./RoomListConfig.json"}
 
+# 检测 DDTV 目录文件是否齐全
 if [ "$(ls -A $Backups_Path)" ]; then
     for i in $Backups_Path/*; do
         [ ! -e "${i##*/}" ] && cp -vur $i ${i##*/}
     done
 fi
 
+# 写入 RoomListConfig.json
 if [ ! -e "$RoomListConfig" ]; then
-    if [ -n "${roomlist:-}" ]; then
-        echo $roomlist > $RoomListConfig
+    if [ -n "${RoomList:-}" ]; then
+        echo $RoomList > $RoomListConfig
     fi
 fi
 
+# 写入 BiliUser.ini
+if [ ! -e "$BiliUser_Path" ]; then
+    if [ -n "${BiliUser:-}" ]; then
+        echo $BiliUser > $BiliUser_Path
+    fi
+fi
+
+# 写入 DDTV_Config.ini
 if [ ! -e "$DDTV_Config" ]; then
 echo "[Core]
 RoomListConfig=$RoomListConfig
