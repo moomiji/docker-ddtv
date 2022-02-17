@@ -74,5 +74,5 @@ if [ "$ID" = "debian" ]; then
 elif [ "$ID" = "alpine" ]; then
     su-exec $PUID:$PGID dotnet DDTV_WEB_Server.dll
 else
-    echo "未支持$ID"
+    echo "未支持$ID" && exit 1
 fi

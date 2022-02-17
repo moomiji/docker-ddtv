@@ -18,10 +18,10 @@ jobs:
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.0.x'
+
       - name: Prepare
-        id: prepare
+        id: prepare 
         run: |
-          echo ::set-output name=ddtv_version::$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
           cd Docker/ && chmod +x prepare.sh && ./prepare.sh
 
       - name: Extract Docker metadata for test images
