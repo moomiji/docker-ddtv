@@ -39,7 +39,7 @@ fi
 # 写入 BiliUser.ini
 if [ ! -e "$BiliUser_Path" ]; then
     if [ -n "${BiliUser:-}" ]; then
-        echo $BiliUser > $BiliUser_Path
+        echo -e $BiliUser > $BiliUser_Path
     fi
 fi
 
