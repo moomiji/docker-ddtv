@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     name: 更新DockerHub简介
     env:
-      IMAGE_NAME: ddtvliverec
+      IMAGE_NAME: ddtv
     steps:
       - 
         name: Checkout
