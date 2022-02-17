@@ -128,7 +128,7 @@ docker cp [DDTV CONTAINER ID]:/DDTV/* .
 | PGID | `num` | `0` | 用户组ID |
 | TZ | `州/城市` | `Asia/Shanghai` | 时区 |
 | RoomList | `json` | `{"data":[]}` 来自文件 `RoomListConfig.json` | [官网说明](https://ddtv.pro/config/RoomListConfig.json.html)，食用方法：`RoomList='{"data":[]}'; -e RoomList="${RoomList}"` |
-| BiliUser | `ini` | 来自文件 `BiliUser.ini` | 食用方法：`BiliUser='cookie=...'; -e BiliUser="${BiliUser}"` |
+| BiliUser | `ini` | 来自文件 `BiliUser.ini` | 食用方法：`BiliUser='cookie=...\nExTime=...'; -e BiliUser="${BiliUser}"` |
 | DownloadDirectoryName | `{KEY}_{KEY}` | `{ROOMID}_{NAME}` | 默认下载文件夹名字格式 |
 | DownloadFileName | `{KEY}_{KEY}` | `{DATE}_{TIME}_{TITLE}` | 默认下载文件名格式 |
 | TranscodParmetrs | ffmpeg 参数 带 `{After}` `{Before}` | `-i {Before} -vcodec copy -acodec copy {After}` | 转码默认参数 |
