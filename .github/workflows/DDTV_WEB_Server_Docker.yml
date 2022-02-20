@@ -86,11 +86,12 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to ACR
-        uses: aliyun/acr-login@v1
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
         with:
-          region-id: cn-shenzhen
-          access-key-id: ${{ secrets.ACCESSKEY_ID }}
-          access-key-secret: ${{ secrets.ACCESSKEY_SECRET }}
+          registry: registry.cn-shenzhen.aliyuncs.com
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
 # 构建各架构镜像
       - name: Build and push debian os
