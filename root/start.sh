@@ -1,6 +1,7 @@
 #!/bin/bash
 # 当前可用参数有：--no-update
-if [[ "${1:=no-parameter}" != "--"* ]]; then echo "exec $1"; exec $1; exit $?; fi # 测试用
+ARGs=${*:-"--no-arguments"}
+if [[ "$ARGs" != "--"* ]]; then echo "exec $ARGs"; exec $ARGs; exit $?; fi # 测试用
 set -e; set -u
 echo '
           ____  ____  _______    __     _____  ____
@@ -79,7 +80,7 @@ ${ServerName:+ServerName=$ServerName}" > $DDTV_Config
 fi
 
 # 更新 DDTV
-if [ "$1" != "--no-update" ]; then
+if [ "$ARGs" != *"--no-update"* ]; then
     dotnet DDTV_Update.dll docker
 fi
 
