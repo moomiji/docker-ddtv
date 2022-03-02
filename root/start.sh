@@ -1,4 +1,6 @@
 #!/bin/bash
+# 当前可用参数有：--no-update
+if [[ "${1:=no-parameter}" != "--"* ]]; then echo "exec $1"; exec $1; exit $?; fi # 测试用
 set -e; set -u
 echo '
           ____  ____  _______    __     _____  ____
@@ -76,7 +78,11 @@ ${ServerAID:+ServerAID=$ServerAID}
 ${ServerName:+ServerName=$ServerName}" > $DDTV_Config
 fi
 
-dotnet DDTV_Update.dll docker
+# 更新 DDTV
+if [ "$1" != "--no-update" ]; then
+    dotnet DDTV_Update.dll docker
+fi
+
 ID=`awk -F= '/^ID=/{print $2}' /etc/os-release`
 chown -R $PUID:$PGID /DDTV ${DownloadPath:-} ${TmpPath:-}
 
