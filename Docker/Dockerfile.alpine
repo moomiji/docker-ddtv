@@ -1,5 +1,4 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine
-ENV DOTNET_System_Drawing_EnableUnixSupport=true 
 ENV Logging__Console__FormatterName=
 ENV TZ=Asia/Shanghai
 COPY root/ /
