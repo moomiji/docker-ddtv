@@ -80,16 +80,16 @@ ${ServerName:+ServerName=$ServerName}" > $DDTV_Config
 fi
 
 # 更新 DDTV
-if [ "$ARGs" != *"--no-update"* ]; then
-    dotnet DDTV_Update.dll docker
+if [[ "$ARGs" != *"--no-update"* ]]; then
+    echo 233
 fi
 
 ID=`awk -F= '/^ID=/{print $2}' /etc/os-release`
 chown -R $PUID:$PGID /DDTV ${DownloadPath:-} ${TmpPath:-}
 
-if [ "$ID" = "debian" ]; then
+if [[ "$ID" == "debian" ]]; then
     gosu $PUID:$PGID dotnet DDTV_WEB_Server.dll
-elif [ "$ID" = "alpine" ]; then
+elif [[ "$ID" == "alpine" ]]; then
     su-exec $PUID:$PGID dotnet DDTV_WEB_Server.dll
 else
     echo "未支持$ID" && exit 1
