@@ -1,7 +1,7 @@
 #!/bin/bash
 # 当前可用参数有：--no-update
 ARGs=${*:-"--no-arguments"}
-if [[ "$ARGs" != "--"* ]]; then echo "exec $ARGs"; exec $ARGs; exit $?; fi # 测试用
+if [[ "$ARGs" != "--"* ]]; then echo "exec $ARGs"; eval $ARGs; exit $?; fi # 测试用
 set -e; set -u
 echo '
           ____  ____  _______    __     _____  ____
