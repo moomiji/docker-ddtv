@@ -81,7 +81,7 @@ fi
 
 # 更新 DDTV
 if [[ "$ARGs" != *"--no-update"* ]]; then
-    echo 233
+    dotnet DDTV_Update.dll docker
 fi
 
 ID=`awk -F= '/^ID=/{print $2}' /etc/os-release`
