@@ -40,6 +40,7 @@ jobs:
           Version_minor=${Version#*.}  && Version_minor=${Version_minor:0:1}
           echo ::set-output name=ddtv_version::${Version}
           echo ::set-output name=ddtv_version_major::${Version_major}.${Version_minor}
+          WEBUI_URL=${{ secrets.WEBUI_URL }}
           cd Docker/ && chmod +x prepare.sh && ./prepare.sh
 
       - name: Metadata for alpine images
