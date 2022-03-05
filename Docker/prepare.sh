@@ -13,5 +13,5 @@ cd ..
 rm -rf *.zip
 wget -q $1
 unzip *.zip
-mkdir -p usr/share/nginx/html
-mv -f dist/* usr/share/nginx/html
+mkdir -p nginx/usr/share/nginx/html
+mv -f dist/* /nginx/usr/share/nginx/html
