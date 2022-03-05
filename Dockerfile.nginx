@@ -1,0 +1,13 @@
+FROM nginx:stable-alpine
+ENV TZ=Asia/Shanghai
+COPY nginx/ /
+
+RUN chmod +x /docker-entrypoint.d/*.sh
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+EXPOSE 80
+STOPSIGNAL SIGQUIT
+CMD ["nginx", "-g", "daemon off;"]
+
+
+# docker run --name tmp-nginx-container -d -p 2233:80 -v /www/wwwroot/nas.momiji.fun:/usr/share/nginx/html -v $PWD/nginx.conf:/etc/nginx/nginx.conf  nginx
