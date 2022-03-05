@@ -76,8 +76,11 @@ ${WebPassword:+WebPassword=$WebPassword}
 ${AccessKeyId:+AccessKeyId=$AccessKeyId}
 ${AccessKeySecret:+AccessKeySecret=$AccessKeySecret}
 ${ServerAID:+ServerAID=$ServerAID}
-${ServerName:+ServerName=$ServerName}" > $DDTV_Config
-fi
+${ServerName:+ServerName=$ServerName}
+${AccessControlAllowOrigin:+AccessControlAllowOrigin=$AccessControlAllowOrigin}
+${AccessControlAllowCredentials:+AccessControlAllowCredentials=$AccessControlAllowCredentials}
+" > $DDTV_Config
+fi # 22.03.06 更新至AccessControlAllowCredentials
 
 # 更新 DDTV
 if [[ "$ARGs" != *"--no-update"* ]]; then
