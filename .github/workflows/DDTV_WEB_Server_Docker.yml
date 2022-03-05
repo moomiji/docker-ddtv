@@ -15,6 +15,8 @@ on:
   push:
     branches: [master]
     paths:
+      - 'DDTV_WEB_Server/**'
+      - 'DDTV_WEB_Views/**'
       - 'Docker/**'
       - '!Docker/README.md'
       - '.github/workflows/DDTV_WEB_Server_Docker.yml'
@@ -31,14 +33,14 @@ jobs:
           dotnet-version: '6.0.x'
 
       - name: Prepare # 输出
-        id: prepare 
+        id: prepare
         run: |
           Version=$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
           Version_major=${Version%%.*} && Version_major=${Version_major:0-1}
           Version_minor=${Version#*.}  && Version_minor=${Version_minor:0:1}
           echo ::set-output name=ddtv_version::${Version}
           echo ::set-output name=ddtv_version_major::${Version_major}.${Version_minor}
-          cd Docker/ && chmod +x prepare.sh && ./prepare.sh
+          cd Docker/ && chmod +x prepare.sh && ./prepare.sh ${{ secrets.WEBUI_URL }}
 
       - name: Metadata for alpine images
         id: alpine
@@ -68,6 +70,21 @@ jobs:
           tags: |
             type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
             type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
+
+      - name: Metadata for nginx images
+        id: nginx
+        uses: docker/metadata-action@v3
+        with:
+            #registry.cn-shenzhen.aliyuncs.com/${{ github.actor }}/ddtvwebui
+            #${{ secrets.DOCKERHUB_USERNAME }}/ddtvwebui
+          images: |
+            ghcr.io/${{ github.actor }}/ddtvwebui
+          flavor: |
+            latest=true
+          tags: |
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
+
 
 # 登录至仓库
       - name: Login to DockerHub
@@ -113,3 +130,13 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.alpine.outputs.tags }}
           labels: ${{ steps.alpine.outputs.labels }}
+
+      - name: Build and push nginx os
+        uses: docker/build-push-action@v2
+        with:
+          context: Docker/
+          file: Docker/Dockerfile.nginx
+          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.nginx.outputs.tags }}
+          labels: ${{ steps.nginx.outputs.labels }}
