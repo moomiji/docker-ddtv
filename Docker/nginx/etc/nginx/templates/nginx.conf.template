@@ -1,6 +1,0 @@
-server {
-    listen 80;
-    location /api {
-        proxy_pass ${PROXY_PASS};
-    }
-}

@@ -3,8 +3,7 @@ ENV Logging__Console__FormatterName=
 ENV TZ=Asia/Shanghai
 COPY root/ /
 
-RUN chmod +x *.sh \
-    && apk add --no-cache ffmpeg bash tzdata wget unzip su-exec \
+RUN apk add --no-cache ffmpeg bash tzdata wget unzip su-exec \
     && apk add libgdiplus --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ --allow-untrusted \
     && apk del --purge wget unzip \
     && rm -rf /var/cache/apk/* /root/.cache /tmp/* \
