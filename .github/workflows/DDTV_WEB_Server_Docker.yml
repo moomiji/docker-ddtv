@@ -1,5 +1,5 @@
 name: DDTV_WEB_Server_Docker
-# 合并删去 debian DockerHub
+# 合并删去 DockerHub
 #  watch:
 #    types: [started]
 #          echo ::set-output name=ddtv_version::${Version}
@@ -56,21 +56,6 @@ jobs:
             type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
             type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
 
-      - name: Metadata for debian images
-        id: debian
-        uses: docker/metadata-action@v3
-        with:
-          images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/ddtv
-            ghcr.io/${{ github.actor }}/ddtv
-            registry.cn-shenzhen.aliyuncs.com/${{ github.actor }}/ddtv
-          flavor: |
-            latest=true
-            suffix=-debian,onlatest=true
-          tags: |
-            type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
-            type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
-
       - name: Metadata for nginx images
         id: nginx
         uses: docker/metadata-action@v3
@@ -111,16 +96,6 @@ jobs:
           password: ${{ secrets.ACR_PASSWORD }}
 
 # 构建各架构镜像
-      - name: Build and push debian os
-        uses: docker/build-push-action@v2
-        with:
-          context: Docker/
-          file: Docker/Dockerfile.debian
-          platforms: linux/amd64, linux/arm64, linux/arm/v7
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.debian.outputs.tags }}
-          labels: ${{ steps.debian.outputs.labels }}
-
       - name: Build and push alpine os
         uses: docker/build-push-action@v2
         with:
