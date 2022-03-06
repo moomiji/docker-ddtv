@@ -10,7 +10,6 @@
 | OS | Tag | OS Version  | Supported Platform |
 | ---- | ---- | ---- | ---- |
 | Alpine | `latest` `Version` | Alpine 3.14 | `amd64` `arm64v8` `arm32v7` |
-| Debian | `latest-debian` `Version-debian` | Debian 11 | `amd64` `arm64v8` `arm32v7` |
 
 （截至2022/2/16）
 
