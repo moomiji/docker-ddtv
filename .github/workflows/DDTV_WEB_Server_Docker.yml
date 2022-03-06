@@ -64,6 +64,7 @@ jobs:
             #${{ secrets.DOCKERHUB_USERNAME }}/ddtvwebui
           images: |
             ghcr.io/${{ github.actor }}/ddtvwebui
+            registry.cn-shenzhen.aliyuncs.com/${{ github.actor }}/ddtvwebui
           flavor: |
             latest=true
           tags: |

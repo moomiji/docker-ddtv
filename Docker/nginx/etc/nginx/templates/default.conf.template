@@ -3,7 +3,7 @@ server {
     listen  [::]:80;
     server_name  localhost;
 
-    location /api {
+    location ~ ^/(api|loginqr) {
         proxy_pass ${PROXY_PASS:-http://127.0.0.1:11419};
     }
 
