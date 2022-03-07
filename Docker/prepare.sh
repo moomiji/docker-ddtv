@@ -9,8 +9,9 @@ unzip "*.zip"
 
 mkdir -p root/DDTV \
          root/DDTV_Backups \
+         nginx/DDTV \
          nginx/DDTV_Backups
-mv -v dist/* nginx/DDTV_Backups
+mv -v dist/* nginx/DDTV_Backups/static
 mv -v "${Server_File_Path%/*}"/* root/DDTV_Backups
 cp -v nginx/docker-entrypoint.d/webui.sh root/webui.sh
 cd root/DDTV_Backups && dotnet DDTV_Update.dll docker

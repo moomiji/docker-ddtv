@@ -58,8 +58,8 @@ docker run -itd \
     -e WebPassword=ddtv \
     -e PUID=$(id -u) \
     -e PGID=$(id -g) \
-    -e RoomList="${RoomList}" \
-    -e BiliUser="${BiliUser}" \
+    -e RoomList="${RoomList}" \ # 房间配置文件，详见 常用的环境变量
+    -e BiliUser="${BiliUser}" \ # 用户本地加密缓存扫码登陆bilibili信息
     -e show=false \
     -v ${DOWNLOAD_DIR}:/DDTV/Rec \
     --name DDTV_WEB_Server \
@@ -126,9 +126,9 @@ docker run -d -p 8080:80 \
 
 ```shell
 docker run -d -p 8080:80 \
-    -v ${CONFIG_DIR}:/usr/share/nginx/html/static
-  # -v ${CONFIG_DIR}/barinfo.js:/usr/share/nginx/html/static/barinfo.js
-  # -v ${CONFIG_DIR}/config.js:/usr/share/nginx/html/static/config.js
+    -v ${CONFIG_DIR}:/DDTV/static
+  # -v ${CONFIG_DIR}/barinfo.js:/DDTV/static/barinfo.js
+  # -v ${CONFIG_DIR}/config.js:/DDTV/static/config.js
     --name DDTV_WEBUI ghcr.io/moomiji/ddtvwebui
 ```
 
@@ -136,11 +136,11 @@ docker run -d -p 8080:80 \
 
 | 文件名 | 获得方法 |
 | ----  | ----  |
-| BiliUser.ini  | 从配置好的 DDTV GUI 目录下复制  |
-| DDTV_Config.ini | 从配置好的 DDTV GUI 目录下复制 |
-| RoomListConfig.json  | 从配置好的 DDTV GUI 目录下复制 |
-| barinfo.js  | 从配置好的 DDTV UI 目录下复制 |
-| config.js  | 从配置好的 DDTV UI 目录下复制 |
+| BiliUser.ini  | 配置好的 DDTV GUI 目录下  |
+| DDTV_Config.ini | 配置好的 DDTV GUI 目录下 |
+| RoomListConfig.json  | 配置好的 DDTV GUI 目录下 |
+| barinfo.js | 配置好的 DDTV UI  目录下 |
+| config.js  | 配置好的 DDTV UI  目录下 |
 
 - 详见：[官网配置说明](https://ddtv.pro/config/)
 
@@ -162,13 +162,10 @@ docker run -d -p 8080:80 \
 | RoomList_Config_Path | 路径 | `./RoomListConfig.json` | RoomListConfig.json文件位置 |
 | RoomList | `json` | `{"data":[]}` 来自文件 `RoomListConfig.json`  文件不存在时可用 | [官网说明](https://ddtv.pro/config/RoomListConfig.json.html)，食用方法：`RoomList='{"data":[]}'; -e RoomList="${RoomList}"` |
 | BiliUser | `ini` | 来自文件 `BiliUser.ini` 文件不存在时可用 | 食用方法：`BiliUser='cookie=...  \n  ExTime=...'; -e BiliUser="${BiliUser}"` |
-| DownloadDirectoryName | `{KEY}_{KEY}` | `{ROOMID}_{NAME}` | 默认下载文件夹名字格式 |
-| DownloadFileName | `{KEY}_{KEY}` | `{DATE}_{TIME}_{TITLE}` | 默认下载文件名格式 |
 | IsAutoTranscod | `bool` | `false` | 启用自动转码 |
 | TranscodParmetrs | ffmpeg 参数 带 `{After}` `{Before}` | `-i {Before} -vcodec copy -acodec copy {After}` | 转码默认参数 |
-| WEB_API_SSL | `bool` | `false` | 启用WEB_API加密证书 |
-| pfxFileName | 路径 |   | pfx证书文件路径 |
-| pfxPasswordFileName | 路径 |   | pfx证书秘钥文件路径 |
+| DownloadDirectoryName | `{KEY}_{KEY}` | `{ROOMID}_{NAME}` | 默认下载文件夹名字格式 |
+| DownloadFileName | `{KEY}_{KEY}` | `{DATE}_{TIME}_{TITLE}` | 默认下载文件名格式 |
 | RecQuality | `int` | `10000` | 录制分辨率，可选值：流畅:80  高清:150  超清:250  蓝光:400  原画:10000 |
 | IsRecDanmu | `bool` | `true` | 全局弹幕录制开关 |
 | IsRecGift | `bool` | `true` | 全局礼物录制开关 |
@@ -176,8 +173,13 @@ docker run -d -p 8080:80 \
 | IsRecSC | `bool` | `true` | 全局SC录制开关 |
 | IsFlvSplit | `bool` | `false` | 全局FLV文件按大小切分开关，注：启动后自动合并、自动转码时效 |
 | FlvSplitSize | `long int` | `1073741824` | FLV文件切分的大小(byte) |
+| WEB_API_SSL | `bool` | `false` | 启用WEB_API加密证书 |
+| pfxFileName | 路径 |   | pfx证书文件路径 |
+| pfxPasswordFileName | 路径 |   | pfx证书秘钥文件路径 |
 | WebUserName | `string` | `ami` | WEB登陆使用的用户名 |
 | WebPassword | `string` | `ddtv` | WEB登陆使用的密码 |
+| AccessControlAllowOrigin | `http(s)://you.host:port` | `*` | DDTV_WEB跨域设置路径，应为前端网址 |
+| AccessControlAllowCredentials | `bool` | `true` | DDTV_WEB的Credentials设置 (布尔值) |
 
 2. DDTV WEB UI 可用参数（当 WEB Server 内置了前端项目时，也可使用）
 
@@ -185,8 +187,8 @@ docker run -d -p 8080:80 \
 
 | 参数名 | 格式 | 默认值 | 说明 |
 | ---- | ---- | ---- | ---- |
-| PROXY_PASS | `http(s)://you.host:port` | `http://127.0.0.1:11419` | 需要反代的后端地址 |
-| apiUrl | `bool` `http(s)://you.host:port` | `http://127.0.0.1:11419` | 后端地址，同源也请更换为主机IP，需要反代请填false |
+| PROXY_PASS | `http(s)://you.host:port` | `http://127.0.0.1:11419` | 需要反代的后端地址, apiUrl=false 时 WEBUI 从反代地址联系 WEBServer |
+| apiUrl | `bool` `http(s)://you.host:port` | `http://127.0.0.1:11419` | 后端地址, 同源也请更换为主机IP, 需要反代请填 false |
 | mount | 路径 | `/` | 展示目录所在文件系统占用 |
 | show | `bool` | `true` | 是否显示 |
 | infoshow | `bool` | `true` | 是否显示版权信息 |

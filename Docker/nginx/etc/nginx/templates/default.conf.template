@@ -8,7 +8,7 @@ server {
     }
 
     location / {
-        root   /usr/share/nginx/html;
+        root   /DDTV/static;
         index  index.html;
     }
 
