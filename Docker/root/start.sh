@@ -1,7 +1,7 @@
 #!/bin/bash
 # 当前可用参数有：--no-update
 ARGs=${*:-"--no-arguments"}
-if [[ "$ARGs" != "--"* ]]; then echo "exec $ARGs"; eval $ARGs; exit $?; fi # 测试用
+if [[ "$ARGs" != "--"* ]]; then echo "exec $ARGs"; eval "$ARGs"; exit $?; fi # 测试用
 set -e; set -u
 echo '
           ____  ____  _______    __     _____  ____
@@ -27,22 +27,24 @@ RoomListConfig=${RoomListConfig:-"./RoomListConfig.json"}
 
 # 检测 DDTV 目录文件是否齐全
 if [ "$(ls -A $Backups_Path)" ]; then
-    for i in $(find $Backups_Path); do
-        [ ! -e "${i##$Backups_Path/}" ] && cp -vur $i ${i##$Backups_Path/}
+    shopt -s globstar nullglob
+    for file in test/**; do
+        [ "${file##"$Backups_Path"/}" = "" ] && continue
+        [ ! -e "${file##"$Backups_Path"/}" ] && cp -vur "$file" "${file##"$Backups_Path"/}"
     done
 fi
 
 # 写入 RoomListConfig.json
 if [ ! -e "$RoomListConfig" ]; then
     if [ -n "${RoomList:-}" ]; then
-        echo $RoomList > $RoomListConfig
+        echo "$RoomList" > "$RoomListConfig"
     fi
 fi
 
 # 写入 BiliUser.ini
 if [ ! -e "$BiliUser_Path" ]; then
     if [ -n "${BiliUser:-}" ]; then
-        echo -e $BiliUser > $BiliUser_Path
+        echo -e "$BiliUser" > $BiliUser_Path
     fi
 fi
 
@@ -79,7 +81,7 @@ ${ServerAID:+ServerAID=$ServerAID}
 ${ServerName:+ServerName=$ServerName}
 ${AccessControlAllowOrigin:+AccessControlAllowOrigin=$AccessControlAllowOrigin}
 ${AccessControlAllowCredentials:+AccessControlAllowCredentials=$AccessControlAllowCredentials}
-" > $DDTV_Config
+" > "$DDTV_Config"
 fi # 22.03.06 更新至AccessControlAllowCredentials
 
 # 更新 DDTV
@@ -87,8 +89,8 @@ if [[ "$ARGs" != *"--no-update"* ]]; then
     dotnet DDTV_Update.dll docker
 fi
 
-ID=`awk -F= '/^ID=/{print $2}' /etc/os-release`
-chown -R $PUID:$PGID /DDTV ${DownloadPath:-} ${TmpPath:-}
+./etc/os-release
+chown -R $PUID:$PGID /DDTV "${DownloadPath:-}" "${TmpPath:-}"
 
 if [[ "$ID" == "debian" ]]; then
     gosu $PUID:$PGID dotnet DDTV_WEB_Server.dll
