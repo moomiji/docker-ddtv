@@ -1,5 +1,6 @@
 FROM nginx:stable-alpine
 ENV TZ=Asia/Shanghai
+ENV PROXY_PASS=http://127.0.0.1:11419
 COPY nginx/ /
 # .sh file     in /docker-entrypoint.d
 # .html file   in /usr/share/nginx/html
