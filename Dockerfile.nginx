@@ -3,7 +3,7 @@ ENV TZ=Asia/Shanghai
 ENV PROXY_PASS=http://127.0.0.1:11419
 COPY nginx/ /
 # .sh file     in /docker-entrypoint.d
-# .html file   in /usr/share/nginx/html
+# 配置前端文件  in /usr/share/nginx/html
 # default.conf in /etc/nginx/conf.d
 ENTRYPOINT ["/docker-entrypoint.sh"]
 EXPOSE 80
