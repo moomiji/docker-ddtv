@@ -22,7 +22,9 @@
 
 ## webserver使用方法
 
-可用镜像名: `moomiji/ddtv` `ghcr.io/moomiji/ddtv` `registry.cn-shenzhen.aliyuncs.com/moomiji/ddtv`
+可用镜像名: `moomiji/ddtv` `ghcr.io/moomiji/ddtv` `registry.cn-shenzhen.aliyuncs.com/moomiji/ddtv`。
+
+建议使用第三种。
 
 1. 尝鲜使用
 
@@ -81,6 +83,12 @@ docker run -itd \
     moomiji/ddtv:latest
 ```
 
+4. 运行可用参数
+
+```shell
+docker run moomiji/ddtv:latest --no-update # 不开启启动更新
+```
+
 ## webui使用方法
 
 可用镜像名: `ghcr.io/moomiji/ddtvwebui` `registry.cn-shenzhen.aliyuncs.com/moomiji/ddtvwebui`
@@ -124,10 +132,6 @@ docker run -d -p 8080:80 \
     --name DDTV_WEBUI ghcr.io/moomiji/ddtvwebui
 ```
 
-3. 内部文件路径
-
-咕咕咕
-
 ## 配置文件如何准备
 
 | 文件名 | 获得方法 |
@@ -155,6 +159,7 @@ docker run -d -p 8080:80 \
 | PUID | `num` | `0` | 用户ID |
 | PGID | `num` | `0` | 用户组ID |
 | TZ | `州/城市` | `Asia/Shanghai` | 时区 |
+| RoomList_Config_Path | 路径 | `./RoomListConfig.json` | RoomListConfig.json文件位置 |
 | RoomList | `json` | `{"data":[]}` 来自文件 `RoomListConfig.json`  文件不存在时可用 | [官网说明](https://ddtv.pro/config/RoomListConfig.json.html)，食用方法：`RoomList='{"data":[]}'; -e RoomList="${RoomList}"` |
 | BiliUser | `ini` | 来自文件 `BiliUser.ini` 文件不存在时可用 | 食用方法：`BiliUser='cookie=...  \n  ExTime=...'; -e BiliUser="${BiliUser}"` |
 | DownloadDirectoryName | `{KEY}_{KEY}` | `{ROOMID}_{NAME}` | 默认下载文件夹名字格式 |
@@ -174,13 +179,15 @@ docker run -d -p 8080:80 \
 | WebUserName | `string` | `ami` | WEB登陆使用的用户名 |
 | WebPassword | `string` | `ddtv` | WEB登陆使用的密码 |
 
-2. DDTV WEB UI 可用参数
+2. DDTV WEB UI 可用参数（当 WEB Server 内置了前端项目时，也可使用）
+
+变量只在 `镜像第一次启动` 可用。
 
 | 参数名 | 格式 | 默认值 | 说明 |
 | ---- | ---- | ---- | ---- |
 | PROXY_PASS | `http(s)://you.host:port` | `http://127.0.0.1:11419` | 需要反代的后端地址 |
 | apiUrl | `bool` `http(s)://you.host:port` | `http://127.0.0.1:11419` | 后端地址，同源也请更换为主机IP，需要反代请填false |
-| mount | `/path/dir` | `/` | 展示目录所在文件系统占用 |
+| mount | 路径 | `/` | 展示目录所在文件系统占用 |
 | show | `bool` | `true` | 是否显示 |
 | infoshow | `bool` | `true` | 是否显示版权信息 |
 | infotext | `string` |  | 版权信息 |
