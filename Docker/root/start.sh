@@ -28,7 +28,7 @@ RoomListConfig=${RoomListConfig:-"./RoomListConfig.json"}
 # 检测 DDTV 目录文件是否齐全
 if [ "$(ls -A $Backups_Path)" ]; then
     shopt -s globstar nullglob
-    for file in test/**; do
+    for file in $Backups_Path/**; do
         [ "${file##"$Backups_Path"/}" = "" ] && continue
         [ ! -e "${file##"$Backups_Path"/}" ] && cp -vur "$file" "${file##"$Backups_Path"/}"
     done
