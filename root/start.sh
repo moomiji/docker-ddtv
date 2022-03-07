@@ -1,18 +1,14 @@
 #!/bin/bash
 set -e; set -u
 # 当前可用参数有：--no-update
+# 参数更新需修改start.sh README.md docker-compose.yml
 ARGs=${*:-"--no-arguments"}
 # 测试用
 if [[ "$ARGs" != "--"* ]]; then echo "exec $ARGs"; eval "$ARGs"; exit $?; fi
 
-DDTV_Path=/DDTV
-Backups_Path=/DDTV_Backups
-BiliUser_Path=./BiliUser.ini
-DDTV_Config_Path=./DDTV_Config.ini
-RoomListConfig_Path=${RoomListConfig_Path:-"./RoomListConfig.json"}
 # 运行 webui.sh
 # 检测 DDTV 目录文件是否齐全
-./webui.sh "$DDTV_Path" "$Backups_Path"
+./webui.sh
 
 echo '
  _       ____________     _____
@@ -23,7 +19,11 @@ echo '
 '
 echo "Running as UID ${PUID:=$UID} and GID ${PGID:=$PUID}."
 echo ""
-cd "$DDTV_Path" || exit
+cd /DDTV || exit
+
+BiliUser_Path=./BiliUser.ini
+DDTV_Config_Path=./DDTV_Config.ini
+RoomListConfig_Path=${RoomListConfig_Path:-"./RoomListConfig.json"}
 
 # 写入 RoomListConfig.json
 if [ ! -e "$RoomListConfig_Path" ]; then
@@ -43,10 +43,10 @@ fi
 if [ ! -e "$DDTV_Config_Path" ]; then
 echo "[Core]
 RoomListConfig=$RoomListConfig_Path
-GUI_FirstStart=true
-WEB_FirstStart=true
-${TranscodParmetrs:+TranscodParmetrs=$TranscodParmetrs}
+${GUI_FirstStart:+GUI_FirstStart=$GUI_FirstStart}
+${WEB_FirstStart:+WEB_FirstStart=$WEB_FirstStart}
 ${IsAutoTranscod:+IsAutoTranscod=$IsAutoTranscod}
+${TranscodParmetrs:+TranscodParmetrs=$TranscodParmetrs}
 ${ClientAID:+ClientAID=$ClientAID}
 [Download]
 ${DownloadPath:+DownloadPath=$DownloadPath}
