@@ -25,7 +25,8 @@
 使用 docker-compose.yml
 
 ```shell
-wget git://raw.githubusercontent.com/moomiji/docker-ddtv/master/docker-compose.yml
+wget https://raw.githubusercontent.com/moomiji/docker-ddtv/master/docker-compose.yml
+# or wget https://endpoint.fastgit.org/https://github.com/moomiji/docker-ddtv/blob/master/docker-compose.yml
 docker-compose up
 ```
 
