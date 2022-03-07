@@ -4,7 +4,7 @@ services:
   DDTV.WEBServer:
     image: registry.cn-shenzhen.aliyuncs.com/moomiji/ddtv
     container_name: DDTV_WEB_Server
-    restart: unless-stopped
+    restart: on-failure:3
 #    ports:
 #      - "11419:11419"
 #    command: ["--no-update"]
@@ -72,7 +72,7 @@ services:
   DDTV.WEBUI:
     image: registry.cn-shenzhen.aliyuncs.com/moomiji/ddtvwebui
     container_name: DDTV_WEBUI
-    restart: unless-stopped
+    restart: on-failure:3
     ports:
       - "11419:80"
 #    command: ["nginx", "-g", "daemon off;"]
