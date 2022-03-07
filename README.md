@@ -20,6 +20,15 @@
 
 若上面两个蓝黑色徽章的版本不同，在github中Star[本项目](https://github.com/moomiji/Docker-DDTV)进行自动更新，在[Action](https://github.com/moomiji/Docker-DDTV/actions/workflows/DDTV_docker.yml)中查看进度。
 
+## 最佳实践
+
+使用 docker-compose.yml
+
+```shell
+wget git://raw.githubusercontent.com/moomiji/docker-ddtv/master/docker-compose.yml
+docker-compose up
+```
+
 ## webserver使用方法
 
 可用镜像名: `moomiji/ddtv` `ghcr.io/moomiji/ddtv` `registry.cn-shenzhen.aliyuncs.com/moomiji/ddtv`。

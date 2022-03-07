@@ -1,0 +1,107 @@
+version: '3'
+
+services:
+  DDTV.WEBServer:
+    image: registry.cn-shenzhen.aliyuncs.com/moomiji/ddtv
+    container_name: DDTV_WEB_Server
+    restart: unless-stopped
+#    ports:
+#      - "11419:11419"
+#    command: ["--no-update"]
+    environment: # 修改请见 常用的环境变量
+#     [容器变量]
+      PUID: 0
+      PGID: 0
+      TZ: Asia/Shanghai
+#      RoomList: '{"data":[]}'
+#      BiliUser: ''
+#     [Core]
+#      GUI_FirstStart: true
+#      WEB_FirstStart: true
+      IsAutoTranscod: false
+      TranscodParmetrs: "-i {Before} -vcodec copy -acodec copy {After}"
+#      ClientAID:
+#     [Download]
+#      TmpPath: ./tmp/
+#      DownloadPath: ./Rec/
+      DownloadDirectoryName: "{ROOMID}_{NAME}"
+      DownloadFileName: "{DATE}_{TIME}_{TITLE}"
+#      RecQuality: 10000
+#      IsRecDanmu: true
+#      IsRecGift: true
+#      IsRecGuard: true
+#      IsRecSC: true
+      IsFlvSplit: false
+      FlvSplitSize: 1073741824
+#     [WEB_API]
+      WEB_API_SSL: false
+      pfxFileName: pfxFileName
+      pfxPasswordFileName: pfxPasswordFileName
+      WebUserName: ami
+      WebPassword: ddtv
+#      AccessKeyId:
+#      AccessKeySecret:
+#      ServerAID:
+#      ServerName: DDTV_Server
+#      AccessControlAllowOrigin: http(s)://you.host:port
+#      AccessControlAllowCredentials: true
+
+#### 当只使用 WEB Server 且内置了 WEB UI 时，下列变量可用：
+#      apiUrl: http://127.0.0.1:11419
+#      mount: /
+#      show: true
+#      infoshow: true
+#      infotext:
+#      infolink:
+#      ICPshow: true
+#      ICPtext:
+#      ICPlink:
+#      GAshow: true
+#      GAtext:
+####   GAlink:
+
+#     [Core]
+      RoomListConfig_Path: ./RoomListConfig.json
+    volumes:
+# 不挂载配置文件夹时，建议把上边的 ./RoomListConfig.json 改为  ./Rec/RoomListConfig.json，持久化房间配置
+#      - DDTV_WEB_Server:/DDTV
+      - DDTV_Rec:/DDTV/Rec
+    networks:
+      - service_only
+
+  DDTV.WEBUI:
+    image: registry.cn-shenzhen.aliyuncs.com/moomiji/ddtvwebui
+    container_name: DDTV_WEBUI
+    restart: unless-stopped
+    ports:
+      - "11419:80"
+#    command: ["nginx", "-g", "daemon off;"]
+    environment: # 修改请见 常用的环境变量
+      PROXY_PASS: http://DDTV.WEBServer:11419
+      apiUrl: false # http://127.0.0.1:11419
+      mount: /
+      show: true
+#      infoshow: true
+#      infotext:
+#      infolink:
+#      ICPshow: true
+#      ICPtext:
+#      ICPlink:
+#      GAshow: true
+#      GAtext:
+#      GAlink:
+#    volumes:
+#      DDTV_WEBUI_Config: /usr/share/nginx/static/static
+    networks:
+      - public_access
+      - service_only
+
+volumes:
+  DDTV_Rec:
+#  DDTV_WEB_Server: /root/.DDTV
+#  DDTV_WEBUI_Config: /root/.DDTV/static/static
+
+networks:
+  public_access: # Provide the access for DDTV WEB Views
+  service_only:  # Provide the communication network between services only
+    internal: true
