@@ -1,15 +1,20 @@
 #!/bin/bash
+set -e; set -u
 # 当前可用参数有：--no-update
 ARGs=${*:-"--no-arguments"}
-if [[ "$ARGs" != "--"* ]]; then echo "exec $ARGs"; eval "$ARGs"; exit $?; fi # 测试用
-set -e; set -u
-echo '
-          ____  ____  _______    __     _____  ____
-         / __ \/ __ \/_  __/ |  / /    |__  / / __ \
-        / / / / / / / / /  | | / /      /_ < / / / /
-       / /_/ / /_/ / / /   | |/ /     ___/ // /_/ /
-      /_____/_____/ /_/    |___/     /____(_)____/
+# 测试用
+if [[ "$ARGs" != "--"* ]]; then echo "exec $ARGs"; eval "$ARGs"; exit $?; fi
 
+DDTV_Path=/DDTV
+Backups_Path=/DDTV_Backups
+BiliUser_Path=./BiliUser.ini
+DDTV_Config_Path=./DDTV_Config.ini
+RoomListConfig_Path=${RoomListConfig_Path:-"./RoomListConfig.json"}
+# 运行 webui.sh
+# 检测 DDTV 目录文件是否齐全
+./webui.sh "$DDTV_Path" "$Backups_Path"
+
+echo '
  _       ____________     _____
 | |     / / ____/ __ )   / ___/___  ______   _____  _____
 | | /| / / __/ / __  |   \__ \/ _ \/ ___/ | / / _ \/ ___/
@@ -18,26 +23,12 @@ echo '
 '
 echo "Running as UID ${PUID:=$UID} and GID ${PGID:=$PUID}."
 echo ""
-cd /DDTV
-
-Backups_Path=/DDTV_Backups
-BiliUser_Path=./BiliUser.ini
-DDTV_Config=${DDTV_Config:-"./DDTV_Config.ini"}
-RoomListConfig=${RoomListConfig:-"./RoomListConfig.json"}
-
-# 检测 DDTV 目录文件是否齐全
-if [ "$(ls -A $Backups_Path)" ]; then
-    shopt -s globstar nullglob
-    for file in $Backups_Path/**; do
-        [ "${file##"$Backups_Path"/}" = "" ] && continue
-        [ ! -e "${file##"$Backups_Path"/}" ] && cp -vur "$file" "${file##"$Backups_Path"/}"
-    done
-fi
+cd "$DDTV_Path" || exit
 
 # 写入 RoomListConfig.json
-if [ ! -e "$RoomListConfig" ]; then
+if [ ! -e "$RoomListConfig_Path" ]; then
     if [ -n "${RoomList:-}" ]; then
-        echo "$RoomList" > "$RoomListConfig"
+        echo "$RoomList" > "$RoomListConfig_Path"
     fi
 fi
 
@@ -49,9 +40,9 @@ if [ ! -e "$BiliUser_Path" ]; then
 fi
 
 # 写入 DDTV_Config.ini
-if [ ! -e "$DDTV_Config" ]; then
+if [ ! -e "$DDTV_Config_Path" ]; then
 echo "[Core]
-RoomListConfig=$RoomListConfig
+RoomListConfig=$RoomListConfig_Path
 GUI_FirstStart=true
 WEB_FirstStart=true
 ${TranscodParmetrs:+TranscodParmetrs=$TranscodParmetrs}
@@ -81,7 +72,7 @@ ${ServerAID:+ServerAID=$ServerAID}
 ${ServerName:+ServerName=$ServerName}
 ${AccessControlAllowOrigin:+AccessControlAllowOrigin=$AccessControlAllowOrigin}
 ${AccessControlAllowCredentials:+AccessControlAllowCredentials=$AccessControlAllowCredentials}
-" > "$DDTV_Config"
+" > "$DDTV_Config_Path"
 fi # 22.03.06 更新至AccessControlAllowCredentials
 
 # 更新 DDTV
@@ -89,6 +80,7 @@ if [[ "$ARGs" != *"--no-update"* ]]; then
     dotnet DDTV_Update.dll docker
 fi
 
+# 运行 DDTV
 ./etc/os-release
 chown -R $PUID:$PGID /DDTV "${DownloadPath:-}" "${TmpPath:-}"
 
