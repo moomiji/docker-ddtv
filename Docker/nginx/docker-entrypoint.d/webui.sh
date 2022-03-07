@@ -1,5 +1,6 @@
 #!/bin/sh
 #
+# 参数更新需修改start.sh README.md docker-compose.yml
 echo '
           ____  ____  _______    __     _____  ____
          / __ \/ __ \/_  __/ |  / /    |__  / / __ \
@@ -13,8 +14,8 @@ echo '
           | |/ |/ / /___/ /_/ /  / /_/ // /
           |__/|__/_____/_____/   \____/___/'
 
-DDTV_Path=${1:-"/usr/share/nginx/html"}
-Backups_Path=${2:-"/DDTV_Backups"}
+DDTV_Path=/DDTV
+Backups_Path=/DDTV_Backups
 # 检测 DDTV 目录文件是否齐全
 cd "$DDTV_Path" || exit
 if [ "$(ls -A "$Backups_Path")" ]; then
