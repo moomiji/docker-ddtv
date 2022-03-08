@@ -3,7 +3,7 @@ name: DDTV_Docker_Publish
 on:
   release:
     types: [released]
-  watch: # 合并删掉
+  watch:
     types: [started]
   push:
     branches: [master]
