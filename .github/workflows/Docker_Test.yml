@@ -22,6 +22,7 @@ jobs:
       - name: Prepare
         id: prepare 
         run: |
+          echo ${{ env.DDTV }}嘿嘿嘿，鸡汤来喽！ 
           cd Docker/ && chmod +x prepare.sh && ./prepare.sh
 
       - name: Extract Docker metadata for test images
