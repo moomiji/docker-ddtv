@@ -11,6 +11,11 @@ if [[ "$ARGs" != "--"* ]]; then echo "exec $ARGs"; eval "$ARGs"; exit $?; fi
 ./webui.sh
 
 echo '
+          ____  ____  _______    __     _____  ____
+         / __ \/ __ \/_  __/ |  / /    |__  / / __ \
+        / / / / / / / / /  | | / /      /_ < / / / /
+       / /_/ / /_/ / / /   | |/ /     ___/ // /_/ /
+      /_____/_____/ /_/    |___/     /____(_)____/
  _       ____________     _____
 | |     / / ____/ __ )   / ___/___  ______   _____  _____
 | | /| / / __/ / __  |   \__ \/ _ \/ ___/ | / / _ \/ ___/
@@ -81,8 +86,9 @@ if [[ "$ARGs" != *"--no-update"* ]]; then
 fi
 
 # 运行 DDTV
-./etc/os-release
-chown -R $PUID:$PGID /DDTV "${DownloadPath:-}" "${TmpPath:-}"
+. /etc/os-release
+mkdir -vp "${DownloadPath:=./Rec/}" "${TmpPath:=./tmp/}"
+chown -R $PUID:$PGID /DDTV "${DownloadPath}" "${TmpPath}"
 
 if [[ "$ID" == "debian" ]]; then
     gosu $PUID:$PGID dotnet DDTV_WEB_Server.dll
