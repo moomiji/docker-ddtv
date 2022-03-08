@@ -50,8 +50,8 @@ services:
       TranscodParmetrs: "-i {Before} -vcodec copy -acodec copy {After}"
   #    ClientAID:
   # [Download]
-  #    TmpPath: ./tmp/      # 注意路径不能包含空格
-  #    DownloadPath: ./Rec/ # 注意路径不能包含空格
+  #    TmpPath: ./tmp/
+  #    DownloadPath: ./Rec/
       DownloadDirectoryName: "{ROOMID}_{NAME}"
       DownloadFileName: "{DATE}_{TIME}_{TITLE}"
   #    RecQuality: 10000
