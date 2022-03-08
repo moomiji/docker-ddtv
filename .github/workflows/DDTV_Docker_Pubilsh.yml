@@ -65,6 +65,7 @@ jobs:
             latest=true
           tags: |
             type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
+
 #           type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
 
 # 登录至仓库
