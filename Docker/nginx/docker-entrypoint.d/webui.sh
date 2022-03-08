@@ -31,7 +31,12 @@ if [ ! -e "/NotIsFirstStart" ]; then
 
     File_Path=$DDTV_Path/static/static/config.js
     if [ -n "$apiUrl"    ]; then
-        sed -i "/apiUrl/s|:.*,|: \"$apiUrl\",|"                      "$File_Path" ; fi
+        if [[ "$apiUrl" == "false" ]]; then
+            sed -i "/apiUrl/s|:.*,|: $apiUrl,|"                      "$File_Path"
+        else
+            sed -i "/apiUrl/s|:.*,|: \"$apiUrl\",|"                  "$File_Path"
+        fi
+    fi
     if [ -n "$mount"    ]; then
         sed -i "/mount/s|'.*'|'$mount'|"                             "$File_Path" ; fi
 

@@ -12,8 +12,7 @@ services:
       apiUrl: "false"
       show: "false"
     networks:
-      - public_access
-      - service_only
+      - default
 
   DDTV.WEBServer:
     image: moomiji/ddtv
@@ -29,7 +28,7 @@ services:
   #    - DDTV_WEBServer:/DDTV
       - DDTV_Rec:/DDTV/Rec
     networks:
-      - service_only
+      - default
 
 volumes:
   DDTV_Rec:
