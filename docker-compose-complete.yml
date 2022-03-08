@@ -103,6 +103,4 @@ volumes:
 #  DDTV_WEBUI_Config: # /DDTV_WEBUI.path/static
 
 networks:
-  public_access: # Provide the access for DDTV WEB Views
-  service_only:  # Provide the communication network between services only
-    internal: "true"
+  default:

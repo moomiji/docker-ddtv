@@ -36,6 +36,4 @@ volumes:
 #  DDTV_WEBServer:    # /DDTV_WEBServer.path
 
 networks:
-  public_access: # Provide the access for DDTV WEB Views
-  service_only:  # Provide the communication network between services only
-    internal: "true"
+  default:
