@@ -12,7 +12,7 @@ on:
 #     - 'DDTV_WEB_Views/**'
       - 'Docker/**'
       - '!Docker/README.md'
-      - '.github/workflows/DDTV_Docker_Pubilsh.yml'
+      - '.github/workflows/DDTV_Docker_Publish.yml'
 
 env:
   DDTVMOMIJI: ddtv # 合并删掉
