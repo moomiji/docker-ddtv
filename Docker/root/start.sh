@@ -85,9 +85,10 @@ if [[ "$ARGs" != *"--no-update"* ]]; then
     dotnet DDTV_Update.dll docker
 fi
 
-# 运行 DDTV 注意路径不能包含空格
+# 运行 DDTV
 . /etc/os-release
-chown -vR $PUID:$PGID /DDTV ${DownloadPath:-} ${TmpPath:-}
+mkdir -vp "${DownloadPath:=./Rec/}" "${TmpPath:=./tmp/}"
+chown -vR $PUID:$PGID /DDTV "${DownloadPath}" "${TmpPath}"
 
 if [[ "$ID" == "debian" ]]; then
     gosu $PUID:$PGID dotnet DDTV_WEB_Server.dll
