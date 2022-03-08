@@ -87,7 +87,8 @@ fi
 
 # 运行 DDTV
 . /etc/os-release
-chown -R $PUID:$PGID /DDTV "${DownloadPath:-}" "${TmpPath:-}"
+mkdir -vp /DDTV "${DownloadPath:-}" "${TmpPath:-}"
+chown -vR $PUID:$PGID /DDTV "${DownloadPath:-}" "${TmpPath:-}"
 
 if [[ "$ID" == "debian" ]]; then
     gosu $PUID:$PGID dotnet DDTV_WEB_Server.dll
