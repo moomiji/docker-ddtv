@@ -29,6 +29,17 @@ wget https://raw.githubusercontent.com/moomiji/docker-ddtv/master/docker-compose
 # or wget https://endpoint.fastgit.org/https://github.com/moomiji/docker-ddtv/blob/master/docker-compose.yml
 docker-compose up
 ```
+- tip
+
+拉取慢？请更换为国内镜像源
+
+```shell
+curl -sSL https://get.daocloud.io/daotools/set_mirror.sh | sh -s https://registry.docker-cn.com
+
+# Docker中国区官方镜像 - https://registry.docker-cn.com
+# 网易   - http://hub-mirror.c.163.com
+# 中科大 - https://docker.mirrors.ustc.edu.cn
+```
 
 ## webserver使用方法
 
