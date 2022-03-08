@@ -64,8 +64,8 @@ jobs:
           flavor: |
             latest=true
           tags: |
-#           type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
             type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
+#           type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
 
 # 登录至仓库
       - name: Login to DockerHub
