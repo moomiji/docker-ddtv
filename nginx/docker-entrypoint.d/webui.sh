@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # 参数更新需修改start.sh README.md docker-compose.yml
 echo '
@@ -29,13 +29,13 @@ fi
 # 第一次启动修改信息
 if [ ! -e "/NotIsFirstStart" ]; then
 
-    File_Path=$DDTV_Path/static/config.js
+    File_Path=$DDTV_Path/static/static/config.js
     if [ -n "$apiUrl"    ]; then
         sed -i "/apiUrl/s|:.*,|: \"$apiUrl\",|"                      "$File_Path" ; fi
     if [ -n "$mount"    ]; then
         sed -i "/mount/s|'.*'|'$mount'|"                             "$File_Path" ; fi
 
-    File_Path=$DDTV_Path/static/barinfo.js
+    File_Path=$DDTV_Path/static/static/barinfo.js
     if [ -n "$show"     ]; then
         sed -i "/    show/s|: .*,|: $show,|"                         "$File_Path" ; fi
     if [ -n "$infoshow" ]; then
