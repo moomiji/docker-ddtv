@@ -1,25 +1,24 @@
-name: DDTV_WEB_Server_Docker
-# 合并删去 DockerHub
-#  watch:
-#    types: [started]
-#          echo ::set-output name=ddtv_version::${Version}
-#            ${{ secrets.DOCKERHUB_USERNAME }}/ddtv
-#            ghcr.io/${{ github.actor }}/ddtv --> ghcr.io/${{ github.repository }}
-#            type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
+name: DDTV_Docker_Publish
 
 on:
   release:
     types: [released]
-  watch:
+  watch: # 合并删掉
     types: [started]
   push:
     branches: [master]
     paths:
       - 'DDTV_WEB_Server/**'
-      - 'DDTV_WEB_Views/**'
+#     - 'DDTV_WEB_Views/**'
       - 'Docker/**'
       - '!Docker/README.md'
-      - '.github/workflows/DDTV_WEB_Server_Docker.yml'
+      - '.github/workflows/DDTV_Docker_Publish.yml'
+
+env:
+  DDTVMOMIJI: ddtv # 合并删掉
+#  WEBServer: webserver
+  WEBUI: webui
+  DOTNET_VERSION: '6.0.x'
 
 jobs:
   publish:
@@ -30,9 +29,9 @@ jobs:
       - uses: docker/setup-buildx-action@v1
       - uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Prepare # 输出
+      - name: Prepare # 输出版本(exp: ddtv_version="Ver3.0.1.9" ddtv_version_major="3.0")
         id: prepare
         run: |
           Version=$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
@@ -47,9 +46,8 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/ddtv
-            ghcr.io/${{ github.actor }}/ddtv
-            registry.cn-shenzhen.aliyuncs.com/${{ github.actor }}/ddtv
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DDTVMOMIJI }}${{ env.WEBServer }}
+            ghcr.io/${{ github.actor }}/ddtv${{ env.WEBServer }}
           flavor: |
             latest=true
           tags: |
@@ -60,17 +58,14 @@ jobs:
         id: nginx
         uses: docker/metadata-action@v3
         with:
-            #registry.cn-shenzhen.aliyuncs.com/${{ github.actor }}/ddtvwebui
-            #${{ secrets.DOCKERHUB_USERNAME }}/ddtvwebui
           images: |
-            ghcr.io/${{ github.actor }}/ddtvwebui
-            registry.cn-shenzhen.aliyuncs.com/${{ github.actor }}/ddtvwebui
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DDTVMOMIJI }}${{ env.WEBUI }}
+            ghcr.io/${{ github.actor }}/ddtv${{ env.WEBUI }}
           flavor: |
             latest=true
           tags: |
-            type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
+#           type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
             type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
-
 
 # 登录至仓库
       - name: Login to DockerHub
@@ -87,14 +82,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Login to ACR
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
-        with:
-          registry: registry.cn-shenzhen.aliyuncs.com
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
 
 # 构建各架构镜像
       - name: Build and push alpine os
