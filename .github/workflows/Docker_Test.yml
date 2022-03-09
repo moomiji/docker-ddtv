@@ -6,31 +6,47 @@ on:
     branches: 
       - test
 
+env:
+  DDTVMOMIJI: ddtv # 合并删掉
+####################  WEBServer: webserver
+  WEBUI: webui
+  DOTNET_VERSION: '6.0.x'
+
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: test
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
       - uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Prepare
-        id: prepare 
+      - name: Prepare # 输出版本(exp: ddtv_version="Ver3.0.1.9" ddtv_version_major="3.0") | find . -name "*.sh" 不允许有带空格的sh文件
+        id: prepare
         run: |
-          echo ${{ env.DDTV }}嘿嘿嘿，鸡汤来喽！ 
-          cd Docker/ && chmod +x prepare.sh && ./prepare.sh
+          cd Docker/ && chmod +x $(find . -name "*.sh") && ./prepare.sh
 
-      - name: Extract Docker metadata for test images
+      - name: Metadata for test images
         id: test
         uses: docker/metadata-action@v3
         with:
           images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/ddtvliverec
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DDTVMOMIJI }}${{ env.WEBServer }}
+            ghcr.io/${{ github.actor }}/ddtv${{ env.WEBServer }}
+          flavor: |
+            latest=false
+          tags: |
+            type=raw,value=test
+
+      - name: Metadata for nginx images
+        id: nginx
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DDTVMOMIJI }}${{ env.WEBUI }}
+            ghcr.io/${{ github.actor }}/ddtv${{ env.WEBUI }}
           flavor: |
             latest=false
           tags: |
@@ -44,13 +60,31 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
+      - name: Login to ghcr.io
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
 # 构建各架构镜像
       - name: Build and push test os
         uses: docker/build-push-action@v2
         with:
           context: Docker/
           file: Docker/Dockerfile.test
-          platforms: linux/amd64 #, linux/arm64, linux/arm/v7
+          platforms: linux/amd64, linux/arm64, linux/arm/v7
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.test.outputs.tags }}
           labels: ${{ steps.test.outputs.labels }}
+
+      - name: Build and push nginx os
+        uses: docker/build-push-action@v2
+        with:
+          context: Docker/
+          file: Docker/Dockerfile.nginx
+          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.nginx.outputs.tags }}
+          labels: ${{ steps.nginx.outputs.labels }}

@@ -1,12 +1,21 @@
 #!/bin/bash
 set -e; set -u
+# 当前可用参数有：--no-update
+# 参数更新需修改start.sh README.md docker-compose.yml
+ARGs=${*:-"--no-arguments"}
+# 测试用
+if [[ "$ARGs" != "--"* ]]; then echo "exec $ARGs"; eval "$ARGs"; exit $?; fi
+
+# 运行 webui.sh
+# 检测 DDTV 目录文件是否齐全
+./webui.sh
+
 echo '
           ____  ____  _______    __     _____  ____
          / __ \/ __ \/_  __/ |  / /    |__  / / __ \
         / / / / / / / / /  | | / /      /_ < / / / /
        / /_/ / /_/ / / /   | |/ /     ___/ // /_/ /
       /_____/_____/ /_/    |___/     /____(_)____/
-
  _       ____________     _____
 | |     / / ____/ __ )   / ___/___  ______   _____  _____
 | | /| / / __/ / __  |   \__ \/ _ \/ ___/ | / / _ \/ ___/
@@ -15,31 +24,34 @@ echo '
 '
 echo "Running as UID ${PUID:=$UID} and GID ${PGID:=$PUID}."
 echo ""
-cd /DDTV
+cd /DDTV || exit
 
-Backups_Path=/DDTV_Backups
-DDTV_Config=${DDTV_Config:-"./DDTV_Config.ini"}
-RoomListConfig=${RoomListConfig:-"./RoomListConfig.json"}
+BiliUser_Path=./BiliUser.ini
+DDTV_Config_Path=./DDTV_Config.ini
+RoomListConfig_Path=${RoomListConfig_Path:-"./RoomListConfig.json"}
 
-if [ "$(ls -A $Backups_Path)" ]; then
-    for i in $Backups_Path/*; do
-        [ ! -e "${i##*/}" ] && cp -vur $i ${i##*/}
-    done
-fi
-
-if [ ! -e "$RoomListConfig" ]; then
-    if [ -n "${roomlist:-}" ]; then
-        echo $roomlist > $RoomListConfig
+# 写入 RoomListConfig.json
+if [ ! -e "$RoomListConfig_Path" ]; then
+    if [ -n "${RoomList:-}" ]; then
+        echo "$RoomList" > "$RoomListConfig_Path"
     fi
 fi
 
-if [ ! -e "$DDTV_Config" ]; then
+# 写入 BiliUser.ini
+if [ ! -e "$BiliUser_Path" ]; then
+    if [ -n "${BiliUser:-}" ]; then
+        echo -e "$BiliUser" > $BiliUser_Path
+    fi
+fi
+
+# 写入 DDTV_Config.ini
+if [ ! -e "$DDTV_Config_Path" ]; then
 echo "[Core]
-RoomListConfig=$RoomListConfig
-GUI_FirstStart=true
-WEB_FirstStart=true
-${TranscodParmetrs:+TranscodParmetrs=$TranscodParmetrs}
+RoomListConfig=$RoomListConfig_Path
+${GUI_FirstStart:+GUI_FirstStart=$GUI_FirstStart}
+${WEB_FirstStart:+WEB_FirstStart=$WEB_FirstStart}
 ${IsAutoTranscod:+IsAutoTranscod=$IsAutoTranscod}
+${TranscodParmetrs:+TranscodParmetrs=$TranscodParmetrs}
 ${ClientAID:+ClientAID=$ClientAID}
 [Download]
 ${DownloadPath:+DownloadPath=$DownloadPath}
@@ -62,16 +74,25 @@ ${WebPassword:+WebPassword=$WebPassword}
 ${AccessKeyId:+AccessKeyId=$AccessKeyId}
 ${AccessKeySecret:+AccessKeySecret=$AccessKeySecret}
 ${ServerAID:+ServerAID=$ServerAID}
-${ServerName:+ServerName=$ServerName}" > $DDTV_Config
+${ServerName:+ServerName=$ServerName}
+${AccessControlAllowOrigin:+AccessControlAllowOrigin=$AccessControlAllowOrigin}
+${AccessControlAllowCredentials:+AccessControlAllowCredentials=$AccessControlAllowCredentials}
+" > "$DDTV_Config_Path"
+fi # 22.03.06 更新至AccessControlAllowCredentials
+
+# 更新 DDTV
+if [[ "$ARGs" != *"--no-update"* ]]; then
+    dotnet DDTV_Update.dll docker
 fi
 
-dotnet DDTV_Update.dll docker
-ID=`awk -F= '/^ID=/{print $2}' /etc/os-release`
-chown -R $PUID:$PGID /DDTV ${DownloadPath:-} ${TmpPath:-}
+# 运行 DDTV
+. /etc/os-release
+mkdir -vp "${DownloadPath:=./Rec/}" "${TmpPath:=./tmp/}"
+chown -R $PUID:$PGID /DDTV "${DownloadPath}" "${TmpPath}"
 
-if [ "$ID" = "debian" ]; then
+if [[ "$ID" == "debian" ]]; then
     gosu $PUID:$PGID dotnet DDTV_WEB_Server.dll
-elif [ "$ID" = "alpine" ]; then
+elif [[ "$ID" == "alpine" ]]; then
     su-exec $PUID:$PGID dotnet DDTV_WEB_Server.dll
 else
     echo "未支持$ID" && exit 1

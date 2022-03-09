@@ -1,0 +1,105 @@
+version: '3'
+
+services:
+  # 当 DDTV.WEBServer 内置了 WEBUI 时，可不使用 DDTV.WEBUI
+  DDTV.WEBUI:
+    image: moomiji/ddtvwebui
+    container_name: DDTV_WEBUI
+    restart: unless-stopped
+    ports:
+      - "11419:80"
+  #  command: ["nginx", "-g", "daemon off;"]
+    environment: # 修改请见 常用的环境变量
+      PROXY_PASS: http://DDTV.WEBServer:11419
+      apiUrl: "false" # http://127.0.0.1:11419
+      mount: /
+      show: "true"
+  #    infoshow: "true"
+  #    infotext:
+  #    infolink:
+  #    ICPshow: "true"
+  #    ICPtext:
+  #    ICPlink:
+  #    GAshow: "true"
+  #    GAtext:
+  #    GAlink:
+  #  volumes:
+  #    DDTV_WEBUI_Config: /usr/share/nginx/static/static
+    networks:
+      - default
+
+  DDTV.WEBServer:
+    image: moomiji/ddtv
+    container_name: DDTV_WEBServer
+    restart: unless-stopped
+  #  ports:
+  #    - "11419:11419"
+  #  command: ["--no-update"]
+    environment: # 修改请见 常用的环境变量
+  # [容器变量]
+      PUID: 0
+      PGID: 0
+      TZ: Asia/Shanghai
+  #    RoomList: '{"data":[]}'
+  #    BiliUser: ''
+  # [Core]
+  #    GUI_FirstStart: "true"
+  #    WEB_FirstStart: "true"
+      IsAutoTranscod: "false"
+      TranscodParmetrs: "-i {Before} -vcodec copy -acodec copy {After}"
+  #    ClientAID:
+  # [Download]
+  #    TmpPath: ./tmp/
+  #    DownloadPath: ./Rec/
+      DownloadDirectoryName: "{ROOMID}_{NAME}"
+      DownloadFileName: "{DATE}_{TIME}_{TITLE}"
+  #    RecQuality: 10000
+  #    IsRecDanmu: "true"
+  #    IsRecGift: "true"
+  #    IsRecGuard: "true"
+  #    IsRecSC: "true"
+      IsFlvSplit: "false"
+      FlvSplitSize: 1073741824
+  # [WEB_API]
+      WEB_API_SSL: "false"
+      pfxFileName: pfxFileName
+      pfxPasswordFileName: pfxPasswordFileName
+      WebUserName: ami
+      WebPassword: ddtv
+  #    AccessKeyId:
+  #    AccessKeySecret:
+  #    ServerAID:
+  #    ServerName: DDTV_Server
+  #    AccessControlAllowOrigin: http(s)://you.host:port
+  #    AccessControlAllowCredentials: "true"
+
+ ### 当 DDTV.WEBServer 内置了 WEBUI 时，下列变量可用：
+  #    apiUrl: http://127.0.0.1:11419
+  #    mount: /
+  #    show: "true"
+  #    infoshow: "true"
+  #    infotext:
+  #    infolink:
+  #    ICPshow: "true"
+  #    ICPtext:
+  #    ICPlink:
+  #    GAshow: "true"
+  #    GAtext:
+ ###   GAlink:
+
+  # [Core]
+      RoomListConfig_Path: ./RoomListConfig.json
+    volumes:
+  # 不挂载配置文件夹时，建议把上边的 ./RoomListConfig.json 改为  ./Rec/RoomListConfig.json，持久化房间配置
+  #    - DDTV_WEBServer:/DDTV
+      - DDTV_Rec:/DDTV/Rec
+    networks:
+      - default
+
+volumes:
+  DDTV_Rec:
+#  DDTV_WEBServer:    # /DDTV_WEBServer.path
+#  DDTV_WEBUI_Config: # /DDTV_WEBUI.path/static
+
+networks:
+  default:
