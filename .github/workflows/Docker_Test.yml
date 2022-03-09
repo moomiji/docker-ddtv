@@ -26,7 +26,9 @@ jobs:
       - name: Prepare # 输出版本(exp: ddtv_version="Ver3.0.1.9" ddtv_version_major="3.0") | find . -name "*.sh" 不允许有带空格的sh文件
         id: prepare
         run: |
-          cd Docker/ && chmod +x $(find . -name "*.sh") && ./prepare.sh
+          cd Docker/ 
+          chmod +x $(find . -name "*.sh")
+          ./prepare.sh
 
       - name: Metadata for test images
         id: test
