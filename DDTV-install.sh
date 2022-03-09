@@ -19,8 +19,9 @@ DDTV_download_url="https://download.fastgit.org/CHKZL/DDTV/releases/download" # 
 # https://github.com/CHKZL/DDTV/releases/download 太慢了，有需要直接换             # exp  https://github.com/CHKZL/DDTV/releases/download/Ver3.0.1.6/DDTV_WEB_Server_3.0.1.6.zip
 
 #=默认模式====================#
-is_verbose=false        # 调试模式          | false true
 is_install=true         # 卸载模式          | false true
+is_verbose=false        # 调试模式          | false true
+is_need_log=false       # 安装完成后不删日志 | false true
 is_suitable_dotnet=true # 具有正确的 dotnet | false true
 failed=false            # 执行失败
 _sudo=                  # 执行sudo命令      | "sudo" root用户:"   " 普通用户无sudo:" "
@@ -93,7 +94,7 @@ say() {
 }
 
 say_verbose() {
-    if [ "$is_verbose" = true ]; then
+    if [[ $is_verbose == true ]]; then
         printf "%b\n" "${cyan:-}${DDTV_short_name}-install:[debug]${normal:-} $1" | tee -a ${logfile} >&3
     else
         printf "%b\n" "${cyan:-}${DDTV_short_name}-install:[debug]${normal:-} $1"       >> ${logfile}
@@ -202,7 +203,7 @@ check_min_reqs() {
     fi
 
     if [[ $has_minimum == false ]]; then
-        rm -f $logfile && exit 0
+        [[ "$is_need_log" == false ]] && rm -f $logfile && exit 0
     fi
 
     return 0
@@ -266,7 +267,7 @@ get_machine_architecture() {
             ;;
         armv*l)
             say_err "dotnet 不支持 $CPUName，换个录播姬吧TAT"
-            rm -f $logfile && exit 0
+            [[ "$is_need_log" == false ]] && rm -f $logfile && exit 0
             ;;
         aarch64|arm64)
             echo "arm64"
@@ -421,9 +422,8 @@ get_centos_rhel_fedora_deps_command() {
     eval "$invocation"
 
     local tool="$1" # 包管理工具命令
-    local cmd
     local openssl_ver
-    openssl_ver=$(${_sudo}${tool} info -q openssl-libs | awk '/Version/{print $2;exit}' FS=': ')
+    openssl_ver=$(${_sudo} ${tool} info -q openssl-libs | awk '/Version/{print $2;exit}' FS=': ')
     case $is_install in
         true)  echo -n " && ${_sudo} $tool install -q -y""" ;;
         false) echo -n " && ${_sudo} $tool remove -q" ;;
@@ -935,7 +935,7 @@ while [ $# -ne 0 ]; do
                 PROXY="$1"
             else
                 say_err "使用 [-p|--proxy|-[Pp]roxy] 参数需要 curl !"
-                rm -f $logfile && exit 0
+                [[ "$is_need_log" == false ]] && rm -f $logfile && exit 0
             fi
             shift
             ;;
@@ -956,7 +956,10 @@ while [ $# -ne 0 ]; do
         --verbose|-[Vv]erbose|--debug|-[Dd]ebug)
             is_verbose=true
             ;;
-        -?|--?|-h|--help|-[Hh]elp)
+        --need-log)
+            is_need_log=true
+            ;;
+        -h|--help|-[Hh]elp|-?|--?)
             echo ""
             echo -e "DDTV Installer，请确保有bash，并使用 ./$script_name ，而不是 sudo ./$script_name 执行，以避免可能存在的权限问题。"
             echo -e "用法: $script_name\t[-i|--install <NAME1> <NAME2> ...]"
@@ -1195,7 +1198,7 @@ while true; do
     case $yn in
         true)   break
                 ;;
-        false)  rm -f $logfile && exit 0
+        false)  [[ "$is_need_log" == false ]] && rm -f $logfile && exit 0
                 ;;
     esac
 done
@@ -1249,22 +1252,26 @@ if [[ $is_install == true ]]; then
 
 # 输出安装失败信息
     echo ""
-    if [[ "$failed" == *"dotnet"* ]] && [ -e "dotnet-install.sh" ]    ; then say_warning "dotnet 安装失败，请自行执行 \"${_sudo}./dotnet-install.sh -c ${dotnet_version[0]} -i $dotnet_install_dir --runtime aspnetcore\"" ; fi
-    if [[ "$failed" == *"dotnet"* || $is_exec_dotnet_cmd == false  ]] ; then say_warning "请参考微软文档安装 \".NET${dotnet_version[0]} SDK\" 或 \"ASP.NET Core与.NET Core 运行时(${dotnet_version[0]})\": https://docs.microsoft.com/zh-cn/dotnet/core/install/linux 。" ; fi
+    if [[ "$failed" == *"dotnet"* ]] && [ -e "dotnet-install.sh" ]      ; then say_warning "dotnet 安装失败，请自行执行 \"${_sudo}./dotnet-install.sh -c ${dotnet_version[0]} -i $dotnet_install_dir --runtime aspnetcore\"" ; fi
+    if [[ "$failed" == *"dotnet"* || $is_exec_dotnet_cmd == false  ]]   ; then say_warning "请参考微软文档安装 \".NET${dotnet_version[0]} SDK\" 或 \"ASP.NET Core与.NET Core 运行时(${dotnet_version[0]})\": https://docs.microsoft.com/zh-cn/dotnet/core/install/linux 。" ; fi
     if [[ "$failed" == *"deps"*   || $is_exec_deps_cmd   == false    ]] ; then say_warning "请参考微软文档安装 dotnet 依赖: https://docs.microsoft.com/zh-cn/dotnet/core/install/linux-scripted-manual#dependencies 。" ; fi
     if [[ "$failed" == *"deps"*   || $is_exec_deps_cmd   == false    ]] ; then say_warning "请安装 $DDTV_full_name 依赖（参考上述微软文档）: libgdiplus (版本 6.0.1 或更高版本)。" ; fi
 fi
 # [[ $is_install == false && $is_exec_deps_cmd == false && $supported_dotnet_package == false ]] && say "依赖未卸载，有需要请运行 \"./$script_name --uninstall deps\""
 
 # 输出失败信息
+if [[ "$failed" == *"ffmpeg"* ]]; then
+    say_warning "当前包存储库未有 ffmpeg ，请自行${anvl}。"
+fi
+
 if [[ "$failed" != false ]]; then
     say_err "脚本执行存在失败，请查看终端输出重新${anvl}！"
     say_err "或反馈debug日志（$PWD/$logfile）！"
-elif [[ "$failed" == *"ffmpeg"* ]]; then
-    say_warning "当前包存储库未有 ffmpeg ，请自行${anvl}。"
-    rm -f $logfile
-else
-    rm -rf $logfile ${temporary_file_template%%.*}.*
+    is_need_log=true
 fi
+
+[[ "$is_need_log" == false ]] && rm -f $logfile
+rm -rf "${temporary_file_template%%.*}".*
+
 
 # 孩子的第一个脚本，拿来练手的（，像 set -e 、双引号与单引号在$() eval中的作用区别 等没考虑到，看到奇葩代码请控制好血压（
