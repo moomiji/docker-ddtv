@@ -31,12 +31,13 @@ docker-compose up
 ```
 - tip
 
-拉取慢？请更换为国内镜像源
+拉取慢？请更换为国内镜像源或使用 ghcr.io 镜像 `ghcr.io/moomiji/ddtv` `ghcr.io/moomiji/ddtvwebui`
 
 ```shell
 curl -sSL https://get.daocloud.io/daotools/set_mirror.sh | sh -s https://registry.docker-cn.com
 
 # Docker中国区官方镜像 - https://registry.docker-cn.com
+# 道客   - http://f1361db2.m.daocloud.io
 # 网易   - http://hub-mirror.c.163.com
 # 中科大 - https://docker.mirrors.ustc.edu.cn
 ```

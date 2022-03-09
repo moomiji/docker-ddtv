@@ -8,15 +8,13 @@ on:
   push:
     branches: [master]
     paths:
-      - 'DDTV_WEB_Server/**'
-#     - 'DDTV_WEB_Views/**'
       - 'Docker/**'
       - '!Docker/README.md'
       - '.github/workflows/DDTV_Docker_Publish.yml'
 
 env:
   DDTVMOMIJI: ddtv # 合并删掉
-#  WEBServer: webserver
+####################  WEBServer: webserver
   WEBUI: webui
   DOTNET_VERSION: '6.0.x'
 
@@ -31,7 +29,7 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Prepare # 输出版本(exp: ddtv_version="Ver3.0.1.9" ddtv_version_major="3.0")
+      - name: Prepare # 输出版本(exp: ddtv_version="Ver3.0.1.9" ddtv_version_major="3.0") | find . -name "*.sh" 不允许有带空格的sh文件
         id: prepare
         run: |
           Version=$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
@@ -39,7 +37,7 @@ jobs:
           Version_minor=${Version#*.}  && Version_minor=${Version_minor:0:1}
           echo ::set-output name=ddtv_version::${Version}
           echo ::set-output name=ddtv_version_major::${Version_major}.${Version_minor}
-          cd Docker/ && chmod +x $(find . -name "*.sh")  && ./prepare.sh ${{ secrets.WEBUI_URL }}
+          cd Docker/ && chmod +x $(find . -name "*.sh") && ./prepare.sh
 
       - name: Metadata for alpine images
         id: alpine

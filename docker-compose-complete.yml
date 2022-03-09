@@ -98,8 +98,8 @@ services:
 
 volumes:
   DDTV_Rec:
-#  DDTV_WEBServer:    # /DDTV_WEBServer.path
-#  DDTV_WEBUI_Config: # /DDTV_WEBUI.path/static
+#  DDTV_WEBServer:
+#  DDTV_WEBUI_Config:
 
 networks:
   default:
