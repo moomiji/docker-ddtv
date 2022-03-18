@@ -190,8 +190,8 @@ check_min_reqs() {
         download="curl${PROXY:+" -x $PROXY"} --retry 5 --retry-delay 2 --connect-timeout 15 -LO"
         download_to="curl${PROXY:+" -x $PROXY"} --retry 5 --retry-delay 2 --connect-timeout 15 -Lo"
     elif machine_has "wget"; then
-        download="wget${PROXY:+"-e \"http_proxy=$PROXY\""} --spider --tries 5 --waitretry 2 --connect-timeout 15"
-        download_to="wget${PROXY:+" -e \"http_proxy=$PROXY\""} --spider --tries 5 --waitretry 2 --connect-timeout 15 -O"
+        download="wget${PROXY:+"-e \"http_proxy=$PROXY\""} --tries 5 --waitretry 2 --connect-timeout 15"
+        download_to="wget${PROXY:+" -e \"http_proxy=$PROXY\""} --tries 5 --waitretry 2 --connect-timeout 15 -O"
     else
         has_minimum=false
         say_err "安装${DDTV_full_name}需要 curl(推荐) 或 wget !"
@@ -843,7 +843,6 @@ uninstall_service(){
 
 #=检测脚本参数====================#
 while [ $# -ne 0 ]; do
-    name="$1"
     name="$1"
     shift
 
