@@ -105,7 +105,7 @@ docker run -itd \
     moomiji/ddtv:latest
 ```
 
-4. 运行可用参数
+4. 可用运行参数
 
 ```shell
 docker run moomiji/ddtv:latest --no-update # 不开启启动更新
