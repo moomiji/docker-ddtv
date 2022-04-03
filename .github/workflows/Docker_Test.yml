@@ -71,22 +71,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
 # 构建各架构镜像
-      - name: Build and push test os
-        uses: docker/build-push-action@v2
-        with:
-          context: Docker/
-          file: Docker/Dockerfile.test
-          platforms: linux/amd64, linux/arm64, linux/arm/v7
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.test.outputs.tags }}
-          labels: ${{ steps.test.outputs.labels }}
-
-      - name: Build and push nginx os
-        uses: docker/build-push-action@v2
-        with:
-          context: Docker/
-          file: Docker/Dockerfile.nginx
-          platforms: linux/amd64, linux/arm64, linux/arm/v7
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.nginx.outputs.tags }}
-          labels: ${{ steps.nginx.outputs.labels }}
+      - name: echo
+        run: |
+          echo ${{ steps.test.outputs.tags }}
