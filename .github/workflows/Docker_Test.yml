@@ -45,6 +45,6 @@ jobs:
           context: Docker/WEBServer/
           file: Docker/WEBServer/Dockerfile.debian
           platforms: linux/amd64
-          push: false
+          push: true
           tags: ${{ steps.test.outputs.tags }}
           labels: $( echo "${{ steps.test.outputs.tags }}" | tr "\n" "," )
