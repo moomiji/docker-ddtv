@@ -16,13 +16,6 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
       - name: Prepare # 输出版本(exp: ddtv_version="Ver3.0.1.9" ddtv_version_major="3.0") | find . -name "*.sh" 不允许有带空格的sh文件
         id: prepare
         run: |
@@ -47,4 +40,6 @@ jobs:
 
       - name: echo
         run: |
-          echo "${{ steps.test.outputs.tags }}"
+          for tag in "${{ steps.test.outputs.tags }}"; do
+            echo "${tag}-debian"
+          done
