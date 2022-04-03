@@ -39,12 +39,11 @@ jobs:
             type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
 
       - name: Build and push WEBServer(debian)
-        if: github.event_name == 'release'
         uses: docker/build-push-action@v2
         with:
           context: Docker/WEBServer/
           file: Docker/WEBServer/Dockerfile.debian
           platforms: linux/amd64
-          push: true
+          push: false
           tags: ${{ steps.test.outputs.tags }}
           labels: $( echo "${{ steps.test.outputs.tags }}" | tr "\n" "," )
