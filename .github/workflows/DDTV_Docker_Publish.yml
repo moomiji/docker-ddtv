@@ -3,7 +3,7 @@ name: DDTV_Docker_Publish
 on:
   release:
     types: [released]
-  watch:
+  watch: # 合并删除
     types: [started]
   push:
     branches: [master]
@@ -13,10 +13,10 @@ on:
       - '.github/workflows/DDTV_Docker_Publish.yml'
 
 env:
-  DDTVMOMIJI: ddtv # 合并删掉
-####################  WEBServer: webserver
-  WEBUI: webui
-  DOTNET_VERSION: '6.0.x'
+  BACK_END_PROJECT: webserver
+  FRONT_END_PROJECT: webui
+  CLI_PROJECT: cli
+  DOTNET_VERSION: '6.0'
 
 jobs:
   publish:
@@ -28,8 +28,19 @@ jobs:
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: Prepare # 输出版本(exp: ddtv_version="Ver3.0.1.9" ddtv_version_major="3.0") | find . -name "*.sh" 不允许有带空格的sh文件
+# 登录至仓库
+      - name: Login to ghcr.io
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+# 输出版本
+#   ddtv_version="Ver3.0.1.9"
+#   ddtv_version_major="3.0"
+#   注意：find . -name "*.sh" 不允许有带空格的sh文件
+      - name: Prepare
         id: prepare
         run: |
           Version=$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
@@ -39,90 +50,128 @@ jobs:
           echo ::set-output name=ddtv_version_major::${Version_major}.${Version_minor}
           cd Docker/ && chmod +x $(find . -name "*.sh") && ./prepare.sh
 
-      - name: Metadata for alpine images
+      - name: Metadata for WEBUI images
+        id: webui
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ghcr.io/${{ github.actor }}/ddtv${{ env.FRONT_END_PROJECT }}
+          flavor: |
+            latest=true
+          tags: |
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
+
+      - name: Metadata for WEBServer images
+        id: webserver
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ghcr.io/${{ github.actor }}/ddtv${{ env.BACK_END_PROJECT }}
+          flavor: |
+            latest=true
+          tags: |
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
+
+      - name: Metadata for CLI images
+        id: cli
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ghcr.io/${{ github.actor }}/ddtv${{ env.CLI_PROJECT }}
+          flavor: |
+            latest=true
+          tags: |
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
+
+      - name: Metadata for alpine os images
         id: alpine
-        uses: docker/metadata-action@v3
-        with:
-          images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DDTVMOMIJI }}${{ env.WEBServer }}
-            ghcr.io/${{ github.actor }}/ddtv${{ env.WEBServer }}
-          flavor: |
-            latest=true
-          tags: |
-            type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
-            type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
+        run: |
+          echo ::set-output name=webserver_tags::$(echo "${{ steps.webserver.outputs.tags }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
+          echo ::set-output name=cli_tags::$(echo "${{       steps.cli.outputs.tags       }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
 
-      - name: Metadata for debian images
-        id: debian
-        uses: docker/metadata-action@v3
-        with:
-          images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DDTVMOMIJI }}${{ env.WEBServer }}
-            ghcr.io/${{ github.actor }}/ddtv${{ env.WEBServer }}
-          flavor: |
-            latest=true
-            suffix=-debian,onlatest=true
-          tags: |
-            type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
-            type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
+      - name: Metadata for Debug images
+        id: debug
+        run: |
+          echo ::set-output name=debian_tags::"ghcr.io/${{ github.actor }}/ddtv${{ env.BACK_END_PROJECT }}:debug"
+          echo ::set-output name=alpine_tags::"ghcr.io/${{ github.actor }}/ddtv${{ env.BACK_END_PROJECT }}:debug-alpine"
 
-      - name: Metadata for nginx images
-        id: nginx
-        uses: docker/metadata-action@v3
-        with:
-          images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DDTVMOMIJI }}${{ env.WEBUI }}
-            ghcr.io/${{ github.actor }}/ddtv${{ env.WEBUI }}
-          flavor: |
-            latest=true
-          tags: |
-            type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
-
-#           type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
-
-# 登录至仓库
-      - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-      - name: Login to ghcr.io
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-# 构建各架构镜像
-      - name: Build and push debian os
+# 构建各架构镜像（发行版）
+      - name: Build and push WEBUI
+        if: false # github.event_name == 'release'
         uses: docker/build-push-action@v2
         with:
-          context: Docker/
-          file: Docker/Dockerfile.debian
-          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          context: Docker/WEBUI/
+          file: Docker/WEBUI/Dockerfile
+          platforms: linux/amd64, linux/arm64, linux/arm/v7, linux/386, linux/arm/v6, linux/ppc64le, linux/s390x
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.debian.outputs.tags }}
-          labels: ${{ steps.debian.outputs.labels }}
-
-      - name: Build and push alpine os
+          tags: ${{ steps.webui.outputs.tags }}
+          labels: ${{ steps.webui.outputs.labels }}
+# alpine
+      - name: Build and push Debug(alpine)
+        if: github.event_name == 'release'
         uses: docker/build-push-action@v2
         with:
-          context: Docker/
-          file: Docker/Dockerfile.alpine
-          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          context: Docker/Debug/
+          file: Docker/Debug/Dockerfile.alpine
+          platforms: linux/amd64 #, linux/arm64, linux/arm/v7
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.alpine.outputs.tags }}
-          labels: ${{ steps.alpine.outputs.labels }}
+          tags: ${{ steps.debug.outputs.alpine_tags }}
+          labels: ${{ steps.webserver.outputs.labels }}
 
-      - name: Build and push nginx os
+      - name: Build and push WEBServer(alpine)
+        if: github.event_name == 'release'
         uses: docker/build-push-action@v2
         with:
-          context: Docker/
-          file: Docker/Dockerfile.nginx
+          context: Docker/WEBServer/
+          file: Docker/WEBServer/Dockerfile.alpine
+          platforms: linux/amd64 #, linux/arm64, linux/arm/v7
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.alpine.outputs.webserver_tags }}
+          labels: ${{ steps.webserver.outputs.labels }}
+
+      - name: Build and push CLI(alpine)
+        if: github.event_name == 'release'
+        uses: docker/build-push-action@v2
+        with:
+          context: Docker/CLI/
+          file: Docker/CLI/Dockerfile.alpine
+          platforms: linux/amd64 #, linux/arm64, linux/arm/v7
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.alpine.outputs.cli_tags }}
+          labels: ${{ steps.cli.outputs.labels }}
+# debian
+      - name: Build and push Debug
+        if: github.event_name == 'release'
+        uses: docker/build-push-action@v2
+        with:
+          context: Docker/Debug/
+          file: Docker/Debug/Dockerfile
           platforms: linux/amd64, linux/arm64, linux/arm/v7
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.nginx.outputs.tags }}
-          labels: ${{ steps.nginx.outputs.labels }}
+          tags: ${{ steps.debug.outputs.debian_tags }}
+          labels: ${{ steps.webserver.outputs.labels }}
+
+      - name: Build and push WEBServer
+        if: github.event_name == 'release'
+        uses: docker/build-push-action@v2
+        with:
+          context: Docker/WEBServer/
+          file: Docker/WEBServer/Dockerfile
+          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.webserver.outputs.tags }}
+          labels: ${{ steps.webserver.outputs.labels }}
+
+      - name: Build and push CLI
+        if: github.event_name == 'release'
+        uses: docker/build-push-action@v2
+        with:
+          context: Docker/CLI/
+          file: Docker/CLI/Dockerfile
+          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.cli.outputs.tags }}
+          labels: ${{ steps.cli.outputs.labels }}

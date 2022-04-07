@@ -72,7 +72,7 @@ if [ -t 1 ] && command -v tput > /dev/null; then
         normal="$(tput sgr0     || echo)"
       # black="$(tput setaf 0   || echo)"
         red="$(tput setaf 1     || echo)"
-        green="$(tput setaf 2   || echo)"
+      # green="$(tput setaf 2   || echo)"
         yellow="$(tput setaf 3  || echo)"
       # blue="$(tput setaf 4    || echo)"
       # magenta="$(tput setaf 5 || echo)"
@@ -442,7 +442,7 @@ get_centos_rhel_fedora_deps_command() {
     fi
 }
 
-#-输出安装卸载命令====================#
+#=输出安装卸载命令====================#
 # funcname=(un)install_{utilname}
 # 方便 *install_{utilname} 直接判断
 
