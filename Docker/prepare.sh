@@ -16,9 +16,12 @@ wget -q -O CLI.zip "$(cat < latest | awk '/download_url/{print $4}' FS='"' | gre
     echo "CLI.zip downloaded"
 wget -q -O WEBServer.zip "$(cat < latest | awk '/download_url/{print $4}' FS='"' | grep -i Server)" &&
     echo "WEBServer.zip downloaded"
-CLI_File_Path=$(   unzip -l CLI.zip       | awk "/dll/{print \$4;exit}" FS=' ')
-Server_File_Path=$(unzip -l WEBserver.zip | awk "/dll/{print \$4;exit}" FS=' ')
-unzip "*.zip"
+CLI_DLL_File_Path=$(   unzip -l CLI.zip       | awk "/dll/{print \$4;exit}" FS=' ') &&
+    echo "CLI DLL file path geted"
+Server_DLL_File_Path=$(unzip -l WEBServer.zip | awk "/dll/{print \$4;exit}" FS=' ') &&
+    echo "WEBServer DLL file path geted"
+unzip CLI.zip "${CLI_DLL_File_Path%/*}/*"
+unzip WEBServer.zip "${Server_DLL_File_Path%/*}/*"
 
 # wget -q "https://github.com/hegugu-ng/DDTV_WEBUI/releases/latest/download/$(wget -qO - https://raw.githubusercontent.com/hegugu-ng/DDTV_WEBUI/main/.github/workflows/npm-publish-github-packages.yml | awk "/files:.*\.zip/{print \$2;exit}" FS='/')"
 # wget -q https://github.com/moomiji/docker-ddtv/releases/download/edge/static.zip
@@ -26,7 +29,7 @@ unzip "*.zip"
 # mv -v dist/* \
 #          nginx/DDTV_Backups/static
 
-# cd "${Server_File_Path%/*}/" && dotnet DDTV_Update.dll docker && cd -
+# cd "${Server_DLL_File_Path%/*}/" && dotnet DDTV_Update.dll docker && cd -
 
 mkdir -p Debug/root \
          CLI/root/DDTV \
@@ -36,9 +39,9 @@ mkdir -p Debug/root \
          WEBUI/root/DDTV \
          WEBUI/root/DDTV_Backups
 
-mv -v "${CLI_File_Path%/*}/*" \
+mv -v "${CLI_DLL_File_Path%/*}/*" \
          CLI/root/DDTV_Backups
-mv -v "${Server_File_Path%/*}/*" \
+mv -v "${Server_DLL_File_Path%/*}/*" \
          WEBServer/root/DDTV_Backups
 
 echo CLI            \
