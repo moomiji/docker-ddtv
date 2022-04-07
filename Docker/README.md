@@ -9,8 +9,9 @@
 
 | Image | Tag | Registry  | Supported Platform |
 | ---- | ---- | ---- | ---- |
-| ddtv | `latest` `Version` | `DockerHub` `ghcr.io` `registry.cn-shenzhen.aliyuncs.com` | `amd64` `arm64v8` `arm32v7` |
-| ddtvwebui | `latest` `Version` | `ghcr.io` `registry.cn-shenzhen.aliyuncs.com` | `amd64` `arm64v8` `arm32v7` |
+| ddtv | `latest` `Version` | `DockerHub` `ghcr.io` | `amd64` `arm64v8` `arm32v7` |
+| ddtvwebui | `latest` `Version` | `DockerHub` `ghcr.io` | `amd64` `arm64v8` `arm32v7` |
+| ddtvperf | `alpine` `debian` | `DockerHub` `ghcr.io` | `amd64` `arm64v8` `arm32v7` |
 
 ## 更新镜像
 
@@ -113,7 +114,7 @@ docker run moomiji/ddtv:latest --no-update # 不开启启动更新
 
 ## webui使用方法
 
-可用镜像名: `moomiji/ddtvwebui` `ghcr.io/moomiji/ddtvwebui`
+可用镜像名: `moomiji/ddtvwebui` `ghcr.io/moomiji/ddtvwebui`。
 
 1. 直接使用
 
@@ -168,7 +169,7 @@ docker run -d -p 8080:80 \
 
 ## 常用的环境变量
 
-1. DDTV WEB Server 可用参数
+1. WEBServer、CLI、Debug 可用参数
 
 除前三个变量 `PUID` `PGID` `TZ` 的其他变量只在 `配置文件不存在（未挂载）时` 可用。
 
@@ -201,14 +202,17 @@ docker run -d -p 8080:80 \
 | WebUserName | `string` | `ami` | WEB登陆使用的用户名 |
 | WebPassword | `string` | `ddtv` | WEB登陆使用的密码 |
 | AccessControlAllowOrigin | `http(s)://you.host:port` | `*` | DDTV_WEB跨域设置路径，应为前端网址 |
-| AccessControlAllowCredentials | `bool` | `true` | DDTV_WEB的Credentials设置 (布尔值) |
+| AccessControlAllowCredentials | `bool` | `true` | DDTV_WEB的Credentials设置 |
+| CookieDomain | `string` | 空值 | 用于控制cookie作用域 |
+| Shell | `bool` | `false` | 用于控制下载完成后是否执行对应房间的Shell命令 |
 
-2. DDTV WEB UI 可用参数（当 WEB Server 内置了前端项目时，也可使用）
+2. WEBUI 可用参数（当 WEBServer 内置了 WEBUI 时，也可使用）
 
 变量只在 `镜像第一次启动` 可用。
 
 | 参数名 | 格式 | 默认值 | 说明 |
 | ---- | ---- | ---- | ---- |
+| WEBUI_Path | 路径 | `/DDTV/static` | WEBUI的文件夹路径 |
 | PROXY_PASS | `http(s)://you.host:port` | `http://127.0.0.1:11419` | 需要反代的后端地址, apiUrl=false 时 WEBUI 从反代地址联系 WEBServer |
 | apiUrl | `bool` `http(s)://you.host:port` | `http://127.0.0.1:11419` | 后端地址, 同源也请更换为主机IP, 需要反代请填 false |
 | mount | 路径 | `/` | 展示目录所在文件系统占用 |
@@ -222,6 +226,41 @@ docker run -d -p 8080:80 \
 | GAshow | `bool` | `true` | 是否显示公网安备信息 |
 | GAtext | `string` |  | 公网安备信息 |
 | GAlink | `string` |  | 公网安备信息跳转链接 |
+
+## perf使用方法
+
+可用镜像名: `moomiji/ddtvperf` `ghcr.io/moomiji/ddtvperf`。
+
+该镜像用于 ddtv 出现异常占用时，进行性能探测并记录给开发者分析。
+
+```shell
+docker run ${与 ddtv 相同的参数&配置文件} --pid=host --name DDTV_perf moomiji/ddtvperf:alpine
+docker run ${与 ddtv 相同的参数&配置文件} --name DDTV_perf moomiji/ddtvperf:debian
+```
+
+- 性能探测与记录
+
+```shell
+docker exec -it --privileged DDTV_perf /bin/bash
+cd /DDTV
+```
+
+当出现性能占用异常时，运行以下命令 20~30 s，`Ctrl+C`停止记录。
+
+```
+# perf record -p ${DDTV_WEB_Server进程号} -g
+perf record -p $(ps -ef | grep -v "grep" | awk '/DDTV_WEB_Server/{print $1}') -g
+```
+
+转换为火焰图，并将
+
+```
+. /etc/os-release
+DDTV_Core_Version=$(cat DDTV_WEB_Server.deps.json | awk '/DDTV_Core\//{print $3}' FS='[/"]' | awk 'NR==1')
+DDTV_WEB_Server_Version=$(cat DDTV_WEB_Server.deps.json | awk '/DDTV_WEB_Server\//{print $3}' FS='[/"]' | awk 'NR==1')
+touch "DDTV.CoreVer${DDTV_Core_Version}.WEBVer${DDTV_WEB_Server_Version}.${PRETTY_NAME}.svg"
+exec "perf script | FlameGraph/stackcollapse-perf.pl | FlameGraph/flamegraph.pl > DDTV*.svg"
+```
 
 ## docker常用命令
 

@@ -1,0 +1,195 @@
+name: DDTV_Docker_Release
+
+on:
+  release:
+    types: [released]
+  watch: # 合并删除
+    types: [started]
+  push:
+    branches: [master]
+    paths:
+      - 'Docker/**'
+      - '!Docker/README.md'
+      - '.github/workflows/DDTV_Docker_Release.yml'
+
+env:
+  BACK_END_PROJECT: webserver
+  FRONT_END_PROJECT: webui
+  CLI_PROJECT: cli
+  DOTNET_VERSION: '6.0'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+# 登录至仓库
+      - name: Login to ghcr.io
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+# 输出版本
+# 输出是否构建debug镜像
+#   ddtv_version="Ver3.0.1.9"
+#   ddtv_version_major="3.0"
+#   注意：find . -name "*.sh" 不允许有带空格的sh文件
+      - name: Prepare
+        id: prepare
+        run: |
+          Version=$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
+          Version_major=${Version%%.*} && Version_major=${Version_major:0-1}
+          Version_minor=${Version#*.}  && Version_minor=${Version_minor:0:1}
+          echo ::set-output name=ddtv_version::${Version}
+          echo ::set-output name=ddtv_version_major::${Version_major}.${Version_minor}
+
+          docker pull ghcr.io/${{ github.actor }}/ddtvwebserver:debug-alpine \
+              && docker pull mcr.microsoft.com/dotnet/sdk:6.0-alpine \
+              && OldVer=$(docker history ghcr.io/${{ github.actor }}/ddtv:debug-alpine | --no-trunc |
+                          awk '/DOTNET_SDK_VERSION=/{print $2}' FS='DOTNET_SDK_VERSION=' | awk '{print $1}') \
+              && NewVer=$(docker history mcr.microsoft.com/dotnet/sdk:6.0-alpine | --no-trunc |
+                          awk '/DOTNET_SDK_VERSION=/{print $2}' FS='DOTNET_SDK_VERSION=' | awk '{print $1}') \
+              && [[ "$OldVer" == "$NewVer" ]] \
+              && echo ::set-output name=is_build_debug_alpine::"false" \
+              || echo ::set-output name=is_build_debug_alpine::"true"
+
+          docker pull ghcr.io/${{ github.actor }}/ddtvwebserver:debug \
+              && docker pull mcr.microsoft.com/dotnet/sdk:6.0 \
+              && OldVer=$(docker history ghcr.io/${{ github.actor }}/ddtv:debug | --no-trunc |
+                          awk '/DOTNET_SDK_VERSION=/{print $2}' FS='DOTNET_SDK_VERSION=' | awk '{print $1}') \
+              && NewVer=$(docker history mcr.microsoft.com/dotnet/sdk:6.0 | --no-trunc |
+                          awk '/DOTNET_SDK_VERSION=/{print $2}' FS='DOTNET_SDK_VERSION=' | awk '{print $1}') \
+              && [[ "$OldVer" == "$NewVer" ]] \
+              && echo ::set-output name=is_build_debug::"false" \
+              || echo ::set-output name=is_build_debug::"true"
+
+          cd Docker/ && chmod +x $(find . -name "*.sh") && ./prepare.sh
+
+      - name: Metadata for WEBUI images
+        id: webui
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ghcr.io/${{ github.actor }}/ddtv${{ env.FRONT_END_PROJECT }}
+          flavor: |
+            latest=true
+          tags: |
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
+
+      - name: Metadata for WEBServer images
+        id: webserver
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ghcr.io/${{ github.actor }}/ddtv${{ env.BACK_END_PROJECT }}
+          flavor: |
+            latest=true
+          tags: |
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
+
+      - name: Metadata for CLI images
+        id: cli
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ghcr.io/${{ github.actor }}/ddtv${{ env.CLI_PROJECT }}
+          flavor: |
+            latest=true
+          tags: |
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
+            type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
+
+      - name: Metadata for alpine os images
+        id: alpine
+        run: |
+          echo ::set-output name=webserver_tags::$(echo "${{ steps.webserver.outputs.tags }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
+          echo ::set-output name=cli_tags::$(echo "${{       steps.cli.outputs.tags       }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
+
+      - name: Metadata for Debug images
+        id: debug
+        run: |
+          echo ::set-output name=debian_tags::"ghcr.io/${{ github.actor }}/ddtv${{ env.BACK_END_PROJECT }}:debug"
+          echo ::set-output name=alpine_tags::"ghcr.io/${{ github.actor }}/ddtv${{ env.BACK_END_PROJECT }}:debug-alpine"
+
+# 构建各架构镜像（发行版）
+      - name: Build and push WEBUI
+        if: false
+        uses: docker/build-push-action@v2
+        with:
+          context: Docker/WEBUI/
+          file: Docker/WEBUI/Dockerfile
+          platforms: linux/amd64, linux/arm64, linux/arm/v7, linux/386, linux/arm/v6, linux/ppc64le, linux/s390x
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.webui.outputs.tags }}
+          labels: ${{ steps.webui.outputs.labels }}
+# alpine
+      - name: Build and push Debug(alpine)
+        if: ${{ steps.prepare.outputs.is_build_debug_alpine == 'true' || github.event_name == 'push' }}
+        uses: docker/build-push-action@v2
+        with:
+          context: Docker/Debug/
+          file: Docker/Debug/Dockerfile.alpine
+          platforms: linux/amd64 #, linux/arm64, linux/arm/v7
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.debug.outputs.alpine_tags }}
+          labels: ${{ steps.webserver.outputs.labels }}
+
+      - name: Build and push WEBServer(alpine)
+        uses: docker/build-push-action@v2
+        with:
+          context: Docker/WEBServer/
+          file: Docker/WEBServer/Dockerfile.alpine
+          platforms: linux/amd64 #, linux/arm64, linux/arm/v7
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.alpine.outputs.webserver_tags }}
+          labels: ${{ steps.webserver.outputs.labels }}
+
+      - name: Build and push CLI(alpine)
+        uses: docker/build-push-action@v2
+        with:
+          context: Docker/CLI/
+          file: Docker/CLI/Dockerfile.alpine
+          platforms: linux/amd64 #, linux/arm64, linux/arm/v7
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.alpine.outputs.cli_tags }}
+          labels: ${{ steps.cli.outputs.labels }}
+# debian
+      - name: Build and push Debug
+        if: ${{ steps.prepare.outputs.is_build_debug == 'true' || github.event_name == 'push' }}
+        uses: docker/build-push-action@v2
+        with:
+          context: Docker/Debug/
+          file: Docker/Debug/Dockerfile
+          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.debug.outputs.debian_tags }}
+          labels: ${{ steps.webserver.outputs.labels }}
+
+      - name: Build and push WEBServer
+        uses: docker/build-push-action@v2
+        with:
+          context: Docker/WEBServer/
+          file: Docker/WEBServer/Dockerfile
+          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.webserver.outputs.tags }}
+          labels: ${{ steps.webserver.outputs.labels }}
+
+      - name: Build and push CLI
+        uses: docker/build-push-action@v2
+        with:
+          context: Docker/CLI/
+          file: Docker/CLI/Dockerfile
+          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.cli.outputs.tags }}
+          labels: ${{ steps.cli.outputs.labels }}
