@@ -1,9 +1,11 @@
 FROM nginx:stable-alpine
-ENV TZ=Asia/Shanghai
-ENV PROXY_PASS=http://DDTV.WEBServer:11419
-COPY nginx/ /
+ENV DDTV_Project=WEBUI \
+    TZ=Asia/Shanghai \
+    WEBUI_Path=/DDTV/static \
+    PROXY_PASS=http://DDTV.WEBServer:11419
+COPY root/ /
   # .sh file     in /docker-entrypoint.d
-  # 配置前端文件  in /DDTV/static
+  # 前端配置文件  in /DDTV/static
   # default.conf in /etc/nginx/conf.d
 
 RUN apk add --no-cache bash\

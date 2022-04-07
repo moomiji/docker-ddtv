@@ -8,7 +8,7 @@ server {
     }
 
     location / {
-        root   /DDTV/static;
+        root   ${WEBUI_Path};
         index  index.html;
     }
 
