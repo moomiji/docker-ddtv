@@ -1,14 +1,15 @@
 #!/bin/bash
-# 在DDTV启动之前，检查文件
+# 在CLI WEBServer WEBUI (Debug) 启动之前，检查文件
 # 参数更新需修改 README.md docker-compose.yml
 set -e; set -u
 
 DDTV_Path=/DDTV
 Backups_Path=/DDTV_Backups
-WEBUI_Config_Path=$WEBUI_Path/static
+WEBUI_Config_Path=${WEBUI_Path:-/DDTV}/static
+RoomListConfig_Path=${RoomListConfig_Path:-"$DDTV_Path/RoomListConfig.json"}
 
 checkup() {
-    case $DDTV_Project in
+    case ${DDTV_Project:-WTF} in
         Debug)
             check_tool_Debug
             ;;
@@ -58,7 +59,7 @@ check_dir_DDTV() {
 #   $RoomListConfig_Path
 #   $RoomList
 check_file_RoomListConfig_json() {
-    File_Path=${RoomListConfig_Path:-"$DDTV_Path/RoomListConfig.json"}
+    File_Path=$RoomListConfig_Path
     if [ ! -e "$File_Path" ]; then
         if [ -n "${RoomList:-}" ]; then
             echo "$RoomList" > "$File_Path"

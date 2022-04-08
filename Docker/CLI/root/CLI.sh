@@ -15,7 +15,7 @@ cd /DDTV
 #   --no-update
 if [[ "$*" != "--"* ]]; then
     # 运行测试命令
-    echo "exec $ARGs" && eval "$ARGs" && exit $?
+    echo "eval $*" && eval "$*" && exit $?
 else
     # 更新 DDTV
     [[ "$*" != *"--no-update"* ]] && dotnet DDTV_Update.dll docker
@@ -30,7 +30,7 @@ fi
 . /etc/os-release
 echo "Running as UID ${PUID:=$UID} and GID ${PGID:=$PUID}."
 mkdir -vp "${DownloadPath:=./Rec/}" "${TmpPath:=./tmp/}"
-chown -R "$PUID:$PGID" "$DDTV_Path" "$DownloadPath" "$TmpPath"
+chown -R "$PUID:$PGID" /DDTV "$DownloadPath" "$TmpPath"
 
 if [[ "$ID" == "debian" ]]; then
     gosu $PUID:$PGID dotnet DDTV_CLI.dll

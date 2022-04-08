@@ -31,17 +31,17 @@ unzip WEBServer.zip "${Server_DLL_File_Path%/*}/*"
 
 # cd "${Server_DLL_File_Path%/*}/" && dotnet DDTV_Update.dll docker && cd -
 
-mkdir -vp Debug/root \
-          CLI/root/DDTV \
-          CLI/root/DDTV_Backups \
-          WEBServer/root/DDTV \
+mkdir -vp Debug/root                  \
+          CLI/root/DDTV               \
+          CLI/root/DDTV_Backups       \
+          WEBServer/root/DDTV         \
           WEBServer/root/DDTV_Backups \
-          WEBUI/root/DDTV \
+          WEBUI/root/DDTV             \
           WEBUI/root/DDTV_Backups
 
-mv -v "${CLI_DLL_File_Path%/*}"/* \
+mv -v "${CLI_DLL_File_Path%/*}"/*     \
           CLI/root/DDTV_Backups
-mv -v "${Server_DLL_File_Path%/*}"/* \
+mv -v "${Server_DLL_File_Path%/*}"/*  \
           WEBServer/root/DDTV_Backups
 
 echo CLI/root       \

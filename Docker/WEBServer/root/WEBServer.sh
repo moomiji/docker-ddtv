@@ -20,7 +20,7 @@ cd /DDTV
 #   --no-update
 if [[ "$*" != "--"* ]]; then
     # 运行测试命令
-    echo "exec $ARGs" && eval "$ARGs" && exit $?
+    echo "eval $*" && eval "$*" && exit $?
 else
     # 更新 DDTV
     [[ "$*" != *"--no-update"* ]] && dotnet DDTV_Update.dll docker

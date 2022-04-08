@@ -10,6 +10,4 @@ COPY root/ /
 
 RUN ./install.sh && rm -v ./install.sh
 
-EXPOSE 11419
-VOLUME /DDTV/Rec
 ENTRYPOINT ["/bin/sh", "-c"]
