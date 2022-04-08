@@ -132,11 +132,12 @@ jobs:
           echo ::set-output name=debian_tags::"ghcr.io/${{ github.actor }}/ddtv${{ env.BACK_END_PROJECT }}:debug"
           echo ::set-output name=alpine_tags::"ghcr.io/${{ github.actor }}/ddtv${{ env.BACK_END_PROJECT }}:debug-alpine"
 
-      - name: Echo ARGs
+      - name: Echo build-args
         id: args
         run: |
-          build-args="REPO=$( echo "${{ steps.deps.outputs.tags }}" | head -n1 )"
-          echo ::set-output name=build-args::$build-args
+          echo "${{ steps.deps.outputs.tags }}" > tmpargs
+          ARGs="${ARGs:+"$ARGs,"} REPO=$(head -n1 tmpargs)"
+          echo ::set-output name=build-args::$ARGs
 
 # 构建各架构镜像（发行版）
       - name: Build and push WEBUI(alpine)
