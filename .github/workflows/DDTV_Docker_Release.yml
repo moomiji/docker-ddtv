@@ -19,7 +19,7 @@ env:
   DOTNET_VERSION: '6.0'
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
