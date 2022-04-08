@@ -17,14 +17,14 @@ case $ID in
         ;;
 
     debian)
-        # apt update
+          # apt update
         if [[ "$DDTV_Project" == "Debug" ]]; then
-            apt install --no-install-recommends ffmpeg bash tzdata wget unzip gosu libgdiplus linux-perf perl git -y
+            apt install --no-install-recommends ffmpeg bash tzdata gosu libgdiplus linux-perf perl git -y
             git clone --depth=1 https://github.com/BrendanGregg/FlameGraph
         else
-            apt install --no-install-recommends ffmpeg bash tzdata wget unzip gosu libgdiplus -y
+            apt install --no-install-recommends ffmpeg bash tzdata gosu libgdiplus -y
         fi
-            apt autoremove --purge wget unzip -y && apt clean -y
+            apt clean -y
             sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list
         ;;
     *)

@@ -4,8 +4,8 @@ ENV DDTV_Project=CLI \
     TZ=Asia/Shanghai
 COPY root/ /
 
-RUN apt update && apt install bash -y || apk add bash && ./install.sh && rm ./install.sh
+RUN apt update || apk add bash && ./install.sh && rm -v ./install.sh
 
 EXPOSE 11419
 VOLUME /DDTV/Rec
-ENTRYPOINT ["./start.sh"]
+ENTRYPOINT ["./CLI.sh"]

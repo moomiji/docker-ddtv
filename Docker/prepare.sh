@@ -51,5 +51,5 @@ echo CLI/root       \
 
 echo CLI/root       \
      Debug/root     \
-     WEBUI/root     \
+     WEBUI/root/docker-entrypoint.d/01-checkup.sh \
      WEBServer/root | xargs -n 1 cp -v ./checkup.sh
