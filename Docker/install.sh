@@ -17,7 +17,7 @@ case $ID in
         ;;
 
     debian)
-        apt update
+        # apt update
         if [[ "$DDTV_Project" == "Debug" ]]; then
             apt install --no-install-recommends ffmpeg bash tzdata wget unzip gosu libgdiplus perf perl git -y
             git clone --depth=1 https://github.com/BrendanGregg/FlameGraph

@@ -8,7 +8,7 @@ ENV DDTV_Project=Debug \
     TZ=Asia/Shanghai
 COPY root/ /
 
-RUN ./install.sh && rm ./install.sh
+RUN apt update && apt install bash || apk add bash && ./install.sh && rm ./install.sh
 
 EXPOSE 11419
 VOLUME /DDTV/Rec
