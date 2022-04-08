@@ -5,7 +5,7 @@ set -e; set -u
 shopt -s globstar nullglob
 for Dockerfile in ./**/Dockerfile; do
     cp "$Dockerfile" "$Dockerfile".alpine
-    sed -i 'N;1a-alpine' "$Dockerfile".alpine
+    sed -i '/FROM/s/$/&-alpine/g' "$Dockerfile".alpine
 done
 
 # 下载 DDTV
