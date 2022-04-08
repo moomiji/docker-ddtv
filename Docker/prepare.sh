@@ -44,10 +44,10 @@ mv -v "${CLI_DLL_File_Path%/*}"/* \
 mv -v "${Server_DLL_File_Path%/*}"/* \
           WEBServer/root/DDTV_Backups
 
-echo CLI            \
-     Debug          \
-     WEBUI          \
-     WEBServer      | xargs -n 1 cp -v ./install.sh
+echo CLI/root       \
+     Debug/root     \
+     WEBUI/root     \
+     WEBServer/root | xargs -n 1 cp -v ./install.sh
 
 echo CLI/root       \
      Debug/root     \
