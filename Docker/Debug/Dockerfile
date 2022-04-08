@@ -8,6 +8,6 @@ ENV DDTV_Project=Debug \
     TZ=Asia/Shanghai
 COPY root/ /
 
-RUN ./install-deps.sh && rm -v ./install-deps.sh
+RUN ./install-deps.sh
 
 ENTRYPOINT ["/bin/sh", "-c"]
