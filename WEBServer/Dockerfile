@@ -5,8 +5,6 @@ ENV DDTV_Project=WEBServer \
     TZ=Asia/Shanghai
 COPY root/ /
 
-RUN ./install.sh && rm -v ./install.sh
-
 EXPOSE 11419
 VOLUME /DDTV/Rec
 ENTRYPOINT ["./WEBServer.sh"]
