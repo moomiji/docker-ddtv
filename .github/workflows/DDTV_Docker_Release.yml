@@ -133,11 +133,10 @@ jobs:
           echo ::set-output name=alpine_tags::"ghcr.io/${{ github.actor }}/ddtv${{ env.BACK_END_PROJECT }}:debug-alpine"
 
       - name: Echo build-args
-        id: args
+        id: build-args
         run: |
           echo "${{ steps.deps.outputs.tags }}" > tmpargs
-          ARGs="${ARGs:+"$ARGs,"} REPO=$(head -n1 tmpargs)"
-          echo ::set-output name=build-args::$ARGs
+          echo ::set-output name=repo::$(head -n1 tmpargs)
 
 # 构建各架构镜像（发行版）
       - name: Build and push WEBUI(alpine)
@@ -178,7 +177,7 @@ jobs:
           context: Docker/WEBServer/
           file: Docker/WEBServer/Dockerfile.alpine
           platforms: linux/amd64, linux/arm64, linux/arm/v7
-          build-args: ${{ steps.args.outputs.build_args }}
+          build-args: REPO=${{ steps.build-args.outputs.repo }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.alpine.outputs.webserver_tags }}
           labels: ${{ steps.webserver.outputs.labels }}
@@ -189,7 +188,7 @@ jobs:
           context: Docker/CLI/
           file: Docker/CLI/Dockerfile.alpine
           platforms: linux/amd64, linux/arm64, linux/arm/v7
-          build-args: ${{ steps.args.outputs.build_args }}
+          build-args: REPO=${{ steps.build-args.outputs.repo }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.alpine.outputs.cli_tags }}
           labels: ${{ steps.cli.outputs.labels }}
@@ -221,7 +220,7 @@ jobs:
           context: Docker/WEBServer/
           file: Docker/WEBServer/Dockerfile
           platforms: linux/amd64, linux/arm64, linux/arm/v7
-          build-args: ${{ steps.args.outputs.build_args }}
+          build-args: REPO=${{ steps.build-args.outputs.repo }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.webserver.outputs.tags }}
           labels: ${{ steps.webserver.outputs.labels }}
@@ -232,7 +231,7 @@ jobs:
           context: Docker/CLI/
           file: Docker/CLI/Dockerfile
           platforms: linux/amd64, linux/arm64, linux/arm/v7
-          build-args: ${{ steps.args.outputs.build_args }}
+          build-args: REPO=${{ steps.build-args.outputs.repo }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.cli.outputs.tags }}
           labels: ${{ steps.cli.outputs.labels }}
