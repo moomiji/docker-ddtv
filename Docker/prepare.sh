@@ -20,8 +20,8 @@ CLI_DLL_File_Path=$(   unzip -l CLI.zip       | awk "/dll/{print \$4;exit}" FS='
     echo "CLI DLL file path geted"
 Server_DLL_File_Path=$(unzip -l WEBServer.zip | awk "/dll/{print \$4;exit}" FS=' ') &&
     echo "WEBServer DLL file path geted"
-unzip CLI.zip "${CLI_DLL_File_Path%/*}"/*
-unzip WEBServer.zip "${Server_DLL_File_Path%/*}"/*
+unzip CLI.zip "${CLI_DLL_File_Path%/*}/*"
+unzip WEBServer.zip "${Server_DLL_File_Path%/*}/*"
 
 # wget -q "https://github.com/hegugu-ng/DDTV_WEBUI/releases/latest/download/$(wget -qO - https://raw.githubusercontent.com/hegugu-ng/DDTV_WEBUI/main/.github/workflows/npm-publish-github-packages.yml | awk "/files:.*\.zip/{print \$2;exit}" FS='/')"
 # wget -q https://github.com/moomiji/docker-ddtv/releases/download/edge/static.zip
