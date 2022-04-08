@@ -46,7 +46,7 @@ mv -v "${Server_DLL_File_Path%/*}"/*  \
           WEBServer/root/DDTV_Backups
 
 echo Deps/root      \
-     Debug/root     | xargs -n 1 cp -v ./install.sh
+     Debug/root     | xargs -n 1 cp -v ./install-Deps.sh
 
 echo CLI/root       \
      Debug/root     \
