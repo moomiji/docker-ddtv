@@ -1,4 +1,5 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+ARG REPO
+FROM $REPO
 ENV DDTV_Project=WEBServer \
     Logging__Console__FormatterName= \
     TZ=Asia/Shanghai

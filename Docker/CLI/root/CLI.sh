@@ -4,8 +4,8 @@ echo '
    / __ \/ __ \/_  __/ |  / /  |__  / / __ \       / ____/ /   /  _/
   / / / / / / / / /  | | / /    /_ < / / / /      / /   / /    / /
  / /_/ / /_/ / / /   | |/ /   ___/ // /_/ /      / /___/ /____/ /
-/_____/_____/ /_/    |___/   /____(_)____/       \____/_____/___/'
-
+/_____/_____/ /_/    |___/   /____(_)____/       \____/_____/___/
+'
 set -e; set -u
 ./checkup.sh
 cd /DDTV
@@ -13,13 +13,15 @@ cd /DDTV
 # 参数更新需修改 README.md docker-compose.yml
 # 可用参数有: 
 #   --no-update
-if [[ "$*" != "--"* ]]; then
-    # 运行测试命令
-    echo "eval $*" && eval "$*" && exit $?
-else
-    # 更新 DDTV
-    [[ "$*" != *"--no-update"* ]] && dotnet DDTV_Update.dll docker
-fi
+case "$*" in
+    ""|*"--no-update"*)
+        # 更新 DDTV
+        [[ "$*" == *"--no-update"* ]] || dotnet DDTV_Update.dll docker
+        ;;
+    *)  # 运行测试命令
+        echo "eval $*" && eval "$*" && exit $?
+        ;;
+esac
 
 # 运行 DDTV
 # 可用参数有:
