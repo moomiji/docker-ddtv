@@ -1,5 +1,4 @@
 #!/bin/bash
-# 参数更新需修改 README.md docker-compose.yml
 
 echo '
     ____  ____  _______    __     _____  ____

@@ -17,7 +17,6 @@ checkup() {
             check_file_BiliUser_ini
             check_file_DDTV_Config_ini
             check_file_RoomListConfig_json
-            check_file_permission
             ;;
         WEBServer)
             check_dir_DDTV
@@ -28,7 +27,6 @@ checkup() {
             check_file_BiliUser_ini
             check_file_DDTV_Config_ini
             check_file_RoomListConfig_json
-            check_file_permission
             ;;
         WEBUI)
             check_dir_DDTV
@@ -53,17 +51,6 @@ check_dir_DDTV() {
             [ ! -e "${file##"$Backups_Path"/}" ] && cp -vur "$file" "${file##"$Backups_Path"/}"
         done
     fi
-}
-
-# 检测权限
-# 可用参数有:
-#   $PUID
-#   $PGID
-#   $DownloadPath
-#   $TmpPath
-check_file_permission() {
-    mkdir -vp "${DownloadPath:=./Rec/} ${TmpPath:=./tmp/}"
-    chown -R "${PUID:-$UID}:${PGID:-$PUID} $DDTV_Path $DownloadPath $TmpPath"
 }
 
 # 写入 RoomListConfig.json
