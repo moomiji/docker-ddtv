@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # WEBServer CLI Debug 安装相关依赖
 set -e; set -u
 
@@ -6,7 +6,7 @@ set -e; set -u
 
 case $ID in
     alpine)
-        if [[ "$DDTV_Project" == "Debug" ]]; then
+        if [ "$DDTV_Project" = "Debug" ]; then
             apk add --no-cache ffmpeg bash tzdata su-exec perf perl git
             git clone --depth=1 https://github.com/BrendanGregg/FlameGraph
         else
@@ -17,8 +17,8 @@ case $ID in
         ;;
 
     debian)
-          # apt update
-        if [[ "$DDTV_Project" == "Debug" ]]; then
+            apt update
+        if [ "$DDTV_Project" = "Debug" ]; then
             apt install --no-install-recommends ffmpeg bash tzdata gosu libgdiplus linux-perf perl git -y
             git clone --depth=1 https://github.com/BrendanGregg/FlameGraph
         else
