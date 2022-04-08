@@ -1,11 +1,10 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+ARG REPO
+FROM $REPO
 ENV DDTV_Project=CLI \
     Logging__Console__FormatterName= \
     TZ=Asia/Shanghai
+
 COPY root/ /
-
-RUN ./install.sh && rm -v ./install.sh
-
 EXPOSE 11419
 VOLUME /DDTV/Rec
 ENTRYPOINT ["./CLI.sh"]

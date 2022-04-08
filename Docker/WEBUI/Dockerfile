@@ -1,4 +1,4 @@
-FROM nginx:stable-alpine
+FROM nginx:stable
 ENV DDTV_Project=WEBUI \
     TZ=Asia/Shanghai \
     WEBUI_Path=/DDTV/static \
@@ -8,7 +8,7 @@ COPY root/ /
   # 前端配置文件  in /DDTV/static
   # default.conf in /etc/nginx/conf.d
 
-RUN apk add --no-cache bash\
+RUN apk add --no-cache bash \
     && rm -rf /var/cache/apk/* /root/.cache /tmp/* \
     && sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
