@@ -37,6 +37,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 # 输出版本
+# 输出是否构建debug镜像
 #   ddtv_version="Ver3.0.1.9"
 #   ddtv_version_major="3.0"
 #   注意：find . -name "*.sh" 不允许有带空格的sh文件
@@ -48,6 +49,27 @@ jobs:
           Version_minor=${Version#*.}  && Version_minor=${Version_minor:0:1}
           echo ::set-output name=ddtv_version::${Version}
           echo ::set-output name=ddtv_version_major::${Version_major}.${Version_minor}
+
+          docker pull ghcr.io/${{ github.actor }}/ddtvwebserver:debug-alpine \
+              && docker pull mcr.microsoft.com/dotnet/sdk:6.0-alpine \
+              && OldVer=$(docker history ghcr.io/${{ github.actor }}/ddtv:debug-alpine | --no-trunc |
+                          awk '/DOTNET_SDK_VERSION=/{print $2}' FS='DOTNET_SDK_VERSION=' | awk '{print $1}') \
+              && NewVer=$(docker history mcr.microsoft.com/dotnet/sdk:6.0-alpine | --no-trunc |
+                          awk '/DOTNET_SDK_VERSION=/{print $2}' FS='DOTNET_SDK_VERSION=' | awk '{print $1}') \
+              && [[ "$OldVer" == "$NewVer" ]] \
+              && echo ::set-output name=is_build_debug_alpine::"false" \
+              || echo ::set-output name=is_build_debug_alpine::"true"
+
+          docker pull ghcr.io/${{ github.actor }}/ddtvwebserver:debug \
+              && docker pull mcr.microsoft.com/dotnet/sdk:6.0 \
+              && OldVer=$(docker history ghcr.io/${{ github.actor }}/ddtv:debug | --no-trunc |
+                          awk '/DOTNET_SDK_VERSION=/{print $2}' FS='DOTNET_SDK_VERSION=' | awk '{print $1}') \
+              && NewVer=$(docker history mcr.microsoft.com/dotnet/sdk:6.0 | --no-trunc |
+                          awk '/DOTNET_SDK_VERSION=/{print $2}' FS='DOTNET_SDK_VERSION=' | awk '{print $1}') \
+              && [[ "$OldVer" == "$NewVer" ]] \
+              && echo ::set-output name=is_build_debug::"false" \
+              || echo ::set-output name=is_build_debug::"true"
+
           cd Docker/ && chmod +x $(find . -name "*.sh") && ./prepare.sh
 
       - name: Metadata for WEBUI images
@@ -111,6 +133,7 @@ jobs:
           labels: ${{ steps.webui.outputs.labels }}
 # alpine
       - name: Build and push Debug(alpine)
+        if: ${{ steps.prepare.outputs.is_build_debug_alpine == 'true' }}
         uses: docker/build-push-action@v2
         with:
           context: Docker/Debug/
@@ -141,6 +164,7 @@ jobs:
           labels: ${{ steps.cli.outputs.labels }}
 # debian
       - name: Build and push Debug
+        if: ${{ steps.prepare.outputs.is_build_debug == 'true' }}
         uses: docker/build-push-action@v2
         with:
           context: Docker/Debug/
