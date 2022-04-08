@@ -1,3 +1,3 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 
-RUN ./install.sh && rm -v ./install.sh
+RUN ./install-deps.sh && rm -v ./install-deps.sh
