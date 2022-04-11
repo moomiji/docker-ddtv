@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0
-ENV DDTV_Project=Debug \
+ENV DDTV_Docker_Project=Debug \
     PATH="/tools:${PATH}" \
     Logging__Console__FormatterName= \
     DOTNET_PerfMapEnabled=1 \

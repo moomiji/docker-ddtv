@@ -1,6 +1,6 @@
 ARG REPO
 FROM $REPO
-ENV DDTV_Project=WEBServer \
+ENV DDTV_Docker_Project=WEBServer \
     Logging__Console__FormatterName= \
     TZ=Asia/Shanghai
 COPY root/ /
