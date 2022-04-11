@@ -9,7 +9,7 @@ WEBUI_Config_Path=${WEBUI_Path:-/DDTV}/static
 RoomListConfig_Path=${RoomListConfig_Path:-"$DDTV_Path/RoomListConfig.json"}
 
 checkup() {
-    case ${DDTV_Project:-WTF} in
+    case ${DDTV_Docker_Project:-WTF} in
         Debug)
             check_tool_Debug
             ;;
@@ -37,7 +37,7 @@ checkup() {
             fi
             ;;
         *)
-            echo "Error DDTV Project!" && exit 1
+            echo "错误的 DDTV Docker 项目!" && exit 1
             ;;
     esac
         touch /NotIsFirstStart
@@ -45,12 +45,13 @@ checkup() {
 
 # 检测 DDTV 目录文件是否齐全
 check_dir_DDTV() {
-    cd "$DDTV_Path" || exit
-    if [ "$(ls -A "$Backups_Path")" ]; then
+    cd "$DDTV_Path" || echo "不存在目录: $DDTV_Path" && exit 1
+    if [ -d "$Backups_Path" ]; then
         shopt -s globstar nullglob
         for file in "$Backups_Path"/**; do
-            [ "${file##"$Backups_Path"/}" = "" ] && continue
-            [ ! -e "${file##"$Backups_Path"/}" ] && cp -vur "$file" "${file##"$Backups_Path"/}"
+            if [ ! -e "${file//$Backupfile/$DDTV_Path}" ]; then
+                cp -vur "$file" "${file//$Backupfile/$DDTV_Path}"
+            fi
         done
     fi
 }
