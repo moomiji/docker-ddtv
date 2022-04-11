@@ -64,7 +64,7 @@ check_file_RoomListConfig_json() {
     File_Path=$RoomListConfig_Path
     if [ ! -e "$File_Path" ]; then
         if [ -n "${RoomList:-}" ]; then
-            echo "$RoomList" > "$File_Path" && echo "Writed in $File_Path: $RoomList"
+            echo "$RoomList" > "$File_Path" && echo "已写入$File_Path: $RoomList"
         fi
     fi
 }
@@ -76,7 +76,7 @@ check_file_BiliUser_ini() {
     File_Path=$DDTV_Path/BiliUser.ini
     if [ ! -e "$File_Path" ]; then
         if [ -n "${BiliUser:-}" ]; then
-            echo -e "$BiliUser" > $File_Path && echo -e "Writed in $File_Path: $BiliUser"
+            echo -e "$BiliUser" > $File_Path && echo -e "已写入$File_Path:\n$BiliUser"
         fi
     fi
 }
@@ -124,7 +124,7 @@ ${ServerName:+"ServerName=$ServerName"}
 ${AccessControlAllowOrigin:+"AccessControlAllowOrigin=$AccessControlAllowOrigin"}
 ${AccessControlAllowCredentials:+"AccessControlAllowCredentials=$AccessControlAllowCredentials"}
 ${CookieDomain:+"CookieDomain=$CookieDomain"}
-" > "$File_Path" && echo "Writed in $File_Path:" && awk NF "$File_Path"
+" > "$File_Path" && echo "已写入$File_Path:" && awk NF "$File_Path"
     fi
     # 22.04.07 更新至Shell 新增 3 个
     # 34-3 个键值 DefaultVolume PlayQuality HideIconState
@@ -158,7 +158,7 @@ check_file_config_js() {
     if [ -n "$mount" ]; then
         sed -i "/mount/s|'.*'|'$mount'|" "$File_Path"
     fi
-    echo "Writed in $File_Path:"
+    echo "已写入$File_Path:"
     cat "$File_Path"
 }
 
@@ -190,7 +190,7 @@ check_file_barinfo_js() {
         sed -i "/GA.*show/s|text.*link|show: \"$GAtext\", link|"     "$File_Path" ; fi
     if [ -n "$GAlink"   ]; then
         sed -i "/GA.*link/s|link.*}|link: \"$GAlink\" }|"            "$File_Path" ; fi
-    echo "Writed in $File_Path:"
+    echo "已写入$File_Path:"
     cat "$File_Path"
 }
 
