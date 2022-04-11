@@ -7,14 +7,14 @@ echo '
 /_____/_____/ /_/    |___/   /____(_)____/       \____/_____/___/
 '
 set -e; set -u
-./checkup.sh
-cd /DDTV
 
 # 参数更新需修改 README.md docker-compose.yml
 # 可用参数有: 
 #   --no-update
 case "$*" in
     ""|*"--no-update"*)
+        ./checkup.sh
+        cd /DDTV
         # 更新 DDTV
         [[ "$*" == *"--no-update"* ]] || dotnet DDTV_Update.dll docker
         ;;
