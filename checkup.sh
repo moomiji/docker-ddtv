@@ -9,7 +9,7 @@ WEBUI_Config_Path=${WEBUI_Path:-/DDTV}/static
 RoomListConfig_Path=${RoomListConfig_Path:-"$DDTV_Path/RoomListConfig.json"}
 
 checkup() {
-    case ${DDTV_Project:-WTF} in
+    case ${DDTV_Docker_Project:-WTF} in
         Debug)
             check_tool_Debug
             ;;
@@ -37,7 +37,7 @@ checkup() {
             fi
             ;;
         *)
-            echo "Error DDTV Project!" && exit 1
+            echo "错误的 DDTV Docker 项目!" && exit 1
             ;;
     esac
         touch /NotIsFirstStart
@@ -45,12 +45,13 @@ checkup() {
 
 # 检测 DDTV 目录文件是否齐全
 check_dir_DDTV() {
-    cd "$DDTV_Path" || exit
-    if [ "$(ls -A "$Backups_Path")" ]; then
+    cd "$DDTV_Path" || if true; then echo "不存在目录: $DDTV_Path" ; exit 1 ; fi
+    if [ -d "$Backups_Path" ]; then
         shopt -s globstar nullglob
         for file in "$Backups_Path"/**; do
-            [ "${file##"$Backups_Path"/}" = "" ] && continue
-            [ ! -e "${file##"$Backups_Path"/}" ] && cp -vur "$file" "${file##"$Backups_Path"/}"
+            if [ ! -e "${file//$Backups_Path/$DDTV_Path}" ]; then
+                cp -vur "$file" "${file//$Backups_Path/$DDTV_Path}"
+            fi
         done
     fi
 }
@@ -63,7 +64,7 @@ check_file_RoomListConfig_json() {
     File_Path=$RoomListConfig_Path
     if [ ! -e "$File_Path" ]; then
         if [ -n "${RoomList:-}" ]; then
-            echo "$RoomList" > "$File_Path" && echo "Writed in $File_Path: $RoomList"
+            echo "$RoomList" > "$File_Path" && echo "已写入$File_Path: $RoomList"
         fi
     fi
 }
@@ -75,7 +76,7 @@ check_file_BiliUser_ini() {
     File_Path=$DDTV_Path/BiliUser.ini
     if [ ! -e "$File_Path" ]; then
         if [ -n "${BiliUser:-}" ]; then
-            echo -e "$BiliUser" > $File_Path && echo -e "Writed in $File_Path: $BiliUser"
+            echo -e "$BiliUser" > $File_Path && echo -e "已写入$File_Path:\n$BiliUser"
         fi
     fi
 }
@@ -123,7 +124,7 @@ ${ServerName:+"ServerName=$ServerName"}
 ${AccessControlAllowOrigin:+"AccessControlAllowOrigin=$AccessControlAllowOrigin"}
 ${AccessControlAllowCredentials:+"AccessControlAllowCredentials=$AccessControlAllowCredentials"}
 ${CookieDomain:+"CookieDomain=$CookieDomain"}
-" > "$File_Path" && echo "Writed in $File_Path:" && awk NF "$File_Path"
+" > "$File_Path" && echo "已写入$File_Path:" && awk NF "$File_Path"
     fi
     # 22.04.07 更新至Shell 新增 3 个
     # 34-3 个键值 DefaultVolume PlayQuality HideIconState
@@ -157,7 +158,7 @@ check_file_config_js() {
     if [ -n "$mount" ]; then
         sed -i "/mount/s|'.*'|'$mount'|" "$File_Path"
     fi
-    echo "Writed in $File_Path:"
+    echo "已写入$File_Path:"
     cat "$File_Path"
 }
 
@@ -189,7 +190,7 @@ check_file_barinfo_js() {
         sed -i "/GA.*show/s|text.*link|show: \"$GAtext\", link|"     "$File_Path" ; fi
     if [ -n "$GAlink"   ]; then
         sed -i "/GA.*link/s|link.*}|link: \"$GAlink\" }|"            "$File_Path" ; fi
-    echo "Writed in $File_Path:"
+    echo "已写入$File_Path:"
     cat "$File_Path"
 }
 
