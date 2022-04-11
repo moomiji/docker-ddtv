@@ -17,6 +17,7 @@ env:
   FRONT_END_PROJECT: webui
   CLI_PROJECT: cli
   DOTNET_VERSION: '6.0'
+  PLATFORMS: linux/amd64, linux/arm64, linux/arm/v7
 
 jobs:
   release:
@@ -156,7 +157,7 @@ jobs:
         with:
           context: Docker/Debug/
           file: Docker/Debug/Dockerfile.alpine
-          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          platforms: ${{ env.PLATFORMS }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.debug.outputs.alpine_tags }}
           labels: ${{ steps.webserver.outputs.labels }}
@@ -166,7 +167,7 @@ jobs:
         with:
           context: Docker/Deps/
           file: Docker/Deps/Dockerfile.alpine
-          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          platforms: ${{ env.PLATFORMS }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.alpine.outputs.deps_tags }}
           labels: ${{ steps.deps.outputs.labels }}
@@ -176,7 +177,7 @@ jobs:
         with:
           context: Docker/WEBServer/
           file: Docker/WEBServer/Dockerfile.alpine
-          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          platforms: ${{ env.PLATFORMS }}
           build-args: REPO=${{ steps.build-args.outputs.repo }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.alpine.outputs.webserver_tags }}
@@ -187,7 +188,7 @@ jobs:
         with:
           context: Docker/CLI/
           file: Docker/CLI/Dockerfile.alpine
-          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          platforms: ${{ env.PLATFORMS }}
           build-args: REPO=${{ steps.build-args.outputs.repo }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.alpine.outputs.cli_tags }}
@@ -199,7 +200,7 @@ jobs:
         with:
           context: Docker/Debug/
           file: Docker/Debug/Dockerfile
-          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          platforms: ${{ env.PLATFORMS }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.debug.outputs.debian_tags }}
           labels: ${{ steps.webserver.outputs.labels }}
@@ -209,7 +210,7 @@ jobs:
         with:
           context: Docker/Deps/
           file: Docker/Deps/Dockerfile
-          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          platforms: ${{ env.PLATFORMS }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.deps.outputs.tags }}
           labels: ${{ steps.deps.outputs.labels }}
@@ -219,7 +220,7 @@ jobs:
         with:
           context: Docker/WEBServer/
           file: Docker/WEBServer/Dockerfile
-          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          platforms: ${{ env.PLATFORMS }}
           build-args: REPO=${{ steps.build-args.outputs.repo }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.webserver.outputs.tags }}
@@ -230,7 +231,7 @@ jobs:
         with:
           context: Docker/CLI/
           file: Docker/CLI/Dockerfile
-          platforms: linux/amd64, linux/arm64, linux/arm/v7
+          platforms: ${{ env.PLATFORMS }}
           build-args: REPO=${{ steps.build-args.outputs.repo }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.cli.outputs.tags }}

@@ -233,9 +233,10 @@ docker run -d -p 8080:80 \
 
 该镜像用于 ddtv 出现异常占用时，进行性能探测并记录给开发者分析。
 
+
 ```shell
-docker run ${与 ddtv 相同的参数&配置文件} --pid=host --name DDTV_perf moomiji/ddtvperf:alpine
-docker run ${与 ddtv 相同的参数&配置文件} --name DDTV_perf moomiji/ddtvperf:debian
+docker run ${与 ddtv 相同的参数&配置文件} --rm --cap-add=SYS_ADMIN --cap-add=SYS_PTRACE --privileged moomiji/ddtvperf:alpine
+docker run ${与 ddtv 相同的参数&配置文件} --rm --cap-add=SYS_ADMIN --cap-add=SYS_PTRACE --privileged moomiji/ddtvperf:debian
 ```
 
 - 性能探测与记录
