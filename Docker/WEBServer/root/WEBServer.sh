@@ -20,6 +20,8 @@ cd /DDTV
 #   --no-update
 case "$*" in
     ""|*"--no-update"*)
+        ./checkup.sh
+        cd /DDTV
         # 更新 DDTV
         [[ "$*" == *"--no-update"* ]] || dotnet DDTV_Update.dll docker
         ;;

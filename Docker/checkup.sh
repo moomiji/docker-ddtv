@@ -129,20 +129,22 @@ ${CookieDomain:+"CookieDomain=$CookieDomain"}
     # 34-3 个键值 DefaultVolume PlayQuality HideIconState
 }
 
-# 第一次启动 DDTV Debug 
+# 第一次启动 DDTV Debug
 check_tool_Debug() {
-    dotnet tool install --tool-path /tools \
-        dotnet-counters \
-        dotnet-coverage \
-        dotnet-dump \
-        dotnet-gcdump \
-        dotnet-trace \
-        dotnet-stack \
-        dotnet-symbol \
-        dotnet-sos
+    dotnet tool install --no-cache --tool-path /tools dotnet-counters
+    dotnet tool install --no-cache --tool-path /tools dotnet-coverage
+    dotnet tool install --no-cache --tool-path /tools dotnet-dump
+    dotnet tool install --no-cache --tool-path /tools dotnet-gcdump
+    dotnet tool install --no-cache --tool-path /tools dotnet-trace
+    dotnet tool install --no-cache --tool-path /tools dotnet-stack
+    dotnet tool install --no-cache --tool-path /tools dotnet-symbol
+    dotnet tool install --no-cache --tool-path /tools dotnet-sos
 }
 
 # 第一次启动配置前端文件config.js
+# 可用参数有: 
+#   $apiUrl
+#   $mount
 check_file_config_js() {
     File_Path=$WEBUI_Config_Path/config.js
     if [ -n "$apiUrl" ]; then
@@ -160,6 +162,11 @@ check_file_config_js() {
 }
 
 # 第一次启动配置前端文件barinfo.js
+# 可用参数有: 
+#   $show
+#   $infoshow $ICPshow $GAshow
+#   $infotext $ICPtext $GAtext
+#   $infolink $ICPlink $GAlink
 check_file_barinfo_js() {
     File_Path=$WEBUI_Config_Path/barinfo.js
     if [ -n "$show"     ]; then
