@@ -6,7 +6,7 @@ set -e; set -u
 
 case $ID in
     alpine)
-        if [ "${DDTV_Project:-WTF}" = "Debug" ]; then
+        if [ "${DDTV_Docker_Project:-WTF}" = "Debug" ]; then
             apk add --no-cache perf perl git
             git clone --depth=1 https://github.com/BrendanGregg/FlameGraph
         fi
@@ -17,7 +17,7 @@ case $ID in
 
     debian)
             apt update
-        if [ "${DDTV_Project:-WTF}" = "Debug" ]; then
+        if [ "${DDTV_Docker_Project:-WTF}" = "Debug" ]; then
             apt install --no-install-recommends linux-perf perl git -y && mv /usr/bin/perf* /usr/bin/perf
             git clone --depth=1 https://github.com/BrendanGregg/FlameGraph
         fi
