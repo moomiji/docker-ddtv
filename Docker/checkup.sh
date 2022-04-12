@@ -49,8 +49,8 @@ check_dir_DDTV() {
     if [ -d "$Backups_Path" ]; then
         shopt -s globstar nullglob
         for file in "$Backups_Path"/**; do
-            if [ ! -e "${file//$Backupfile/$DDTV_Path}" ]; then
-                cp -vur "$file" "${file//$Backupfile/$DDTV_Path}"
+            if [ ! -e "${file//$Backups_Path/$DDTV_Path}" ]; then
+                cp -vur "$file" "${file//$Backups_Path/$DDTV_Path}"
             fi
         done
     fi
