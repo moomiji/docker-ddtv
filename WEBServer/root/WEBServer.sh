@@ -12,17 +12,15 @@ echo '
 |__/|__/_____/_____/   /____/\___/_/    |___/\___/_/
 '
 set -e; set -u
-./checkup.sh
-cd /DDTV
 
 # 参数更新需修改 README.md docker-compose.yml
-# 可用参数有: 
-#   --no-update
+# 可用参数有:
+#   --no-update 不更新 DDTV
+#   --verbose   脚本输出更多信息（若服务器多人使用docker，请谨慎使用该参数，因为会将DDTV中的个人信息\配置输出到docker日志中）
 case "$*" in
-    ""|*"--no-update"*)
-        ./checkup.sh
+    ""|*"--verbose"*|*"--no-update"*)
+        ./checkup.sh "$@"
         cd /DDTV
-        # 更新 DDTV
         [[ "$*" == *"--no-update"* ]] || dotnet DDTV_Update.dll docker
         ;;
     *)  # 运行测试命令
@@ -39,7 +37,7 @@ esac
 . /etc/os-release
 echo "Running as UID ${PUID:=$UID} and GID ${PGID:=$PUID}."
 mkdir -vp "${DownloadPath:=./Rec/}" "${TmpPath:=./tmp/}"
-chown -R "$PUID:$PGID" /DDTV "$DownloadPath" "$TmpPath"
+chown -vR "$PUID:$PGID" /DDTV "$DownloadPath" "$TmpPath"
 
 if [[ "$ID" == "debian" ]]; then
     gosu $PUID:$PGID dotnet DDTV_WEB_Server.dll
