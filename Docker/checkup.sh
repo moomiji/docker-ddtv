@@ -45,7 +45,7 @@ checkup() {
 
 # 检测 DDTV 目录文件是否齐全
 check_dir_DDTV() {
-    cd "$DDTV_Path" || echo "不存在目录: $DDTV_Path" && exit 1
+    cd "$DDTV_Path" || if true; then echo "不存在目录: $DDTV_Path" ; exit 1 ; fi
     if [ -d "$Backups_Path" ]; then
         shopt -s globstar nullglob
         for file in "$Backups_Path"/**; do
