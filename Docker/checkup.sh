@@ -11,29 +11,29 @@ RoomListConfig_Path=${RoomListConfig_Path:-"$DDTV_Path/RoomListConfig.json"}
 checkup() {
     case ${DDTV_Docker_Project:-WTF} in
         Debug)
-            check_tool_Debug && echo 1
+            check_tool_Debug
             ;;
         CLI)
-            check_dir_DDTV && echo 1
-            check_file_BiliUser_ini && echo 1
-            check_file_DDTV_Config_ini && echo 1
-            check_file_RoomListConfig_json && echo 1
+            check_dir_DDTV
+            check_file_BiliUser_ini
+            check_file_DDTV_Config_ini
+            check_file_RoomListConfig_json
             ;;
         WEBServer)
-            check_dir_DDTV && echo 1
+            check_dir_DDTV
             #if [ ! -e "/NotIsFirstStart" ]; then
-            #    check_file_config_js && echo 1
-            #    check_file_barinfo_js && echo 1
+            #    check_file_config_js
+            #    check_file_barinfo_js
             #fi
-            check_file_BiliUser_ini && echo 1
-            check_file_DDTV_Config_ini && echo 1
-            check_file_RoomListConfig_json && echo 1
+            check_file_BiliUser_ini
+            check_file_DDTV_Config_ini
+            check_file_RoomListConfig_json
             ;;
         WEBUI)
-            check_dir_DDTV && echo 1
+            check_dir_DDTV
             if [ ! -e "/NotIsFirstStart" ]; then
-                check_file_config_js && echo 1
-                check_file_barinfo_js && echo 1
+                check_file_config_js
+                check_file_barinfo_js
             fi
             ;;
         *)
