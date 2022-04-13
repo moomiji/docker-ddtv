@@ -35,7 +35,7 @@ jobs:
 
       - id: test1
         run: |
-          echo ${{ needs.test.outputs.a.output1 }}
+          echo "${{ needs.test.outputs.a.output1 }} wtf"
 
       - name: Metadata for test images
         if: false
