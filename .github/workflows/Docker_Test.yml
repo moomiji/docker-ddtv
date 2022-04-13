@@ -13,6 +13,11 @@ env:
   DOTNET_VERSION: '6.0.x'
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    outputs:
+      a.output1: 'wtf'
+
   publish:
     runs-on: ubuntu-latest
     steps:
@@ -24,13 +29,10 @@ jobs:
           Version_minor=${Version#*.}  && Version_minor=${Version_minor:0:1}
           echo ::set-output name=ddtv_version::${Version}
           echo ::set-output name=ddtv_version_major::${Version_major}.${Version_minor}
-          echo ::set-output name=wtf::"|
-            1
-            2"
 
       - id: test1
         run: |
-          echo ${{ steps.prepare.outputs.wtf }}
+          echo ${{ needs.test.outputs.a.output1 }}
 
       - name: Metadata for test images
         if: false
