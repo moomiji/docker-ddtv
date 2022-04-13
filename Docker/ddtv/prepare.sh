@@ -48,6 +48,6 @@ echo deps/root      \
      debug/root     | xargs -n 1 cp -v ./install-deps.sh
 
 echo cli/root       \
-     Debug/root     \
+     debug/root     \
      webui/root/docker-entrypoint.d/01-checkup.sh \
      webserver/root | xargs -n 1 cp -v ./checkup.sh

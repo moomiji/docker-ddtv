@@ -166,7 +166,7 @@ jobs:
       is_build_debug: ${{ needs.debian.outputs.is_build_debug }}
       build_args:     ${{ needs.debian.outputs.build_args }}
       labels:         ${{ needs.debian.outputs.labels }}
-      tags_webui:     ${{ steps.alpine.outputs.tags_webui }}
+      tags_webui:     ${{ needs.debian.outputs.tags_webui }}
       tags_debug:     ${{ steps.alpine.outputs.tags_debug }}
       tags_deps:      ${{ steps.alpine.outputs.tags_deps }}
       tags_webserver: ${{ steps.alpine.outputs.tags_webserver }}
@@ -195,12 +195,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-# 注意：find . -name "*.sh" 不允许有带空格的sh文件
 # ./prepare.sh 的参数为 -alpine、-focal 或其他 docker-dotnet 标签后缀
+# 注意：find . -name "*.sh" 不允许有带空格的sh文件
       - name: Prepare
         id: prepare
-        run: |./**/test.sh
-          chmod +x $(find . -name "*.sh") cd Docker/ && ./prepare.sh "-alpine"
+        run: |
+          cd $(chmod -v +x $(find . -name "*.sh") | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")
+          ./prepare.sh "-alpine"
 
       - name: Build and push WEBUI
         if: false
@@ -281,12 +282,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-# 注意：find . -name "*.sh" 不允许有带空格的sh文件
 # ./prepare.sh 的参数为 -alpine、-focal 或其他 docker-dotnet 标签后缀
+# 注意：find . -name "*.sh" 不允许有带空格的sh文件
       - name: Prepare
         id: prepare
         run: |
-          cd Docker/ddtv/ && chmod +x $(find . -name "*.sh") && ./prepare.sh
+          cd $(chmod -v +x $(find . -name "*.sh") | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")
+          ./prepare.sh
 
       - name: Build and push Debug
         if: ${{ needs.debian.outputs.is_build_debug == 'true' || github.event_name == 'push' }}
