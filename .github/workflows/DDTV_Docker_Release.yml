@@ -12,7 +12,7 @@ on:
       - '!Docker/README.md'
       - '.github/workflows/DDTV_Docker_Release.yml'
 
-# *_PROJECT 为项目名兼路径名
+# *_PROJECT 为项目名兼路径名，更改后记得修改 文件存放位置 和 prepare.sh
 # $DEBUG_PROJECT 不用作仓库名，其仓库名为 $DEPS_PROJECT，标签为 debug、debug-alpine
 env:
   DOTNET_VERSION: '6.0' # 只允许 *.*
@@ -23,6 +23,9 @@ env:
   BACK_END_PROJECT: ddtv/webserver
   FRONT_END_PROJECT: ddtv/webui
   PLATFORMS: linux/amd64, linux/arm64, linux/arm/v7
+
+
+
 
 jobs:
   debian:
@@ -123,26 +126,26 @@ jobs:
             type=raw,value=${{ steps.version.outputs.all }}
             type=raw,value=${{ steps.version.outputs.two }}
 
-      - name: Echo build-args
-        id: build-args
+      - name: Output build_args
+        id: build_args
         run: |
           echo "${{ steps.deps.outputs.tags }}" > argstmp
-          build-args="REPO=$(head -n1 argstmp)
+          build_args="REPO=$(head -n1 argstmp)
                       DOTNET_VERSION=${{ env.DOTNET_VERSION }}"
-          build-args="${build-args//'%'/'%25'}"
-          build-args="${build-args//$'\n'/'%0A'}"
-          build-args="${build-args//$'\r'/'%0D'}"
-          echo "::set-output name=output1::$build-args"
+          build_args="${build_args//'%'/'%25'}"
+          build_args="${build_args//$'\n'/'%0A'}"
+          build_args="${build_args//$'\r'/'%0D'}"
+          echo "::set-output name=build_args::$build_args"
 
     outputs:
       is_build_debug: ${{ steps.check.outputs.is_build_debug }}
-      build-args:     ${{ steps.build-args.outputs.build-args }}
+      build_args:     ${{ steps.build_args.outputs.build_args }}
       labels:         ${{ steps.webserver.outputs.labels }}
-      tags-webui:     ${{ steps.webui.outputs.tags }}
-      tags-debug:     ${{ steps.debug.outputs.tags }}
-      tags-deps:      ${{ steps.deps.outputs.tags }}
-      tags-webserver: ${{ steps.webserver.outputs.tags }}
-      tags-cli:       ${{ steps.cli.outputs.tags }}
+      tags_webui:     ${{ steps.webui.outputs.tags }}
+      tags_debug:     ${{ steps.debug.outputs.tags }}
+      tags_deps:      ${{ steps.deps.outputs.tags }}
+      tags_webserver: ${{ steps.webserver.outputs.tags }}
+      tags_cli:       ${{ steps.cli.outputs.tags }}
 
 
 
@@ -154,20 +157,20 @@ jobs:
       - name: Metadata for alpine os images
         id: alpine
         run: |
-          echo ::set-output name=tags-webui::$(    echo "${{ needs.debian.outputs.tags-webui     }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
-          echo ::set-output name=tags-debug::$(    echo "${{ needs.debian.outputs.tags-debug     }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
-          echo ::set-output name=tags-deps::$(     echo "${{ needs.debian.outputs.tags-deps      }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
-          echo ::set-output name=tags-webserver::$(echo "${{ needs.debian.outputs.tags-webserver }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
-          echo ::set-output name=tags-cli::$(      echo "${{ needs.debian.outputs.tags-cli       }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
+          echo ::set-output name=tags_webui::$(    echo "${{ needs.debian.outputs.tags_webui     }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
+          echo ::set-output name=tags_debug::$(    echo "${{ needs.debian.outputs.tags_debug     }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
+          echo ::set-output name=tags_deps::$(     echo "${{ needs.debian.outputs.tags_deps      }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
+          echo ::set-output name=tags_webserver::$(echo "${{ needs.debian.outputs.tags_webserver }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
+          echo ::set-output name=tags_cli::$(      echo "${{ needs.debian.outputs.tags_cli       }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
     outputs:
       is_build_debug: ${{ needs.debian.outputs.is_build_debug }}
-      build-args:     ${{ needs.debian.outputs.build-args }}
+      build_args:     ${{ needs.debian.outputs.build_args }}
       labels:         ${{ needs.debian.outputs.labels }}
-      tags-webui:     ${{ steps.alpine.outputs.tags-webui }}
-      tags-debug:     ${{ steps.alpine.outputs.tags-debug }}
-      tags-deps:      ${{ steps.alpine.outputs.tags-deps }}
-      tags-webserver: ${{ steps.alpine.outputs.tags-webserver }}
-      tags-cli:       ${{ steps.alpine.outputs.tags-cli }}
+      tags_webui:     ${{ steps.alpine.outputs.tags_webui }}
+      tags_debug:     ${{ steps.alpine.outputs.tags_debug }}
+      tags_deps:      ${{ steps.alpine.outputs.tags_deps }}
+      tags_webserver: ${{ steps.alpine.outputs.tags_webserver }}
+      tags_cli:       ${{ steps.alpine.outputs.tags_cli }}
 
 
 
@@ -196,8 +199,8 @@ jobs:
 # ./prepare.sh 的参数为 -alpine、-focal 或其他 docker-dotnet 标签后缀
       - name: Prepare
         id: prepare
-        run: |
-          cd Docker/ && chmod +x $(find . -name "*.sh") && ./prepare.sh "-alpine"
+        run: |./**/test.sh
+          chmod +x $(find . -name "*.sh") cd Docker/ && ./prepare.sh "-alpine"
 
       - name: Build and push WEBUI
         if: false
@@ -206,9 +209,9 @@ jobs:
           context: ${{ env.BUILD_PATH }}/${{ env.FRONT_END_PROJECT }}/
           file: ${{ env.BUILD_PATH }}/${{ env.FRONT_END_PROJECT }}/Dockerfile
           platforms: linux/amd64, linux/arm64, linux/arm/v7, linux/386, linux/arm/v6, linux/ppc64le, linux/s390x
-          build-args: ${{ needs.alpine.outputs.build-args }}
+          build-args: ${{ needs.alpine.outputs.build_args }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.alpine.outputs.tags-webui }}
+          tags: ${{ needs.alpine.outputs.tags_webui }}
           labels: ${{ needs.alpine.outputs.labels }}
 
       - name: Build and push Debug
@@ -218,9 +221,9 @@ jobs:
           context: ${{ env.BUILD_PATH }}/${{ env.DEBUG_PROJECT }}/
           file: ${{ env.BUILD_PATH }}/${{ env.DEBUG_PROJECT }}/Dockerfile
           platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.alpine.outputs.build-args }}
+          build-args: ${{ needs.alpine.outputs.build_args }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.alpine.outputs.tags-debug }}
+          tags: ${{ needs.alpine.outputs.tags_debug }}
           labels: ${{ needs.alpine.outputs.labels }}
 
       - name: Build and push Deps images
@@ -229,9 +232,9 @@ jobs:
           context: ${{ env.BUILD_PATH }}/${{ env.DEPS_PROJECT }}/
           file: ${{ env.BUILD_PATH }}/${{ env.DEPS_PROJECT }}/Dockerfile
           platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.alpine.outputs.build-args }}
+          build-args: ${{ needs.alpine.outputs.build_args }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.alpine.outputs.tags-deps }}
+          tags: ${{ needs.alpine.outputs.tags_deps }}
           labels: ${{ needs.alpine.outputs.labels }}
 
       - name: Build and push CLI
@@ -240,9 +243,9 @@ jobs:
           context: ${{ env.BUILD_PATH }}/${{ env.CLI_PROJECT }}/
           file: ${{ env.BUILD_PATH }}/${{ env.CLI_PROJECT }}/Dockerfile
           platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.alpine.outputs.build-args }}
+          build-args: ${{ needs.alpine.outputs.build_args }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.alpine.outputs.tags-cli }}
+          tags: ${{ needs.alpine.outputs.tags_cli }}
           labels: ${{ needs.alpine.outputs.labels }}
 
       - name: Build and push WEBServer
@@ -251,9 +254,9 @@ jobs:
           context: ${{ env.BUILD_PATH }}/${{ env.BACK_END_PROJECT }}/
           file: ${{ env.BUILD_PATH }}/${{ env.BACK_END_PROJECT }}/Dockerfile
           platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.alpine.outputs.build-args }}
+          build-args: ${{ needs.alpine.outputs.build_args }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.alpine.outputs.tags-webserver }}
+          tags: ${{ needs.alpine.outputs.tags_webserver }}
           labels: ${{ needs.alpine.outputs.labels }}
 
 
@@ -283,7 +286,7 @@ jobs:
       - name: Prepare
         id: prepare
         run: |
-          cd Docker/ && chmod +x $(find . -name "*.sh") && ./prepare.sh
+          cd Docker/ddtv/ && chmod +x $(find . -name "*.sh") && ./prepare.sh
 
       - name: Build and push Debug
         if: ${{ needs.debian.outputs.is_build_debug == 'true' || github.event_name == 'push' }}
@@ -292,9 +295,9 @@ jobs:
           context: ${{ env.BUILD_PATH }}/${{ env.DEBUG_PROJECT }}/
           file: ${{ env.BUILD_PATH }}/${{ env.DEBUG_PROJECT }}/Dockerfile
           platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.debian.outputs.build-args }}
+          build-args: ${{ needs.debian.outputs.build_args }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.debian.outputs.tags-debug }}
+          tags: ${{ needs.debian.outputs.tags_debug }}
           labels: ${{ needs.debian.outputs.labels }}
 
       - name: Build and push Deps images
@@ -303,9 +306,9 @@ jobs:
           context: ${{ env.BUILD_PATH }}/${{ env.DEPS_PROJECT }}/
           file: ${{ env.BUILD_PATH }}/${{ env.DEPS_PROJECT }}/Dockerfile
           platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.debian.outputs.build-args }}
+          build-args: ${{ needs.debian.outputs.build_args }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.debian.outputs.tags-deps }}
+          tags: ${{ needs.debian.outputs.tags_deps }}
           labels: ${{ needs.debian.outputs.labels }}
 
       - name: Build and push CLI
@@ -314,9 +317,9 @@ jobs:
           context: ${{ env.BUILD_PATH }}/${{ env.CLI_PROJECT }}/
           file: ${{ env.BUILD_PATH }}/${{ env.CLI_PROJECT }}/Dockerfile
           platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.debian.outputs.build-args }}
+          build-args: ${{ needs.debian.outputs.build_args }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.debian.outputs.tags-cli }}
+          tags: ${{ needs.debian.outputs.tags_cli }}
           labels: ${{ needs.debian.outputs.labels }}
 
       - name: Build and push WEBServer
@@ -325,7 +328,7 @@ jobs:
           context: ${{ env.BUILD_PATH }}/${{ env.BACK_END_PROJECT }}/
           file: ${{ env.BUILD_PATH }}/${{ env.BACK_END_PROJECT }}/Dockerfile
           platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.debian.outputs.build-args }}
+          build-args: ${{ needs.debian.outputs.build_args }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.debian.outputs.tags-webserver }}
+          tags: ${{ needs.debian.outputs.tags_webserver }}
           labels: ${{ needs.debian.outputs.labels }}
