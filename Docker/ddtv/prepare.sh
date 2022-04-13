@@ -9,7 +9,6 @@ for Dockerfile in ./**/Dockerfile; do
 done
 
 # 下载 DDTV
-
 wget -q https://api.github.com/repos/CHKZL/DDTV/releases/latest &&
      echo "latest downloaded"
 wget -q -O CLI.zip       "$(cat < latest | awk '/download_url/{print $4}' FS='"' | grep -i CLI   )" &&
@@ -31,26 +30,24 @@ unzip WEBServer.zip "${Server_DLL_File_Path%/*}/*"
 # mv -v dist/* \
 #          nginx/DDTV_Backups/static
 
-# cd "${Server_DLL_File_Path%/*}/" && dotnet DDTV_Update.dll docker && cd -
-
-mkdir -vp Deps/root                   \
-          Debug/root                  \
-          CLI/root/DDTV               \
-          CLI/root/DDTV_Backups       \
-          WEBServer/root/DDTV         \
-          WEBServer/root/DDTV_Backups \
-          WEBUI/root/DDTV             \
-          WEBUI/root/DDTV_Backups
+mkdir -vp debug/root                  \
+          deps/root                   \
+          cli/root/DDTV               \
+          cli/root/DDTV_Backups       \
+          webserver/root/DDTV         \
+          webserver/root/DDTV_Backups \
+          webui/root/DDTV             \
+          webui/root/DDTV_Backups
 
 mv -v "${CLI_DLL_File_Path%/*}"/*     \
-          CLI/root/DDTV_Backups
+          cli/root/DDTV_Backups
 mv -v "${Server_DLL_File_Path%/*}"/*  \
-          WEBServer/root/DDTV_Backups
+          webserver/root/DDTV_Backups
 
-echo Deps/root      \
-     Debug/root     | xargs -n 1 cp -v ./install-deps.sh
+echo deps/root      \
+     debug/root     | xargs -n 1 cp -v ./install-deps.sh
 
-echo CLI/root       \
+echo cli/root       \
      Debug/root     \
-     WEBUI/root/docker-entrypoint.d/01-checkup.sh \
-     WEBServer/root | xargs -n 1 cp -v ./checkup.sh
+     webui/root/docker-entrypoint.d/01-checkup.sh \
+     webserver/root | xargs -n 1 cp -v ./checkup.sh

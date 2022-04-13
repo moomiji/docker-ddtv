@@ -12,7 +12,7 @@ on:
       - '!Docker/README.md'
       - '.github/workflows/DDTV_Docker_Release.yml'
 
-# *_PROJECT 为项目名兼路径名
+# *_PROJECT 为项目名兼路径名，更改后记得修改 文件存放位置 和 prepare.sh
 # $DEBUG_PROJECT 不用作仓库名，其仓库名为 $DEPS_PROJECT，标签为 debug、debug-alpine
 env:
   DOTNET_VERSION: '6.0' # 只允许 *.*
@@ -23,6 +23,9 @@ env:
   BACK_END_PROJECT: ddtv/webserver
   FRONT_END_PROJECT: ddtv/webui
   PLATFORMS: linux/amd64, linux/arm64, linux/arm/v7
+
+
+
 
 jobs:
   debian:
@@ -132,7 +135,7 @@ jobs:
           build_args="${build_args//'%'/'%25'}"
           build_args="${build_args//$'\n'/'%0A'}"
           build_args="${build_args//$'\r'/'%0D'}"
-          echo "::set-output name=output1::$build_args"
+          echo "::set-output name=build_args::$build_args"
 
     outputs:
       is_build_debug: ${{ steps.check.outputs.is_build_debug }}
@@ -196,8 +199,8 @@ jobs:
 # ./prepare.sh 的参数为 -alpine、-focal 或其他 docker-dotnet 标签后缀
       - name: Prepare
         id: prepare
-        run: |
-          cd Docker/ && chmod +x $(find . -name "*.sh") && ./prepare.sh "-alpine"
+        run: |./**/test.sh
+          chmod +x $(find . -name "*.sh") cd Docker/ && ./prepare.sh "-alpine"
 
       - name: Build and push WEBUI
         if: false
@@ -283,7 +286,7 @@ jobs:
       - name: Prepare
         id: prepare
         run: |
-          cd Docker/ && chmod +x $(find . -name "*.sh") && ./prepare.sh
+          cd Docker/ddtv/ && chmod +x $(find . -name "*.sh") && ./prepare.sh
 
       - name: Build and push Debug
         if: ${{ needs.debian.outputs.is_build_debug == 'true' || github.event_name == 'push' }}
