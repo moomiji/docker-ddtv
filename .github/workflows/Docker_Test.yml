@@ -16,7 +16,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     outputs:
-      a.output1: ${{ steps.set-output.outputs.output1 }}
+      output1: ${{ steps.set-output.outputs.output1 }}
     steps:
       - id: set-output
         run: |
@@ -35,7 +35,7 @@ jobs:
 
       - id: test1
         run: |
-          echo "${{ needs.test.outputs.a.output1 }} wtf"
+          echo "${{ needs.test.outputs.output1 }} wtf"
 
       - name: Metadata for test images
         if: false
