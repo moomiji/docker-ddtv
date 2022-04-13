@@ -1,4 +1,5 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0
+ARG DOTNET_VERSION
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_VERSION}
 ENV DDTV_Docker_Project=Debug \
     PATH="/tools:${PATH}" \
     Logging__Console__FormatterName= \
