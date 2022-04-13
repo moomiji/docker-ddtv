@@ -6,59 +6,18 @@ on:
     branches: 
       - test
 
-env:
-  DDTVMOMIJI: ddtv # 合并删掉
-####################  WEBServer: webserver
-  WEBUI: webui
-  DOTNET_VERSION: '6.0.x'
-
 jobs:
-  test:
+  job1:
     runs-on: ubuntu-latest
     outputs:
-      a.output1: ${{ steps.set-output.outputs.output1 }}
+      output1: ${{ steps.set-output.outputs.output1 }}
     steps:
       - id: set-output
         run: |
                     echo "::set-output name=output1::'Hello World'"
-  publish:
-    needs: [test]
+  job2:
     runs-on: ubuntu-latest
+    needs: [job1]
     steps:
-      - name: Prepare # 输出版本(exp: ddtv_version="Ver3.0.1.9" ddtv_version_major="3.0") | find . -name "*.sh" 不允许有带空格的sh文件
-        id: prepare
-        run: |
-          Version=$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
-          Version_major=${Version%%.*} && Version_major=${Version_major:0-1}
-          Version_minor=${Version#*.}  && Version_minor=${Version_minor:0:1}
-          echo ::set-output name=ddtv_version::${Version}
-          echo ::set-output name=ddtv_version_major::${Version_major}.${Version_minor}
-
-      - id: test1
-        run: |
-          echo "${{ needs.test.outputs.a.output1 }} wtf"
-
-      - name: Metadata for test images
-        if: false
-        id: test
-        uses: docker/metadata-action@v3
-        with:
-          images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DDTVMOMIJI }}${{ env.WEBServer }}
-            ghcr.io/${{ github.actor }}/ddtv${{ env.WEBServer }}
-          flavor: |
-            latest=true
-          tags: |
-            type=raw,value=${{ steps.prepare.outputs.ddtv_version }}
-            type=raw,value=${{ steps.prepare.outputs.ddtv_version_major }}
-
-      - name: Build and push WEBServer(debian)
-        if: false
-        uses: docker/build-push-action@v2
-        with:
-          context: Docker/WEBServer/
-          file: Docker/WEBServer/Dockerfile.debian
-          platforms: linux/amd64
-          push: false
-          tags: ${{ steps.test.outputs.tags }}
-          labels: $( echo "${{ steps.test.outputs.tags }}" | tr "\n" "," )
+      - run: |
+                    echo "Output1: ${{ needs.job1.outputs.output1 }}"
