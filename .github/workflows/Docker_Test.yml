@@ -12,14 +12,13 @@ jobs:
     outputs:
       output1: ${{ steps.set-output.outputs.output1 }}
     steps:
-      - uses: actions/github-script@v5
-        id: set-output
-        with:
-          script: |
-            # Assuming we have a `content` environment variable or output of previous step
-            core.setOutput("output1", `1`);
-            core.setOutput("output1", `2`);
-            core.setOutput("output1", `3`);
+      - id: set-output
+        run: |
+         a="1\n
+            2\n
+            3\n"
+         echo ::set-output name=output1::"${a//$'\n'/'%0A'}"
+
   job2:
     runs-on: ubuntu-latest
     needs: [job1]
