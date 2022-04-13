@@ -16,8 +16,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     outputs:
-      a.output1: 'wtf'
-
+      a.output1: ${{ steps.set-output.outputs.output1 }}
+    steps:
+      - id: set-output
+        run: |
+                    echo "::set-output name=output1::'Hello World'"
   publish:
     runs-on: ubuntu-latest
     steps:
