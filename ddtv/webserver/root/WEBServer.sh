@@ -37,7 +37,7 @@ esac
 . /etc/os-release
 echo "Running as UID ${PUID:=$UID} and GID ${PGID:=$PUID}."
 mkdir -vp "${DownloadPath:=./Rec/}" "${TmpPath:=./tmp/}"
-chown -vR "$PUID:$PGID" /DDTV "$DownloadPath" "$TmpPath"
+chown -R "$PUID:$PGID" /DDTV "$DownloadPath" "$TmpPath"
 
 if [[ "$ID" == "debian" ]]; then
     gosu $PUID:$PGID dotnet DDTV_WEB_Server.dll

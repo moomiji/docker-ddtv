@@ -12,7 +12,7 @@ RoomListConfig=${RoomListConfig:-"$DDTV_Path/RoomListConfig.json"}
 ARGs="$*"
 # Use in the the functions: eval $invocation
 invocation='say_verbose "Calling: ${FUNCNAME[0]}"'
-say_verbose() { [[ "$ARGs" == *"--verbose"* ]] && printf "\n%b\n" "[debug] $1" ; }
+say_verbose() { if [[ "$ARGs" == *"--verbose"* ]]; then printf "\n%b\n" "[debug] $1"; fi }
 
 checkup() {
     eval "$invocation"
@@ -53,7 +53,7 @@ checkup() {
         touch /NotIsFirstStart
         echo "IsFirstStart!"
     else
-        echo "NotIsFirstStart!"
+        echo "NotFirstStart!"
     fi
 }
 
@@ -65,7 +65,6 @@ check_dir_DDTV() {
     if [ -d "$Backups_Path" ]; then
         shopt -s globstar nullglob
         for file in "$Backups_Path"/**; do
-            say_verbose "\$file is: $file"
             if [ ! -e "${file//$Backups_Path/$DDTV_Path}" ]; then
                 cp -vur "$file" "${file//$Backups_Path/$DDTV_Path}"
             fi
