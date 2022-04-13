@@ -24,13 +24,13 @@ jobs:
           Version_minor=${Version#*.}  && Version_minor=${Version_minor:0:1}
           echo ::set-output name=ddtv_version::${Version}
           echo ::set-output name=ddtv_version_major::${Version_major}.${Version_minor}
-          echo ::set-output name=12::"|
+          echo ::set-output name=wtf::"|
             1
             2"
 
       - id: test1
         run: |
-          echo ${{ steps.prepare.outputs.12 }}
+          echo ${{ steps.prepare.outputs.wtf }}
 
       - name: Metadata for test images
         if: false
