@@ -196,10 +196,11 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
 # ./prepare.sh 的参数为 -alpine、-focal 或其他 docker-dotnet 标签后缀
+# 注意：find . -name "*.sh" 不允许有带空格的sh文件
       - name: Prepare
         id: prepare
         run: |
-          cd $(chmod -v +x ./**/*.sh | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")
+          cd $(chmod -v +x $(find . -name "*.sh") | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")
           ./prepare.sh "-alpine"
 
       - name: Build and push WEBUI
@@ -282,10 +283,11 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
 # ./prepare.sh 的参数为 -alpine、-focal 或其他 docker-dotnet 标签后缀
+# 注意：find . -name "*.sh" 不允许有带空格的sh文件
       - name: Prepare
         id: prepare
         run: |
-          cd $(chmod -v +x ./**/*.sh | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")
+          cd $(chmod -v +x $(find . -name "*.sh") | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")
           ./prepare.sh
 
       - name: Build and push Debug
