@@ -16,12 +16,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.set-output.outputs.output1 }}
+      a.output1: ${{ steps.set-output.outputs.output1 }}
     steps:
       - id: set-output
         run: |
                     echo "::set-output name=output1::'Hello World'"
   publish:
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - name: Prepare # 输出版本(exp: ddtv_version="Ver3.0.1.9" ddtv_version_major="3.0") | find . -name "*.sh" 不允许有带空格的sh文件
@@ -35,7 +36,7 @@ jobs:
 
       - id: test1
         run: |
-          echo "${{ needs.test.outputs.output1 }} wtf"
+          echo "${{ needs.test.outputs.a.output1 }} wtf"
 
       - name: Metadata for test images
         if: false
