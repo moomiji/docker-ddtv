@@ -7,17 +7,22 @@ on:
       - test
 
 jobs:
-  test:
+  job1:
     runs-on: ubuntu-latest
     outputs:
-      a.output1: ${{ steps.set-output.outputs.output1 }}
+      output1: ${{ steps.set-output.outputs.output1 }}
     steps:
-      - id: set-output
-        run: |
-                    echo ::set-output name=output1::'Hello World'
+      - uses: actions/github-script@v5
+        id: set-output
+        with:
+          script: |
+            # Assuming we have a `content` environment variable or output of previous step
+            core.setOutput("output1", `1`);
+            core.setOutput("output1", `2`);
+            core.setOutput("output1", `3`);
   job2:
     runs-on: ubuntu-latest
-    needs: [test]
+    needs: [job1]
     steps:
       - run: |
-                    echo Output1: ${{ needs.test.outputs.a.output1 }}
+                    echo "Output1: ${{ needs.job1.outputs.output1 }}"
