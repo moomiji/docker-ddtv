@@ -195,12 +195,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-# 注意：find . -name "*.sh" 不允许有带空格的sh文件
 # ./prepare.sh 的参数为 -alpine、-focal 或其他 docker-dotnet 标签后缀
       - name: Prepare
         id: prepare
-        run: |./**/test.sh
-          chmod +x $(find . -name "*.sh") cd Docker/ && ./prepare.sh "-alpine"
+        run: |
+          cd $(chmod -v +x ./**/*.sh | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")
+          ./prepare.sh "-alpine"
 
       - name: Build and push WEBUI
         if: false
@@ -281,12 +281,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-# 注意：find . -name "*.sh" 不允许有带空格的sh文件
 # ./prepare.sh 的参数为 -alpine、-focal 或其他 docker-dotnet 标签后缀
       - name: Prepare
         id: prepare
         run: |
-          cd Docker/ddtv/ && chmod +x $(find . -name "*.sh") && ./prepare.sh
+          cd $(chmod -v +x ./**/*.sh | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")
+          ./prepare.sh
 
       - name: Build and push Debug
         if: ${{ needs.debian.outputs.is_build_debug == 'true' || github.event_name == 'push' }}
