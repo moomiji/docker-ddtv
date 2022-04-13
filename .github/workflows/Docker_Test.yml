@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.set-output.outputs.output1 }}
+      a.output1: ${{ steps.set-output.outputs.output1 }}
     steps:
       - id: set-output
         run: |
@@ -20,4 +20,4 @@ jobs:
     needs: [test]
     steps:
       - run: |
-                    echo Output1: ${{ needs.test.outputs.output1 }}
+                    echo Output1: ${{ needs.test.outputs.a.output1 }}
