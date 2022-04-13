@@ -2,25 +2,27 @@
 set -e; set -u
 
 # 复用 Dockerfile
+# $* 为 -alpine、-focal 或其他 docker-dotnet 标签后缀
 shopt -s globstar nullglob
 for Dockerfile in ./**/Dockerfile; do
-    cp "$Dockerfile" "$Dockerfile".alpine
-    sed -i '/FROM/s/$/&-alpine/g' "$Dockerfile".alpine
+    sed -i "/FROM/s/$/&$*/g" "$Dockerfile"
 done
 
 # 下载 DDTV
 
 wget -q https://api.github.com/repos/CHKZL/DDTV/releases/latest &&
-    echo "latest downloaded"
-wget -q -O CLI.zip "$(cat < latest | awk '/download_url/{print $4}' FS='"' | grep -i CLI)" &&
-    echo "CLI.zip downloaded"
+     echo "latest downloaded"
+wget -q -O CLI.zip       "$(cat < latest | awk '/download_url/{print $4}' FS='"' | grep -i CLI   )" &&
+     echo "$(cat < latest | awk '/name/{print $4}' FS='"' | grep -i CLI   ) downloaded"
 wget -q -O WEBServer.zip "$(cat < latest | awk '/download_url/{print $4}' FS='"' | grep -i Server)" &&
-    echo "WEBServer.zip downloaded"
-CLI_DLL_File_Path=$(   unzip -l CLI.zip       | awk "/dll/{print \$4;exit}" FS=' ') &&
-    echo "CLI DLL file path geted"
-Server_DLL_File_Path=$(unzip -l WEBServer.zip | awk "/dll/{print \$4;exit}" FS=' ') &&
-    echo "WEBServer DLL file path geted"
-unzip CLI.zip "${CLI_DLL_File_Path%/*}/*"
+     echo "$(cat < latest | awk '/name/{print $4}' FS='"' | grep -i Server) downloaded"
+
+CLI_DLL_File_Path=$(   unzip -l CLI.zip       | awk "/dll/{print \$4;exit}" FS=' ' || exit 1) &&
+     echo "CLI DLL file path geted"
+Server_DLL_File_Path=$(unzip -l WEBServer.zip | awk "/dll/{print \$4;exit}" FS=' ' || exit 1) &&
+     echo "WEBServer DLL file path geted"
+
+unzip CLI.zip       "${CLI_DLL_File_Path%/*}/*"
 unzip WEBServer.zip "${Server_DLL_File_Path%/*}/*"
 
 # wget -q "https://github.com/hegugu-ng/DDTV_WEBUI/releases/latest/download/$(wget -qO - https://raw.githubusercontent.com/hegugu-ng/DDTV_WEBUI/main/.github/workflows/npm-publish-github-packages.yml | awk "/files:.*\.zip/{print \$2;exit}" FS='/')"
