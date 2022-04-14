@@ -13,5 +13,15 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          curl -L https://api.github.com/repos/CHKZL/DDTV/releases/latest
+      - name: Metadata for images
+        id: metadata
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.images }}
+          flavor: |
+            latest=true
+            suffix=-alpine,onlatest=true
+          tags: |
+            type=raw,value=${{ inputs.verall }}
+            type=raw,value=3.0
+            
