@@ -7,11 +7,11 @@ on:
       - test
 
 env:
-  images: ddtv/debug
+  images: debug
 
 jobs:
   job1:
     runs-on: ubuntu-latest
     steps:
       - run: |
-                    echo "${{ env.images != *"debug"* }}"
+                    echo "${{ env.images != "debug" }}"
