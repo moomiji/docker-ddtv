@@ -1,0 +1,16 @@
+on:
+  workflow_call:
+    inputs:
+      test:
+        type: string
+      t:
+        type: string
+
+jobs:
+  Build and push:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+        echo ${{ inputs.test }}
+        echo ${{ inputs.t }}
+        echo fin
