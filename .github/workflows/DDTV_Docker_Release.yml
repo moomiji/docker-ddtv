@@ -166,7 +166,7 @@ jobs:
       is_build_debug: ${{ needs.debian.outputs.is_build_debug }}
       build_args:     ${{ needs.debian.outputs.build_args }}
       labels:         ${{ needs.debian.outputs.labels }}
-      tags_webui:     ${{ steps.alpine.outputs.tags_webui }}
+      tags_webui:     ${{ needs.debian.outputs.tags_webui }}
       tags_debug:     ${{ steps.alpine.outputs.tags_debug }}
       tags_deps:      ${{ steps.alpine.outputs.tags_deps }}
       tags_webserver: ${{ steps.alpine.outputs.tags_webserver }}
