@@ -1,5 +1,6 @@
 name: DDTV_Test
 
+on:
   release:
     types: [released]
   watch: # 合并删除
