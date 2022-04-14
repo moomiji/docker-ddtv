@@ -14,4 +14,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-                    echo "${{ env.images != debug }}"
+                    echo "${{ env.images != 'debug' }}"
