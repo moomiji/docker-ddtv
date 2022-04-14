@@ -11,15 +11,11 @@ on:
     paths:
       - '.github/**'
 
+env:
+  w: 1
+
 jobs:
   job1:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref_name }}
-      - name: Metadata for images
-        id: metadata
-        uses: ./.github/workflows/test.yml
-        with:
-          test: test
+    uses: ./.github/workflows/test.yml
+    with:
+      test: test
