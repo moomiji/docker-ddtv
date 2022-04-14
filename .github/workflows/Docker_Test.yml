@@ -8,11 +8,6 @@ on:
   push:
     branches: 
       - test
-    paths:
-      - '.github/**'
-
-env:
-  w: 1
 
 jobs:
   job1:
