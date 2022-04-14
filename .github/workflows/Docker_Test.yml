@@ -1,13 +1,14 @@
 name: DDTV_Test
 
-on:
-  workflow_dispatch:
+  release:
+    types: [released]
+  watch: # 合并删除
+    types: [started]
   push:
     branches: 
       - test
-
-env:
-  images: debug
+    paths:
+      - '.github/**'
 
 jobs:
   job1:
@@ -15,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: 'test'
+          ref: ${{ github.ref_name }}
       - name: Metadata for images
         id: metadata
         uses: ./.github/workflows/test.yml
