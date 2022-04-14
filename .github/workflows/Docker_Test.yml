@@ -15,14 +15,6 @@ jobs:
     steps:
       - name: Metadata for images
         id: metadata
-        uses: docker/metadata-action@v3
+        uses: ./.github/workflows/test.yml
         with:
-          images: ${{ env.images }}
-          flavor: |
-            latest=true
-            suffix=-alpine,onlatest=true
-          tags: |
-            ${{ inputs.verall }}
-            type=raw,value=3.0
-            ${{ inputs.verall }}
-            
+          test: test
