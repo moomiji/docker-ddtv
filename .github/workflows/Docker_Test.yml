@@ -22,6 +22,7 @@ jobs:
             latest=true
             suffix=-alpine,onlatest=true
           tags: |
-            type=raw,value=${{ inputs.verall }}
+            ${{ inputs.verall }}
             type=raw,value=3.0
+            ${{ inputs.verall }}
             
