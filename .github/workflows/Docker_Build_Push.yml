@@ -41,7 +41,7 @@ jobs:
 # $2: -alpine 或 -focal 等 docker-dotnet 标签系统后缀
       - name: Prepare
         run: |
-          cd $(shopt -s globstar nullglob && chmod -v +x Docker/**/*.sh" | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")
+          cd "$(shopt -s globstar nullglob && chmod -v +x Docker/**/*.sh | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")"
           ./prepare.sh "${{ inputs.context }}" "${{ env.os_id }}"
 
       - name: Metadata for images

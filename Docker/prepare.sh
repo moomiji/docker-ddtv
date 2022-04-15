@@ -27,7 +27,7 @@ wget -q https://api.github.com/repos/CHKZL/DDTV/releases/latest                 
      && wget -q  "$(cat < latest | awk '/download_url/{print $4}' FS='"' | grep -i $Keyword )"       \
      && File_Path=$(cat < latest | awk '/name/{print $4}' FS='"'         | grep -i $Keyword )        \
      && echo "$File_Path downloaded"                                                                 \
-     && File_Path=$(unzip $File_Path | awk "/$KeyFile/{print \$2}" | awk '{print $1}' FS="$KeyFile") \
+     && File_Path=$(unzip "$File_Path" | awk "/$KeyFile/{print \$2}" | awk '{print $1}' FS="$KeyFile") \
      && echo "File path geted"
 
 # 转移DDTV
