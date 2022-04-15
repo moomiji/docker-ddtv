@@ -1,4 +1,4 @@
 ARG DOTNET_VERSION
 FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_VERSION}
-COPY root/ /
+COPY install-deps.sh /
 RUN ./install-deps.sh

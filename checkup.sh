@@ -1,5 +1,5 @@
 #!/bin/bash
-# 在CLI WEBServer WEBUI (Debug) 启动之前，检查文件
+# 在CLI WEBServer WEBUI 启动之前，检查文件
 # 可用参数有:
 #   --verbose
 set -e; set -u
@@ -18,9 +18,6 @@ checkup() {
     eval "$invocation"
 
     case ${DDTV_Docker_Project:-WTF} in
-        Debug)
-            check_tool_Debug
-            ;;
         CLI)
             check_dir_DDTV
             check_file_BiliUser_ini
@@ -45,7 +42,7 @@ checkup() {
             fi
             ;;
         *)
-            echo "错误的 DDTV Docker 项目!" && exit 1
+            echo "Error DDTV Docker Project!" && exit 1
             ;;
     esac
 
@@ -162,22 +159,6 @@ ${Shell:+"Shell=$Shell"}
         cat < "$File_Path" | grep -v '^$'
     )"
     fi
-}
-
-# 第一次启动 DDTV Debug
-check_tool_Debug() {
-    eval "$invocation"
-
-    dotnet tool install --no-cache --tool-path /tools dotnet-counters
-    dotnet tool install --no-cache --tool-path /tools dotnet-coverage
-    dotnet tool install --no-cache --tool-path /tools dotnet-dump
-    dotnet tool install --no-cache --tool-path /tools dotnet-gcdump
-    dotnet tool install --no-cache --tool-path /tools dotnet-trace
-    dotnet tool install --no-cache --tool-path /tools dotnet-stack
-    dotnet tool install --no-cache --tool-path /tools dotnet-symbol
-    dotnet tool install --no-cache --tool-path /tools dotnet-sos
-
-    echo "dotnet tool 安装完成。"
 }
 
 # 第一次启动配置前端文件config.js
