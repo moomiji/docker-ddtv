@@ -76,7 +76,7 @@ jobs:
       project:    ${{ needs.Prepare.outputs.CLI_PROJECT }}
       platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
-      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest-alpine
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest
 
   WEBServer_Alpine:
     needs: [Prepare, Deps_Alpine]
@@ -89,7 +89,7 @@ jobs:
       project:    ${{ needs.Prepare.outputs.BACK_END_PROJECT }}
       platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
-      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest-alpine
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest
 
 # debian
   Deps_Debian:
