@@ -29,9 +29,9 @@ jobs:
 # ./prepare.sh
 # $1: $*_PROJECT in DDTV_Docker_Release.yml#L16
 # $2: -alpine 或 -focal 等 docker-dotnet 标签系统后缀
+      - run: ${{ inputs.os_id == 'debian' }} || echo "os_id=-${{ inputs.os_id }}" >> $GITHUB_ENV
       - name: Prepare
         run: |
-          ${{ inputs.os_id == 'debian' }} || echo "os_id=-${{ inputs.os_id }}" >> $GITHUB_ENV
           echo "${{ inputs.context }}"
           echo "${{ env.os_id }}"
           echo "${{ inputs.images }}"
