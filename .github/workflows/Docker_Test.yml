@@ -125,7 +125,9 @@ jobs:
       os_id:      debian
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
+      images: |
+        ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
+        ${{ needs.Prepare.outputs.BACK_END_PROJECT }}
       context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
       platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
       build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest
