@@ -37,10 +37,10 @@ mv -v "$File_Path"               \
 mv -v ./checkup.sh               \
           "$1/root"
 
+shopt -s extglob
 if [ -n "${is_nginx:-}" ]; then
     mv -v "$1/root/checkup.sh"   \
           "$1/root/docker-entrypoint.d/01-checkup.sh"
     cd "$1/root/DDTV_Backups"
-    shopt -s extglob
     rm -rf !(keep|keep2)
 fi
