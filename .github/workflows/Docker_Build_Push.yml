@@ -3,7 +3,10 @@ name: Docker_Build_Push
 on:
   workflow_call:
     inputs:
-      context:
+      docker-dir:
+        required: true
+        type: string
+      project:
         required: true
         type: string
       os_id:
@@ -42,7 +45,7 @@ jobs:
       - name: Prepare
         run: |
           cd "$(shopt -s globstar nullglob && chmod -v +x Docker/**/*.sh | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")"
-          ./prepare.sh "${{ inputs.context }}" "${{ env.os_id }}"
+          ./prepare.sh "${{ inputs.project }}" "${{ env.os_id }}"
 
       - name: Metadata for images
         id: metadata
@@ -59,8 +62,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: ${{ inputs.context }}/
-          file:    ${{ inputs.context }}/Dockerfile
+          context: ${{ inputs.docker-dir }}/${{ inputs.project }}/
+          file:    ${{ inputs.docker-dir }}/${{ inputs.project }}/Dockerfile
           push:    true
           tags:    ${{ steps.metadata.outputs.tags }}
           labels:  ${{ steps.metadata.outputs.labels }}

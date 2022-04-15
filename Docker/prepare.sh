@@ -6,16 +6,16 @@ set -e; set -u
 # 复用 Dockerfile
 sed -i "/FROM/s/$/&${2:-}/g" "$1/Dockerfile"
 case $1 in
-    *deps)
+    ddtv/deps)
         exit 0
         ;;
-    *cli)
+    ddtv/cli)
         Keyword=CLI
         ;;
-    *webserver)
+    ddtv/webserver)
         Keyword=WEBServer
         ;;
-    *webui)
+    ddtv/webui)
         Keyword=WEBServer
         is_nginx=true
         ;;
