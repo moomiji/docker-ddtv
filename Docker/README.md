@@ -169,7 +169,7 @@ docker run -d -p 8080:80 \
 
 ## 常用的环境变量
 
-1. WEBServer、CLI、Debug 可用参数
+1. WEBServer、CLI 可用参数
 
 除前三个变量 `PUID` `PGID` `TZ` 的其他变量只在 `配置文件不存在（未挂载）时` 可用。
 

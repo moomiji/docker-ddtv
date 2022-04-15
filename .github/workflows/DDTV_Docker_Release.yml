@@ -11,326 +11,115 @@ on:
       - 'Docker/**'
       - '!Docker/README.md'
       - '.github/workflows/DDTV_Docker_Release.yml'
-
-# *_PROJECT 为项目名兼路径名，更改后记得修改 文件存放位置 和 prepare.sh
-# $DEBUG_PROJECT 不用作仓库名，其仓库名为 $DEPS_PROJECT，标签为 debug、debug-alpine
-env:
-  DOTNET_VERSION: '6.0' # 只允许 *.*
-  BUILD_PATH: ./Docker
-  DEBUG_PROJECT: ddtv/debug
-  DEPS_PROJECT: ddtv/deps
-  CLI_PROJECT: ddtv/cli
-  BACK_END_PROJECT: ddtv/webserver
-  FRONT_END_PROJECT: ddtv/webui
-  PLATFORMS: linux/amd64, linux/arm64, linux/arm/v7
-
-
-
+      - '.github/workflows/Docker_Build_Push.yml'
 
 jobs:
-  debian:
+  Prepare:
     runs-on: ubuntu-latest
     steps:
-# 登录至仓库
-# 如果 $DEPS_PROJECT 仓库为私有
-      - name: Login to ghcr.io
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-# 输出是否构建debug镜像
-      - name: Check
-        id: check
-        run: |
-              OldVer=$(docker history ghcr.io/${{ github.actor }}/ddtvwebserver:debug --no-trunc |
-                          awk '/DOTNET_SDK_VERSION=/{print $2}' FS='DOTNET_SDK_VERSION=' | awk '{print $1}')
-              NewVer=$(docker history mcr.microsoft.com/dotnet/sdk:6.0 --no-trunc |
-                          awk '/DOTNET_SDK_VERSION=/{print $2}' FS='DOTNET_SDK_VERSION=' | awk '{print $1}')
-              if [[ "$OldVer" != "" ]] &&
-                 [[ "$OldVer" == "$NewVer" ]]; then
-                  echo ::set-output name=is_build_debug::"false"
-              else
-                  echo ::set-output name=is_build_debug::"true"
-                  [[ "$OldVer" == "" || "$NewVer" == "" ]] && echo '[ERROR] $OldVer\$NewVer is Null'
-              fi
-# 输出版本
-#   all="Ver3.0.1.9"
-#   two="3.0"
-      - name: Version
+      - name: Output Version
         id: version
         run: |
           Version=$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
-          Version_major=${Version%%.*} && Version_major=${Version_major:0-1}
-          Version_minor=${Version#*.}  && Version_minor=${Version_minor:0:1}
-          echo ::set-output name=all::${Version}
-          echo ::set-output name=two::${Version_major}.${Version_minor}
-
-      - name: Metadata for WEBUI images
-        id: webui
-        uses: docker/metadata-action@v3
-        with:
-          images: |
-            ghcr.io/${{ github.actor }}/${{ env.FRONT_END_PROJECT }}
-          flavor: |
-            latest=true
-          tags: |
-            type=raw,value=${{ steps.version.outputs.all }}
-            type=raw,value=${{ steps.version.outputs.two }}
-
-      - name: Metadata for Debug images
-        id: debug
-        uses: docker/metadata-action@v3
-        with:
-          images: |
-            ghcr.io/${{ github.actor }}/${{ env.DEPS_PROJECT }}
-          flavor: |
-            latest=false
-          tags: |
-            type=raw,value=debug
-            type=raw,value=${{ steps.version.outputs.all }}-debug
-
-      - name: Metadata for Deps images
-        id: deps
-        uses: docker/metadata-action@v3
-        with:
-          images: |
-            ghcr.io/${{ github.actor }}/${{ env.DEPS_PROJECT }}
-          flavor: |
-            latest=true
-          tags: |
-            type=raw,value=${{ steps.version.outputs.all }}
-
-      - name: Metadata for WEBServer images
-        id: webserver
-        uses: docker/metadata-action@v3
-        with:
-          images: |
-            ghcr.io/${{ github.actor }}/${{ env.BACK_END_PROJECT }}
-          flavor: |
-            latest=true
-          tags: |
-            type=raw,value=${{ steps.version.outputs.all }}
-            type=raw,value=${{ steps.version.outputs.two }}
-
-      - name: Metadata for CLI images
-        id: cli
-        uses: docker/metadata-action@v3
-        with:
-          images: |
-            ghcr.io/${{ github.actor }}/${{ env.CLI_PROJECT }}
-          flavor: |
-            latest=true
-          tags: |
-            type=raw,value=${{ steps.version.outputs.all }}
-            type=raw,value=${{ steps.version.outputs.two }}
-
-      - name: Output build_args
-        id: build_args
-        run: |
-          echo "${{ steps.deps.outputs.tags }}" > argstmp
-          build_args="REPO=$(head -n1 argstmp)
-                      DOTNET_VERSION=${{ env.DOTNET_VERSION }}"
-          build_args="${build_args//'%'/'%25'}"
-          build_args="${build_args//$'\n'/'%0A'}"
-          build_args="${build_args//$'\r'/'%0D'}"
-          echo "::set-output name=build_args::$build_args"
-
+          Version_major=${Version%%.*} && Version_major=${Version_major//[^0-9]/}
+          Version_minor=${Version#*.}
+          echo ::set-output name=all::${Version_major}.${Version_minor}
+          echo ::set-output name=two::${Version_major}.${Version_minor%%.*}
     outputs:
-      is_build_debug: ${{ steps.check.outputs.is_build_debug }}
-      build_args:     ${{ steps.build_args.outputs.build_args }}
-      labels:         ${{ steps.webserver.outputs.labels }}
-      tags_webui:     ${{ steps.webui.outputs.tags }}
-      tags_debug:     ${{ steps.debug.outputs.tags }}
-      tags_deps:      ${{ steps.deps.outputs.tags }}
-      tags_webserver: ${{ steps.webserver.outputs.tags }}
-      tags_cli:       ${{ steps.cli.outputs.tags }}
+      verall: ${{ steps.version.outputs.all }} # all="3.0.1.9"
+      vertwo: ${{ steps.version.outputs.two }} # two="3.0"
+      DOTNET_VERSION: '6.0' # 只允许 '*.*'
+      BUILD_PATH: ./Docker
+      DEPS_PROJECT: ddtv/deps
+      CLI_PROJECT: ddtv/cli
+      BACK_END_PROJECT: ddtv/webserver
+      FRONT_END_PROJECT: ddtv/webui
+      PLATFORMS: linux/amd64, linux/arm64, linux/arm/v7
+# *_PROJECT 为项目名兼路径名，更改后记得修改 文件存放位置 和 prepare.sh
 
+# jobs.<job_id>.with.<with_id>上下文不支持env, 仅支持 github, needs
+  WEBUI_Nginx-Alpine:
+    if: false
+    needs: [Prepare]
+    uses: ./.github/workflows/Docker_Build_Push.yml
+    with:
+      os_id:      alpine
+      verall:     ${{ needs.Prepare.outputs.verall }}
+      vertwo:     ${{ needs.Prepare.outputs.vertwo }}
+      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.FRONT_END_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.FRONT_END_PROJECT }}
+      platforms:  linux/amd64, linux/arm64, linux/arm/v7, linux/386, linux/arm/v6, linux/ppc64le, linux/s390x
 
+# alpine
+  Deps_Alpine:
+    needs: [Prepare]
+    uses: ./.github/workflows/Docker_Build_Push.yml
+    with:
+      os_id:      alpine
+      verall:     ${{ needs.Prepare.outputs.verall }}
+      vertwo:     ${{ needs.Prepare.outputs.vertwo }}
+      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}
+      platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
+      build-args: DOTNET_VERSION=${{ needs.Prepare.outputs.DOTNET_VERSION }}
 
+  CLI_Alpine:
+    needs: [Prepare, Deps_Alpine]
+    uses: ./.github/workflows/Docker_Build_Push.yml
+    with:
+      os_id:      alpine
+      verall:     ${{ needs.Prepare.outputs.verall }}
+      vertwo:     ${{ needs.Prepare.outputs.vertwo }}
+      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.CLI_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.CLI_PROJECT }}
+      platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest-alpine
 
-  alpine:
-    runs-on: ubuntu-latest
-    needs: [debian]
-    steps:
-      - name: Metadata for alpine os images
-        id: alpine
-        run: |
-          echo ::set-output name=tags_webui::$(    echo "${{ needs.debian.outputs.tags_webui     }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
-          echo ::set-output name=tags_debug::$(    echo "${{ needs.debian.outputs.tags_debug     }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
-          echo ::set-output name=tags_deps::$(     echo "${{ needs.debian.outputs.tags_deps      }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
-          echo ::set-output name=tags_webserver::$(echo "${{ needs.debian.outputs.tags_webserver }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
-          echo ::set-output name=tags_cli::$(      echo "${{ needs.debian.outputs.tags_cli       }}-alpine" | sed ":a;N;s/\n/-alpine, /g;ta")
-    outputs:
-      is_build_debug: ${{ needs.debian.outputs.is_build_debug }}
-      build_args:     ${{ needs.debian.outputs.build_args }}
-      labels:         ${{ needs.debian.outputs.labels }}
-      tags_webui:     ${{ needs.debian.outputs.tags_webui }}
-      tags_debug:     ${{ steps.alpine.outputs.tags_debug }}
-      tags_deps:      ${{ steps.alpine.outputs.tags_deps }}
-      tags_webserver: ${{ steps.alpine.outputs.tags_webserver }}
-      tags_cli:       ${{ steps.alpine.outputs.tags_cli }}
+  WEBServer_Alpine:
+    needs: [Prepare, Deps_Alpine]
+    uses: ./.github/workflows/Docker_Build_Push.yml
+    with:
+      os_id:      alpine
+      verall:     ${{ needs.Prepare.outputs.verall }}
+      vertwo:     ${{ needs.Prepare.outputs.vertwo }}
+      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
+      platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest-alpine
 
+# debian
+  Deps_Debian:
+    needs: [Prepare]
+    uses: ./.github/workflows/Docker_Build_Push.yml
+    with:
+      os_id:      debian
+      verall:     ${{ needs.Prepare.outputs.verall }}
+      vertwo:     ${{ needs.Prepare.outputs.vertwo }}
+      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}
+      platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
+      build-args: DOTNET_VERSION=${{ needs.Prepare.outputs.DOTNET_VERSION }}
 
+  CLI_Debian:
+    needs: [Prepare, Deps_Debian]
+    uses: ./.github/workflows/Docker_Build_Push.yml
+    with:
+      os_id:      debian
+      verall:     ${{ needs.Prepare.outputs.verall }}
+      vertwo:     ${{ needs.Prepare.outputs.vertwo }}
+      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.CLI_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.CLI_PROJECT }}
+      platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest
 
-
-# WEBUI 为 alpine os 镜像
-  ReleaseAlpine:
-    runs-on: ubuntu-latest
-    needs: [alpine]
-    steps:
-      - uses: actions/checkout@v2
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-#      - uses: actions/setup-dotnet@v1
-#        with:
-#          dotnet-version: ${{ env.DOTNET_VERSION }}
-# 登录至仓库
-      - name: Login to ghcr.io
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-# ./prepare.sh 的参数为 -alpine、-focal 或其他 docker-dotnet 标签后缀
-# 注意：find . -name "*.sh" 不允许有带空格的sh文件
-      - name: Prepare
-        id: prepare
-        run: |
-          cd $(chmod -v +x $(find . -name "*.sh") | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")
-          ./prepare.sh "-alpine"
-
-      - name: Build and push WEBUI
-        if: false
-        uses: docker/build-push-action@v2
-        with:
-          context: ${{ env.BUILD_PATH }}/${{ env.FRONT_END_PROJECT }}/
-          file: ${{ env.BUILD_PATH }}/${{ env.FRONT_END_PROJECT }}/Dockerfile
-          platforms: linux/amd64, linux/arm64, linux/arm/v7, linux/386, linux/arm/v6, linux/ppc64le, linux/s390x
-          build-args: ${{ needs.alpine.outputs.build_args }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.alpine.outputs.tags_webui }}
-          labels: ${{ needs.alpine.outputs.labels }}
-
-      - name: Build and push Debug
-        if: ${{ needs.alpine.outputs.is_build_debug == 'true' || github.event_name == 'push' }}
-        uses: docker/build-push-action@v2
-        with:
-          context: ${{ env.BUILD_PATH }}/${{ env.DEBUG_PROJECT }}/
-          file: ${{ env.BUILD_PATH }}/${{ env.DEBUG_PROJECT }}/Dockerfile
-          platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.alpine.outputs.build_args }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.alpine.outputs.tags_debug }}
-          labels: ${{ needs.alpine.outputs.labels }}
-
-      - name: Build and push Deps images
-        uses: docker/build-push-action@v2
-        with:
-          context: ${{ env.BUILD_PATH }}/${{ env.DEPS_PROJECT }}/
-          file: ${{ env.BUILD_PATH }}/${{ env.DEPS_PROJECT }}/Dockerfile
-          platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.alpine.outputs.build_args }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.alpine.outputs.tags_deps }}
-          labels: ${{ needs.alpine.outputs.labels }}
-
-      - name: Build and push CLI
-        uses: docker/build-push-action@v2
-        with:
-          context: ${{ env.BUILD_PATH }}/${{ env.CLI_PROJECT }}/
-          file: ${{ env.BUILD_PATH }}/${{ env.CLI_PROJECT }}/Dockerfile
-          platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.alpine.outputs.build_args }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.alpine.outputs.tags_cli }}
-          labels: ${{ needs.alpine.outputs.labels }}
-
-      - name: Build and push WEBServer
-        uses: docker/build-push-action@v2
-        with:
-          context: ${{ env.BUILD_PATH }}/${{ env.BACK_END_PROJECT }}/
-          file: ${{ env.BUILD_PATH }}/${{ env.BACK_END_PROJECT }}/Dockerfile
-          platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.alpine.outputs.build_args }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.alpine.outputs.tags_webserver }}
-          labels: ${{ needs.alpine.outputs.labels }}
-
-
-
-
-  ReleaseDebian:
-    runs-on: ubuntu-latest
-    needs: [debian]
-    steps:
-      - uses: actions/checkout@v2
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-#      - uses: actions/setup-dotnet@v1
-#        with:
-#          dotnet-version: ${{ env.DOTNET_VERSION }}
-# 登录至仓库
-      - name: Login to ghcr.io
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-# ./prepare.sh 的参数为 -alpine、-focal 或其他 docker-dotnet 标签后缀
-# 注意：find . -name "*.sh" 不允许有带空格的sh文件
-      - name: Prepare
-        id: prepare
-        run: |
-          cd $(chmod -v +x $(find . -name "*.sh") | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")
-          ./prepare.sh
-
-      - name: Build and push Debug
-        if: ${{ needs.debian.outputs.is_build_debug == 'true' || github.event_name == 'push' }}
-        uses: docker/build-push-action@v2
-        with:
-          context: ${{ env.BUILD_PATH }}/${{ env.DEBUG_PROJECT }}/
-          file: ${{ env.BUILD_PATH }}/${{ env.DEBUG_PROJECT }}/Dockerfile
-          platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.debian.outputs.build_args }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.debian.outputs.tags_debug }}
-          labels: ${{ needs.debian.outputs.labels }}
-
-      - name: Build and push Deps images
-        uses: docker/build-push-action@v2
-        with:
-          context: ${{ env.BUILD_PATH }}/${{ env.DEPS_PROJECT }}/
-          file: ${{ env.BUILD_PATH }}/${{ env.DEPS_PROJECT }}/Dockerfile
-          platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.debian.outputs.build_args }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.debian.outputs.tags_deps }}
-          labels: ${{ needs.debian.outputs.labels }}
-
-      - name: Build and push CLI
-        uses: docker/build-push-action@v2
-        with:
-          context: ${{ env.BUILD_PATH }}/${{ env.CLI_PROJECT }}/
-          file: ${{ env.BUILD_PATH }}/${{ env.CLI_PROJECT }}/Dockerfile
-          platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.debian.outputs.build_args }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.debian.outputs.tags_cli }}
-          labels: ${{ needs.debian.outputs.labels }}
-
-      - name: Build and push WEBServer
-        uses: docker/build-push-action@v2
-        with:
-          context: ${{ env.BUILD_PATH }}/${{ env.BACK_END_PROJECT }}/
-          file: ${{ env.BUILD_PATH }}/${{ env.BACK_END_PROJECT }}/Dockerfile
-          platforms: ${{ env.PLATFORMS }}
-          build-args: ${{ needs.debian.outputs.build_args }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.debian.outputs.tags_webserver }}
-          labels: ${{ needs.debian.outputs.labels }}
+  WEBServer_Debian:
+    needs: [Prepare, Deps_Debian]
+    uses: ./.github/workflows/Docker_Build_Push.yml
+    with:
+      os_id:      debian
+      verall:     ${{ needs.Prepare.outputs.verall }}
+      vertwo:     ${{ needs.Prepare.outputs.vertwo }}
+      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
+      platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest
