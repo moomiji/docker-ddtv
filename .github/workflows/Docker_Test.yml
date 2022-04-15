@@ -43,8 +43,8 @@ jobs:
       os_id:      alpine
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/$FRONT_END_PROJECT
-      context:    $BUILD_PATH/$FRONT_END_PROJECT
+      images:     ghcr.io/${{ github.actor }}/${{ env.FRONT_END_PROJECT }}
+      context:    ${{ env.BUILD_PATH }}/${{ env.FRONT_END_PROJECT }}
       platforms:  linux/amd64, linux/arm64, linux/arm/v7, linux/386, linux/arm/v6, linux/ppc64le, linux/s390x
 
   Deps_Alpine:
@@ -54,10 +54,10 @@ jobs:
       os_id:      alpine
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/$DEPS_PROJECT
-      context:    $BUILD_PATH/$DEPS_PROJECT
-      platforms:  $PLATFORMS
-      build-args: DOTNET_VERSION=$DOTNET_VERSION
+      images:     ghcr.io/${{ github.actor }}/${{ env.DEPS_PROJECT }}
+      context:    ${{ env.BUILD_PATH }}/${{ env.DEPS_PROJECT }}
+      platforms:  ${{ env.PLATFORMS }}
+      build-args: DOTNET_VERSION=${{ env.DOTNET_VERSION }}
 
   Deps_Debian:
     needs: [Prepare]
@@ -66,10 +66,10 @@ jobs:
       os_id:      debian
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/$DEPS_PROJECT
-      context:    $BUILD_PATH/$DEPS_PROJECT
-      platforms:  $PLATFORMS
-      build-args: DOTNET_VERSION=$DOTNET_VERSION
+      images:     ghcr.io/${{ github.actor }}/${{ env.DEPS_PROJECT }}
+      context:    ${{ env.BUILD_PATH }}/${{ env.DEPS_PROJECT }}
+      platforms:  ${{ env.PLATFORMS }}
+      build-args: DOTNET_VERSION=${{ env.DOTNET_VERSION }}
 
   CLI_Alpine:
     needs: [Deps_Alpine]
@@ -78,10 +78,10 @@ jobs:
       os_id:      alpine
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/$CLI_PROJECT
-      context:    $BUILD_PATH/$CLI_PROJECT
-      platforms:  $PLATFORMS
-      build-args: REPO=ghcr.io/${{ github.actor }}/$DEPS_PROJECT:latest-alpine
+      images:     ghcr.io/${{ github.actor }}/${{ env.CLI_PROJECT }}
+      context:    ${{ env.BUILD_PATH }}/${{ env.CLI_PROJECT }}
+      platforms:  ${{ env.PLATFORMS }}
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ env.DEPS_PROJECT }}:latest-alpine
 
   CLI_Debian:
     needs: [Deps_Debian]
@@ -90,10 +90,10 @@ jobs:
       os_id:      debian
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/$CLI_PROJECT
-      context:    $BUILD_PATH/$CLI_PROJECT
-      platforms:  $PLATFORMS
-      build-args: REPO=ghcr.io/${{ github.actor }}/$DEPS_PROJECT:latest
+      images:     ghcr.io/${{ github.actor }}/${{ env.CLI_PROJECT }}
+      context:    ${{ env.BUILD_PATH }}/${{ env.CLI_PROJECT }}
+      platforms:  ${{ env.PLATFORMS }}
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ env.DEPS_PROJECT }}:latest
 
   WEBServer_Alpine:
     needs: [Deps_Alpine]
@@ -102,10 +102,10 @@ jobs:
       os_id:      alpine
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/$BACK_END_PROJECT
-      context:    $BUILD_PATH/$BACK_END_PROJECT
-      platforms:  $PLATFORMS
-      build-args: REPO=ghcr.io/${{ github.actor }}/$DEPS_PROJECT:latest-alpine
+      images:     ghcr.io/${{ github.actor }}/${{ env.BACK_END_PROJECT }}
+      context:    ${{ env.BUILD_PATH }}/${{ env.BACK_END_PROJECT }}
+      platforms:  ${{ env.PLATFORMS }}
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ env.DEPS_PROJECT }}:latest-alpine
 
   WEBServer_Debian:
     needs: [Deps_Debian]
@@ -114,7 +114,7 @@ jobs:
       os_id:      debian
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/$BACK_END_PROJECT
-      context:    $BUILD_PATH/$BACK_END_PROJECT
-      platforms:  $PLATFORMS
-      build-args: REPO=ghcr.io/${{ github.actor }}/$DEPS_PROJECT:latest
+      images:     ghcr.io/${{ github.actor }}/${{ env.BACK_END_PROJECT }}
+      context:    ${{ env.BUILD_PATH }}/${{ env.BACK_END_PROJECT }}
+      platforms:  ${{ env.PLATFORMS }}
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ env.DEPS_PROJECT }}:latest
