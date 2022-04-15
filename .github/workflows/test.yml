@@ -1,20 +1,53 @@
-name: test2
+name: Docker_Build_Push
 
 on:
   workflow_call:
     inputs:
-      test:
-        type: string
-      t:
+      context:
         required: true
+        type: string
+      os_id:
+        required: true
+        type: string
+      images:
+        required: true
+        type: string
+      platforms:
+        required: true
+        type: string
+      verall:
+        type: string
+      vertwo:
+        type: string
+      build-args:
         type: string
 
 jobs:
   Build_and_push:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo ${{ inputs.t }}
-          echo ${{ inputs.test }}
-          echo ${{ inputs.t }}
-          echo fin
+# ./prepare.sh
+# $1: $*_PROJECT in DDTV_Docker_Release.yml#L16
+# $2: -alpine 或 -focal 等 docker-dotnet 标签系统后缀
+      - name: Prepare
+        run: |
+          ${{ inputs.os_id == 'debian' }} || echo "os_id=-${{ inputs.os_id }}" >> $GITHUB_ENV
+          echo "${{ inputs.context }}"
+          echo "${{ env.os_id }}"
+          echo "${{ inputs.images }}"
+          echo "${{ inputs.platforms }}"
+          echo "${{ inputs.verall }}"
+          echo "${{ inputs.vertwo }}"
+          echo "${{ inputs.build-args }}"
+
+      - name: Metadata for images
+        id: metadata
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ inputs.images }}
+          flavor: |
+            latest=true
+            suffix=${{ env.os_id }},onlatest=true
+          tags: |
+            ${{ inputs.verall }}
+            ${{ inputs.vertwo }}
