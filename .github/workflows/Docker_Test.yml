@@ -23,8 +23,6 @@ jobs:
   Prepare:
     runs-on: ubuntu-latest
     outputs:
-      verall: ${{ steps.version.outputs.all }} # all="Ver3.0.1.9"
-      vertwo: ${{ steps.version.outputs.two }} # two="3.0"
     steps:
       - name: Output Version
         id: version
@@ -34,7 +32,19 @@ jobs:
           Version_minor=${Version#*.}  && Version_minor=${Version_minor:0:1}
           echo ::set-output name=all::${Version}
           echo ::set-output name=two::${Version_major}.${Version_minor}
+    outputs:
+      verall: ${{ steps.version.outputs.all }} # all="Ver3.0.1.9"
+      vertwo: ${{ steps.version.outputs.two }} # two="3.0"
+      DOTNET_VERSION: '6.0' # 只允许 *.*
+      BUILD_PATH: ./Docker
+      DEPS_PROJECT: ddtv/deps
+      CLI_PROJECT: ddtv/cli
+      BACK_END_PROJECT: ddtv/webserver
+      FRONT_END_PROJECT: ddtv/webui
+      PLATFORMS: linux/amd64, linux/arm64, linux/arm/v7
+# *_PROJECT 为项目名兼路径名，更改后记得修改 文件存放位置 和 prepare.sh
 
+# jobs.<job_id>.with.<with_id>上下文不支持env, 仅支持 github, needs
   WEBUI_Nginx-Alpine:
     if: false
     needs: [Prepare]
@@ -43,10 +53,11 @@ jobs:
       os_id:      alpine
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/${{ env.FRONT_END_PROJECT }}
-      context:    ${{ env.BUILD_PATH }}/${{ env.FRONT_END_PROJECT }}
+      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.FRONT_END_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.FRONT_END_PROJECT }}
       platforms:  linux/amd64, linux/arm64, linux/arm/v7, linux/386, linux/arm/v6, linux/ppc64le, linux/s390x
 
+# alpine
   Deps_Alpine:
     needs: [Prepare]
     uses: ./.github/workflows/Docker_Build_Push.yml
@@ -54,11 +65,36 @@ jobs:
       os_id:      alpine
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/${{ env.DEPS_PROJECT }}
-      context:    ${{ env.BUILD_PATH }}/${{ env.DEPS_PROJECT }}
-      platforms:  ${{ env.PLATFORMS }}
-      build-args: DOTNET_VERSION=${{ env.DOTNET_VERSION }}
+      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}
+      platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
+      build-args: DOTNET_VERSION=${{ needs.Prepare.outputs.DOTNET_VERSION }}
 
+  CLI_Alpine:
+    needs: [Prepare, Deps_Alpine]
+    uses: ./.github/workflows/Docker_Build_Push.yml
+    with:
+      os_id:      alpine
+      verall:     ${{ needs.Prepare.outputs.verall }}
+      vertwo:     ${{ needs.Prepare.outputs.vertwo }}
+      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.CLI_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.CLI_PROJECT }}
+      platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest-alpine
+
+  WEBServer_Alpine:
+    needs: [Prepare, Deps_Alpine]
+    uses: ./.github/workflows/Docker_Build_Push.yml
+    with:
+      os_id:      alpine
+      verall:     ${{ needs.Prepare.outputs.verall }}
+      vertwo:     ${{ needs.Prepare.outputs.vertwo }}
+      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
+      platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest-alpine
+
+# debian
   Deps_Debian:
     needs: [Prepare]
     uses: ./.github/workflows/Docker_Build_Push.yml
@@ -66,55 +102,31 @@ jobs:
       os_id:      debian
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/${{ env.DEPS_PROJECT }}
-      context:    ${{ env.BUILD_PATH }}/${{ env.DEPS_PROJECT }}
-      platforms:  ${{ env.PLATFORMS }}
-      build-args: DOTNET_VERSION=${{ env.DOTNET_VERSION }}
-
-  CLI_Alpine:
-    needs: [Deps_Alpine]
-    uses: ./.github/workflows/Docker_Build_Push.yml
-    with:
-      os_id:      alpine
-      verall:     ${{ needs.Prepare.outputs.verall }}
-      vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/${{ env.CLI_PROJECT }}
-      context:    ${{ env.BUILD_PATH }}/${{ env.CLI_PROJECT }}
-      platforms:  ${{ env.PLATFORMS }}
-      build-args: REPO=ghcr.io/${{ github.actor }}/${{ env.DEPS_PROJECT }}:latest-alpine
+      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}
+      platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
+      build-args: DOTNET_VERSION=${{ needs.Prepare.outputs.DOTNET_VERSION }}
 
   CLI_Debian:
-    needs: [Deps_Debian]
+    needs: [Prepare, Deps_Debian]
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
       os_id:      debian
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/${{ env.CLI_PROJECT }}
-      context:    ${{ env.BUILD_PATH }}/${{ env.CLI_PROJECT }}
-      platforms:  ${{ env.PLATFORMS }}
-      build-args: REPO=ghcr.io/${{ github.actor }}/${{ env.DEPS_PROJECT }}:latest
-
-  WEBServer_Alpine:
-    needs: [Deps_Alpine]
-    uses: ./.github/workflows/Docker_Build_Push.yml
-    with:
-      os_id:      alpine
-      verall:     ${{ needs.Prepare.outputs.verall }}
-      vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/${{ env.BACK_END_PROJECT }}
-      context:    ${{ env.BUILD_PATH }}/${{ env.BACK_END_PROJECT }}
-      platforms:  ${{ env.PLATFORMS }}
-      build-args: REPO=ghcr.io/${{ github.actor }}/${{ env.DEPS_PROJECT }}:latest-alpine
+      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.CLI_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.CLI_PROJECT }}
+      platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest
 
   WEBServer_Debian:
-    needs: [Deps_Debian]
+    needs: [Prepare, Deps_Debian]
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
       os_id:      debian
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/${{ env.BACK_END_PROJECT }}
-      context:    ${{ env.BUILD_PATH }}/${{ env.BACK_END_PROJECT }}
-      platforms:  ${{ env.PLATFORMS }}
-      build-args: REPO=ghcr.io/${{ github.actor }}/${{ env.DEPS_PROJECT }}:latest
+      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
+      platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest
