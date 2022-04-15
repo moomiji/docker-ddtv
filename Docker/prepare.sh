@@ -23,9 +23,9 @@ esac
         KeyFile=DDTV_Core.dll
 
 # 下载DDTV
-wget https://api.github.com/repos/CHKZL/DDTV/releases/latest                                            \
-     && wget     "$(cat < latest | awk '/download_url/{print $4}' FS='"' | grep -i $Keyword )"          \
-     && File_Path=$(cat < latest | awk '/name/{print $4}' FS='"'         | grep -i $Keyword )           \
+wget --no-verbose https://api.github.com/repos/CHKZL/DDTV/releases/latest                               \
+     && wget --no-verbose "$(cat < latest | awk '/download_url/{print $4}' FS='"' | grep -i $Keyword )" \
+     && File_Path=$(         cat < latest | awk '/name/{print $4}' FS='"'         | grep -i $Keyword )  \
      && File_Path=$(unzip "$File_Path" | awk "/$KeyFile/{print \$2}" | awk '{print $1}' FS="/$KeyFile") \
      && echo "File path geted"                                                                          \
      || eval 'echo "Failed to get File path" && exit 1'
@@ -41,5 +41,6 @@ if [ -n "${is_nginx:-}" ]; then
     mv -v "$1/root/checkup.sh"   \
           "$1/root/docker-entrypoint.d/01-checkup.sh"
     cd "$1/root/DDTV_Backups"
+    shopt -s extglob
     rm -rf !(keep|keep2)
 fi
