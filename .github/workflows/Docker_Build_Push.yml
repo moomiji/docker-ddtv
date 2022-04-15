@@ -53,11 +53,11 @@ jobs:
         with:
           images: ${{ inputs.images }}
           flavor: |
-                  latest=true
-                  suffix=${{ env.os_id }},onlatest=true
+            latest=true
+            suffix=${{ env.os_id }},onlatest=true
           tags:   |
-                  ${{ inputs.verall }}
-                  ${{ inputs.vertwo }}
+            ${{ inputs.verall }}
+            ${{ inputs.vertwo }}
 
       - name: Build and push
         uses: docker/build-push-action@v2
