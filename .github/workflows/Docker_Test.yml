@@ -22,7 +22,6 @@ env:
 jobs:
   Prepare:
     runs-on: ubuntu-latest
-    outputs:
     steps:
       - name: Output Version
         id: version
