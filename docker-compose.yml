@@ -1,38 +1,23 @@
 version: '3'
-# 修改详见 docker-compose-complete.yml
 services:
-  DDTV.WEBUI:
-    image: moomiji/ddtvwebui
-    container_name: DDTV_WEBUI
+  DDTV.WEBServer:
+    image: ghcr.io/chkzl/ddtv/webserver
+    container_name: DDTV_WEB_Server
+#   image: ghcr.io/chkzl/ddtv/cli
+#   container_name: DDTV_CLI
     restart: unless-stopped
     ports:
-      - "11419:80"
+      - "11419:11419"
     environment:
-      PROXY_PASS: http://DDTV.WEBServer:11419
-      apiUrl: "false"
-      show: "false"
-    networks:
-      - default
-
-  DDTV.WEBServer:
-    image: moomiji/ddtv
-    container_name: DDTV_WEBServer
-    restart: unless-stopped
-    environment:
-      PUID: 0
-      PGID: 0
-      WebUserName: ami
-      WebPassword: ddtv
-      RoomListConfig_Path: ./RoomListConfig.json
+      - "PUID=0"
+      - "PGID=0"
+      - "WebUserName=ami"
+      - "WebPassword=ddtv"
+      - "RoomListConfig_Path=./RoomListConfig.json"
     volumes:
-  #    - DDTV_WEBServer:/DDTV
+#     - DDTV:/DDTV
       - DDTV_Rec:/DDTV/Rec
-    networks:
-      - default
 
 volumes:
   DDTV_Rec:
-#  DDTV_WEBServer:
-
-networks:
-  default:
+# DDTV:

@@ -1,11 +1,4 @@
 #!/bin/bash
-echo '
-    ____  ____  _______    __   _____  ____         ________    ____
-   / __ \/ __ \/_  __/ |  / /  |__  / / __ \       / ____/ /   /  _/
-  / / / / / / / / /  | | / /    /_ < / / / /      / /   / /    / /
- / /_/ / /_/ / / /   | |/ /   ___/ // /_/ /      / /___/ /____/ /
-/_____/_____/ /_/    |___/   /____(_)____/       \____/_____/___/
-'
 set -e; set -u
 
 # 参数更新需修改 README.md docker-compose.yml
@@ -35,9 +28,9 @@ mkdir -vp "${DownloadPath:=./Rec/}" "${TmpPath:=./tmp/}"
 chown -R "$PUID:$PGID" /DDTV "$DownloadPath" "$TmpPath"
 
 if [[ "$ID" == "debian" ]]; then
-    gosu $PUID:$PGID dotnet DDTV_CLI.dll
+    gosu $PUID:$PGID dotnet "${DDTV_Docker_Project}.dll"
 elif [[ "$ID" == "alpine" ]]; then
-    su-exec $PUID:$PGID dotnet DDTV_CLI.dll
+    su-exec $PUID:$PGID dotnet "${DDTV_Docker_Project}.dll"
 else
     echo "未支持$ID" && exit 1
 fi

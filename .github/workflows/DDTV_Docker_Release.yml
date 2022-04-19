@@ -35,10 +35,10 @@ jobs:
       BACK_END_PROJECT: ddtv/webserver
       FRONT_END_PROJECT: ddtv/webui
       PLATFORMS: linux/amd64, linux/arm64, linux/arm/v7
-# *_PROJECT 为项目名兼路径名，更改后记得修改 文件存放位置 和 prepare.sh
+# *_PROJECT 为项目名兼路径名，更改后记得修改 文件存放位置、prepare.sh、Docker_Build_Push.yml
 
 # jobs.<job_id>.with.<with_id>上下文不支持env, 仅支持 github, needs
-  WEBUI_Nginx-Alpine:
+  WEBUI_nginx-alpine:
     if: false
     needs: [Prepare]
     uses: ./.github/workflows/Docker_Build_Push.yml
@@ -52,7 +52,7 @@ jobs:
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
 
 # alpine
-  Deps_Alpine:
+  Deps_alpine:
     needs: [Prepare]
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
@@ -61,11 +61,11 @@ jobs:
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}
       project:    ${{ needs.Prepare.outputs.DEPS_PROJECT }}
-      platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
+      platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: DOTNET_VERSION=${{ needs.Prepare.outputs.DOTNET_VERSION }}
 
-  CLI_Alpine:
+  CLI_alpine:
     needs: [Prepare, Deps_Alpine]
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
@@ -78,7 +78,7 @@ jobs:
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest
 
-  WEBServer_Alpine:
+  WEBServer_alpine:
     needs: [Prepare, Deps_Alpine]
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
@@ -92,7 +92,7 @@ jobs:
       build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest
 
 # debian
-  Deps_Debian:
+  Deps_debian:
     needs: [Prepare]
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
@@ -105,7 +105,7 @@ jobs:
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: DOTNET_VERSION=${{ needs.Prepare.outputs.DOTNET_VERSION }}
 
-  CLI_Debian:
+  CLI_debian:
     needs: [Prepare, Deps_Debian]
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
@@ -118,7 +118,7 @@ jobs:
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest
 
-  WEBServer_Debian:
+  WEBServer_debian:
     needs: [Prepare, Deps_Debian]
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
