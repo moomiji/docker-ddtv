@@ -1,5 +1,5 @@
 FROM nginx:stable
-ENV DDTV_Docker_Project=WEBUI \
+ENV DDTV_Docker_Project=DDTV_WEBUI \
     TZ=Asia/Shanghai \
     WEBUI_Path=/DDTV/static \
     PROXY_PASS=http://DDTV.WEBServer:11419
