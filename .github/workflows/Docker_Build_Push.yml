@@ -29,7 +29,13 @@ jobs:
   Build_and_push:
     runs-on: ubuntu-latest
     steps:
-      - run: ${{ inputs.os_id == 'debian' }} || echo "os_id=-${{ inputs.os_id }}" >> $GITHUB_ENV
+      - run: |
+        if ${{ inputs.os_id == 'debian' || inputs.project == 'ddtv/webui' }}; then
+            echo "is_latest=true"              >> $GITHUB_ENV
+        else
+            echo "is_latest=false"             >> $GITHUB_ENV
+            echo "suffix=-${{ inputs.os_id }}" >> $GITHUB_ENV
+        fi
       - uses: actions/checkout@v2
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
@@ -45,7 +51,7 @@ jobs:
       - name: Prepare
         run: |
           cd "$(shopt -s globstar nullglob && chmod -v +x Docker/**/*.sh | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")"
-          ./prepare.sh "${{ inputs.project }}" "${{ env.os_id }}"
+          ./prepare.sh "${{ inputs.project }}" "${{ env.suffix }}"
 
       - name: Metadata for images
         id: metadata
@@ -53,11 +59,11 @@ jobs:
         with:
           images: ${{ inputs.images }}
           flavor: |
-            latest=true
-            suffix=${{ env.os_id }},onlatest=true
+            latest=${{ env.is_latest }}
           tags:   |
-            ${{ inputs.verall }}
-            ${{ inputs.vertwo }}
+            ${{ inputs.os_id }}
+            ${{ inputs.verall }}${{ env.suffix }}
+            ${{ inputs.vertwo }}${{ env.suffix }}
 
       - name: Build and push
         uses: docker/build-push-action@v2

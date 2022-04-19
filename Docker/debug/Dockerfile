@@ -1,5 +1,5 @@
-ARG DOTNET_VERSION
-FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_VERSION}
+ARG IMAGE_TAG
+FROM mcr.microsoft.com/dotnet/sdk:${IMAGE_TAG}
 ENV PATH="/tools:${PATH}" \
     Logging__Console__FormatterName= \
     DOTNET_PerfMapEnabled=1 \
