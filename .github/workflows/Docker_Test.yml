@@ -1,4 +1,4 @@
-name: DDTV_Docker_Release
+name: DDTV_Test
 
 on:
   release:
@@ -6,12 +6,8 @@ on:
   watch: # 合并删除
     types: [started]
   push:
-    branches: [master]
-    paths:
-      - 'Docker/**'
-      - '!Docker/**/README.md'
-      - '.github/workflows/DDTV_Docker_Release.yml'
-      - '.github/workflows/Docker_Build_Push.yml'
+    branches: 
+      - test
 
 jobs:
   Prepare:
