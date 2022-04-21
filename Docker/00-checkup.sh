@@ -7,24 +7,24 @@ set -e; set -u
 DDTV_Path=/DDTV
 Backups_Path=/DDTV_Backups
 WEBUI_Config_Path=${WEBUI_Path:-/DDTV}/static
-RoomListConfig=${RoomListConfig:-"$DDTV_Path/RoomListConfig.json"}
+RoomListConfig=${RoomListConfig:-"./RoomListConfig.json"}
 
 ARGs="$*"
 # Use in the the functions: eval $invocation
 invocation='say_verbose "Calling: ${FUNCNAME[0]}"'
-say_verbose() { if [[ "$ARGs" == *"--verbose"* ]]; then printf "\n%b\n" "[debug] $1"; fi }
+say_verbose() { if [[ "$ARGs" == *"--verbose"* ]]; then printf "\n%b\n" "$0: $1"; fi }
 
 checkup() {
     eval "$invocation"
 
     case ${DDTV_Docker_Project:-WTF} in
-        CLI)
+        DDTV_CLI)
             check_dir_DDTV
             check_file_BiliUser_ini
             check_file_DDTV_Config_ini
             check_file_RoomListConfig_json
             ;;
-        WEBServer)
+        DDTV_WEB_Server)
             check_dir_DDTV
             #if [ ! -e "/NotIsFirstStart" ]; then
             #    check_file_config_js
@@ -34,7 +34,7 @@ checkup() {
             check_file_DDTV_Config_ini
             check_file_RoomListConfig_json
             ;;
-        WEBUI)
+        DDTV_WEBUI)
             check_dir_DDTV
             if [ ! -e "/NotIsFirstStart" ]; then
                 check_file_config_js
@@ -59,14 +59,11 @@ check_dir_DDTV() {
     eval "$invocation"
 
     cd "$DDTV_Path" || eval 'echo "不存在目录: $DDTV_Path" && exit 1'
-    if [ -d "$Backups_Path" ]; then
-        shopt -s globstar nullglob
-        for file in "$Backups_Path"/**; do
-            if [ ! -e "${file//$Backups_Path/$DDTV_Path}" ]; then
-                cp -vur "$file" "${file//$Backups_Path/$DDTV_Path}"
-            fi
-        done
-    fi
+    find "$Backups_Path" -follow -type f -print | sort -V | while read -r file; do
+        if [ ! -e "${file//$Backups_Path/$DDTV_Path}" ]; then
+            cp -vur "$file" "${file//$Backups_Path/$DDTV_Path}"
+        fi
+    done
 }
 
 # 写入 RoomListConfig.json
@@ -76,7 +73,12 @@ check_dir_DDTV() {
 check_file_RoomListConfig_json() {
     eval "$invocation"
 
-    File_Path=$RoomListConfig
+    if [[ "$RoomListConfig" == "./"* ]]; then
+        File_Path="$DDTV_Path/${RoomListConfig#./}"
+    else
+        File_Path=$RoomListConfig
+    fi
+
     if [ ! -e "$File_Path" ]; then
         if [ -n "${RoomList:-}" ]; then
             echo "$RoomList" > "$File_Path" && echo "已写入 $File_Path 。"
