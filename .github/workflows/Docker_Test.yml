@@ -8,7 +8,6 @@ on:
   push:
     branches: 
       - test
-
 jobs:
   Prepare:
     runs-on: ubuntu-latest
@@ -16,24 +15,21 @@ jobs:
       - name: Output Version
         id: version
         run: |
-          Version=$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4}' FS='["]')
-          Version_major=$(echo "${Version%%.*}" | sed 's/[^0-9]//g')
-          Version_minor=${Version#*.}
-          echo ::set-output name=all::"${Version_major}.${Version_minor}"
-          echo ::set-output name=two::"${Version_major}.${Version_minor%%.*}"
+          Version=$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4;exit}' FS='["]')
+          Version_major=${Version%%.*} && Version_major=${Version_major:0-1}
+          Version_minor=${Version#*.}  && Version_minor=${Version_minor:0:1}
+          echo ::set-output name=all::${Version}
+          echo ::set-output name=two::${Version_major}.${Version_minor}
     outputs:
-      verall: ${{ steps.version.outputs.all }} # all="3.0.1.9"
+      verall: ${{ steps.version.outputs.all }} # all="Ver3.0.1.9"
       vertwo: ${{ steps.version.outputs.two }} # two="3.0"
-      DOTNET_VERSION: '6.0' # 只允许 '*.*'
-      DOCKER_DIR: ./Docker
+      DOTNET_VERSION: '6.0' # 只允许 *.*
+      BUILD_PATH: ./Docker
       DEPS_PROJECT: ddtv/deps
       CLI_PROJECT: ddtv/cli
       BACK_END_PROJECT: ddtv/webserver
       FRONT_END_PROJECT: ddtv/webui
       PLATFORMS: linux/amd64, linux/arm64, linux/arm/v7
-# *_PROJECT 为项目名兼路径名，更改后记得修改 文件存放位置 和 prepare.sh
-
-# jobs.<job_id>.with.<with_id>上下文不支持env, 仅支持 github, needs
   WEBUI_Nginx-Alpine:
     if: false
     needs: [Prepare]
@@ -43,9 +39,8 @@ jobs:
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.FRONT_END_PROJECT }}
-      project:    ${{ needs.Prepare.outputs.FRONT_END_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.FRONT_END_PROJECT }}
       platforms:  linux/amd64, linux/arm64, linux/arm/v7, linux/386, linux/arm/v6, linux/ppc64le, linux/s390x
-      docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
 
 # alpine
   Deps_Alpine:
@@ -56,9 +51,8 @@ jobs:
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}
-      project:    ${{ needs.Prepare.outputs.DEPS_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}
       platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
-      docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: DOTNET_VERSION=${{ needs.Prepare.outputs.DOTNET_VERSION }}
 
   CLI_Alpine:
@@ -69,10 +63,9 @@ jobs:
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.CLI_PROJECT }}
-      project:    ${{ needs.Prepare.outputs.CLI_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.CLI_PROJECT }}
       platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
-      docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
-      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest-alpine
 
   WEBServer_Alpine:
     needs: [Prepare, Deps_Alpine]
@@ -82,10 +75,9 @@ jobs:
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
-      project:    ${{ needs.Prepare.outputs.BACK_END_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
       platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
-      docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
-      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest
+      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest-alpine
 
 # debian
   Deps_Debian:
@@ -96,9 +88,8 @@ jobs:
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}
-      project:    ${{ needs.Prepare.outputs.DEPS_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}
       platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
-      docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: DOTNET_VERSION=${{ needs.Prepare.outputs.DOTNET_VERSION }}
 
   CLI_Debian:
@@ -109,9 +100,8 @@ jobs:
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.CLI_PROJECT }}
-      project:    ${{ needs.Prepare.outputs.CLI_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.CLI_PROJECT }}
       platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
-      docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest
 
   WEBServer_Debian:
@@ -121,8 +111,9 @@ jobs:
       os_id:      debian
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      images:     ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
-      project:    ${{ needs.Prepare.outputs.BACK_END_PROJECT }}
+      images: |
+        ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
+        ${{ needs.Prepare.outputs.BACK_END_PROJECT }}
+      context:    ${{ needs.Prepare.outputs.BUILD_PATH }}/${{ needs.Prepare.outputs.BACK_END_PROJECT }}
       platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
-      docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_PROJECT }}:latest
