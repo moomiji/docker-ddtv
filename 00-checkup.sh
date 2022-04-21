@@ -59,7 +59,7 @@ check_dir_DDTV() {
     eval "$invocation"
 
     cd "$DDTV_Path" || eval 'echo "不存在目录: $DDTV_Path" && exit 1'
-    find "$Backups_Path" -follow -type f -print | sort -V | while read -r file; do
+    find "$Backups_Path" -follow -print | sort -V | while read -r file; do
         if [ ! -e "${file//$Backups_Path/$DDTV_Path}" ]; then
             cp -vur "$file" "${file//$Backups_Path/$DDTV_Path}"
         fi
