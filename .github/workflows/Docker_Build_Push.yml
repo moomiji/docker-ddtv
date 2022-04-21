@@ -6,7 +6,7 @@ on:
       docker-dir:
         required: true
         type: string
-      project:
+      repo:
         required: true
         type: string
       os_id:
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          if ${{ inputs.os_id == 'debian' || inputs.project == 'ddtv/webui' }}; then
+          if ${{ inputs.os_id == 'debian' || inputs.repo == 'ddtv/webui' }}; then
               echo "is_latest=true"              >> $GITHUB_ENV
           else
               echo "is_latest=false"             >> $GITHUB_ENV
@@ -46,18 +46,18 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
 # ./prepare.sh
-# $1: $*_PROJECT in DDTV_Docker_Release.yml#L16
+# $1: $*_REPO in DDTV_Docker_Release.yml#L16
 # $2: -alpine 或 -focal 等 docker-dotnet 标签系统后缀
       - name: Prepare
         run: |
           cd "$(shopt -s globstar nullglob && chmod -v +x Docker/**/*.sh | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")"
-          ./prepare.sh "${{ inputs.project }}" "${{ env.suffix }}"
+          ./prepare.sh "${{ inputs.repo }}" "${{ env.suffix }}"
 
       - name: Metadata for images
         id: metadata
         uses: docker/metadata-action@v3
         with:
-          images: ${{ inputs.images }}
+          images: ghcr.io/${{ github.actor }}/${{ inputs.repo }}
           flavor: |
             latest=${{ env.is_latest }}
           tags:   |
@@ -68,8 +68,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: ${{ inputs.docker-dir }}/${{ inputs.project }}/
-          file:    ${{ inputs.docker-dir }}/${{ inputs.project }}/Dockerfile
+          context: ${{ inputs.docker-dir }}/${{ inputs.repo }}/
+          file:    ${{ inputs.docker-dir }}/${{ inputs.repo }}/Dockerfile
           push:    true
           tags:    ${{ steps.metadata.outputs.tags }}
           labels:  ${{ steps.metadata.outputs.labels }}

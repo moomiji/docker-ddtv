@@ -11,8 +11,4 @@ COPY root/ /
 RUN apk add --no-cache bash \
     && rm -rf /var/cache/apk/* /root/.cache /tmp/* \
     && sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-
-ENTRYPOINT ["/docker-entrypoint.sh"]
-EXPOSE 80
-STOPSIGNAL SIGQUIT
-CMD ["nginx", "-g", "daemon off;"]
+WORKDIR /DDTV

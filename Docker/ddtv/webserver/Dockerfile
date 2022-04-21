@@ -4,7 +4,7 @@ ENV DDTV_Docker_Project=DDTV_WEB_Server \
     Logging__Console__FormatterName= \
     TZ=Asia/Shanghai
 COPY root/ /
-# WORKDIR /DDTV
+WORKDIR /DDTV
 EXPOSE 11419
 VOLUME /DDTV/Rec
-ENTRYPOINT ["./start.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
