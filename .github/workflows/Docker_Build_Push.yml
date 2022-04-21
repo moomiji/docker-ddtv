@@ -30,12 +30,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-        if ${{ inputs.os_id == 'debian' || inputs.project == 'ddtv/webui' }}; then
-            echo "is_latest=true"              >> $GITHUB_ENV
-        else
-            echo "is_latest=false"             >> $GITHUB_ENV
-            echo "suffix=-${{ inputs.os_id }}" >> $GITHUB_ENV
-        fi
+          if ${{ inputs.os_id == 'debian' || inputs.project == 'ddtv/webui' }}; then
+              echo "is_latest=true"              >> $GITHUB_ENV
+          else
+              echo "is_latest=false"             >> $GITHUB_ENV
+              echo "suffix=-${{ inputs.os_id }}" >> $GITHUB_ENV
+          fi
       - uses: actions/checkout@v2
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
