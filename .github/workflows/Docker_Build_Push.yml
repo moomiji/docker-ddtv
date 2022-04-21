@@ -12,9 +12,6 @@ on:
       os_id:
         required: true
         type: string
-      images:
-        required: true
-        type: string
       platforms:
         required: true
         type: string
