@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e; set -u
-# $1: $*_PROJECT in DDTV_Docker_Release.yml#L16
+# $1: $*_REPO in DDTV_Docker_Release.yml#L16
 # $2: -alpine 或 -focal 等 docker-dotnet 标签系统后缀
 
 # 复用 Dockerfile
@@ -34,16 +34,14 @@ wget --no-verbose https://api.github.com/repos/CHKZL/DDTV/releases/latest       
 mkdir -vp "$1/root/DDTV"
 mv -v "$File_Path"               \
           "$1/root/DDTV_Backups"
-mv -v ./checkup.sh               \
-          "$1/root"
-mv -v ./start.sh                 \
+mv -v ./00-checkup.sh            \
+          "$1/root/docker-entrypoint.d"
+mv -v ./docker-entrypoint.sh     \
           "$1/root"
 
 shopt -s extglob
 if [ -n "${is_nginx:-}" ]; then
-    rm    "$1/root/start.sh"
-    mv -v "$1/root/checkup.sh"   \
-          "$1/root/docker-entrypoint.d/00-checkup.sh"
-    cd "$1/root/DDTV_Backups"
+    rm  "$1/root/docker-entrypoint.sh"
+    cd  "$1/root/DDTV_Backups"
     rm -rf !(keep|keep2)
 fi
