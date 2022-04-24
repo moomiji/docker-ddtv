@@ -26,21 +26,21 @@
 
 ## 最佳实践
 
-查阅修改`docker_ddtv.env`后运行
+查阅修改`docker-ddtv.env`后运行
 
 方法一：修改`docker-compose.yml`后自行运行
 
 ```
-wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker_ddtv.env
-vi docker_ddtv.env
+wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker-ddtv.env
+vi docker-ddtv.env
 
-wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker_ddtv.env
+wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker-ddtv.env
 vi docker-compose.yml
 > version: '3'
 > services:
 >   DDTV.service_name:
 >     env_file:
->       - docker_ddtv.env
+>       - docker-ddtv.env
 > ...
 ```
 
@@ -49,19 +49,19 @@ vi docker-compose.yml
 <!--看官方文档是提供了的，但实际测试没成功过，有没有会用的来修改下
 - docker-compose
 ```
-wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker_ddtv.env
-vi docker_ddtv.env
+wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker-ddtv.env
+vi docker-ddtv.env
 
 wget https://raw.githubusercontent.com/CHKZL/DDTV/master/docker-compose.yml
-sudo docker-compose --env-file ./docker_ddtv.env up
+sudo docker-compose --env-file ./docker-ddtv.env up
 ```
 -->
 
 - docker run
 ```
-wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker_ddtv.env
-vi docker_ddtv.env
-sudo docker run --env-file=./docker_ddtv.env ...
+wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker-ddtv.env
+vi docker-ddtv.env
+sudo docker run --env-file=./docker-ddtv.env ...
 ```
 
 ## 命令行运行容器
@@ -168,7 +168,7 @@ sudo docker run -itd -p 11419:11419 \ # \后面不能有字符
 | GAlink | `string` |  | 公网安备信息跳转链接 |
 -->
 
-可使用更多的变量，见 [配置说明](/config/) 与 [docker_ddtv.env](https://github.com/CHKZL/DDTV/blob/master/docker_ddtv.env)。
+可使用更多的变量，见 [配置说明](/config/) 与 [docker-ddtv.env](https://github.com/CHKZL/DDTV/blob/master/docker-ddtv.env)。
 
 <sup>4：变量只在 `配置文件不存在时` 可用。</sup>
 <sup>5：变量只在 `第一次启动时` 可用。</sup>

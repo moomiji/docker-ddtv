@@ -30,7 +30,7 @@ wget --no-verbose https://api.github.com/repos/CHKZL/DDTV/releases/latest       
 mkdir -vp "$1/root/DDTV"
 mv -v "$File_Path"               \
           "$1/root/DDTV_Backups"
-mv -v ./00-checkup.sh            \
+mv -v ./*-checkup.sh             \
           "$1/root/docker-entrypoint.d"
 mv -v ./docker-entrypoint.sh     \
           "$1/root"
