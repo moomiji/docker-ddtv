@@ -57,9 +57,9 @@ jobs:
           flavor: |
             latest=${{ env.is_latest }}
           tags:   |
-            ${{ inputs.os_id }}
-            ${{ inputs.verall }}${{ env.suffix }}
             ${{ inputs.vertwo }}${{ env.suffix }}
+            ${{ inputs.verall }}${{ env.suffix }}
+            ${{ inputs.os_id }}
 
       - name: Build and push
         uses: docker/build-push-action@v2
