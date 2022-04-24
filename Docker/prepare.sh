@@ -1,10 +1,6 @@
 #!/bin/bash
 set -e; set -u
-# $1: $*_REPO in DDTV_Docker_Release.yml#L16
-# $2: -alpine 或 -focal 等 docker-dotnet 标签系统后缀
-
-# 复用 Dockerfile
-sed -i "/FROM/s/$/&${2:-}/g" "$1/Dockerfile"
+# $1: $*_REPO in DDTV_Docker_Release.yml#L28-40
 case $1 in
     ddtv/deps)
         exit 0

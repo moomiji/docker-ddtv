@@ -1,4 +1,5 @@
-ARG DOTNET_VERSION
-FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_VERSION}
+ARG REPO
+FROM ${REPO}
+ENV Logging__Console__FormatterName=
 COPY install-deps.sh /
 RUN ./install-deps.sh

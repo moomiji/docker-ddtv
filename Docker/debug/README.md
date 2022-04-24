@@ -24,7 +24,6 @@ docker run -it ${与 运行容器 相同的参数&配置文件} --rm --cap-add=S
 ```shell
 # docker exec -it --privileged ddtvdebug /bin/bash
 # perf record -p ${DDTV_WEB_Server进程号} -g
-cd /DDTV
 perf record -p $(ps -ef | grep -v "grep" | awk '/DDTV_WEB_Server/{print $1}') -g
 ```
 
@@ -32,6 +31,6 @@ perf record -p $(ps -ef | grep -v "grep" | awk '/DDTV_WEB_Server/{print $1}') -g
 
 ```
 . /etc/os-release
-DDTV_WEB_Server_Version=$(cat DDTV_WEB_Server.deps.json | awk '/DDTV_WEB_Server\//{print $3}' FS='[/"]' | awk 'NR==1')
+DDTV_WEB_Server_Version=$(cat /DDTV/DDTV_WEB_Server.deps.json | awk '/DDTV_WEB_Server\//{print $3}' FS='[/"]' | awk 'NR==1')
 eval "perf script | FlameGraph/stackcollapse-perf.pl | FlameGraph/flamegraph.pl > DDTV.WEB_Server_Ver${DDTV_WEB_Server_Version}.in_${PRETTY_NAME}.svg"
 ```

@@ -43,12 +43,11 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
 # ./prepare.sh
-# $1: $*_REPO in DDTV_Docker_Release.yml#L16
-# $2: -alpine 或 -focal 等 docker-dotnet 标签系统后缀
+# $1: $*_REPO in DDTV_Docker_Release.yml#L28-40
       - name: Prepare
         run: |
           cd "$(shopt -s globstar nullglob && chmod -v +x Docker/**/*.sh | awk '/prepare.sh/{print $2}' FS="'|prepare.sh")"
-          ./prepare.sh "${{ inputs.repo }}" "${{ env.suffix }}"
+          ./prepare.sh "${{ inputs.repo }}"
 
       - name: Metadata for images
         id: metadata
