@@ -9,8 +9,8 @@ ARGs="$*"
 say_verbose() { if [[ "$ARGs" == *"--verbose"* ]]; then printf "\n%b\n" "$0: $1"; fi }
 
 case "$ARGs" in
-    # 运行 /docker-entrypoint.d/*.sh
     ""|*"--verbose"*|*"--no-update"*)
+        # 运行 /docker-entrypoint.d/*.sh
         find "/docker-entrypoint.d/" -follow -type f -print | sort -V | while read -r file; do
             case "$file" in
                 *.sh)
@@ -25,11 +25,11 @@ case "$ARGs" in
                     ;;
             esac
         done
-    # 更新 DDTV
+        # 更新 DDTV
         cd /DDTV
-        [[ "$ARGs" == *"--no-update"* ]] || dotnet DDTV_Update.dll docker
+        [[ "$ARGs" == *"--no-update"* ]] || (dotnet DDTV_Update.dll docker || echo "更新失败，请稍候重试！")
         ;;
-    # 运行测试用命令
+        # 运行测试用命令
     *)  echo "eval $ARGs" && eval "$ARGs" && exit $?
         ;;
 esac
@@ -42,7 +42,7 @@ esac
 #   $TmpPath
 . /etc/os-release
 echo "Running as UID ${PUID:=$UID} and GID ${PGID:=$PUID}."
-mkdir -vp "${DownloadPath:=./Rec/}" "${TmpPath:=./tmp/}"
+mkdir -p "${DownloadPath:=./Rec/}" "${TmpPath:=./tmp/}"
 chown -R "$PUID:$PGID" /DDTV "$DownloadPath" "$TmpPath"
 
 case $ID in

@@ -1,4 +1,5 @@
-FROM nginx:stable
+ARG REPO
+FROM ${REPO}
 ENV DDTV_Docker_Project=DDTV_WEBUI \
     TZ=Asia/Shanghai \
     WEBUI_Path=/DDTV/static \
