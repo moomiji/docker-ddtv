@@ -30,7 +30,7 @@
 
 方法一：修改`docker-compose.yml`后自行运行
 
-```
+```shell
 wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker-ddtv.env
 vi docker-ddtv.env
 
@@ -42,6 +42,7 @@ vi docker-compose.yml
 >     env_file:
 >       - docker-ddtv.env
 > ...
+# env_file 优先级低于 environment 指定的环境变量
 ```
 
 方法二：使用参数`--env-file`运行
