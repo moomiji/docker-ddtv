@@ -1,4 +1,4 @@
-ARG IMAGE_TAG
+ARG IMAGE_TAG=latest
 FROM mcr.microsoft.com/dotnet/sdk:${IMAGE_TAG}
 ENV PATH="/tools:${PATH}" \
     Logging__Console__FormatterName= \

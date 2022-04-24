@@ -1,10 +1,6 @@
 #!/bin/bash
 set -e; set -u
-# $1: $*_REPO in DDTV_Docker_Release.yml#L16
-# $2: -alpine 或 -focal 等 docker-dotnet 标签系统后缀
-
-# 复用 Dockerfile
-sed -i "/FROM/s/$/&${2:-}/g" "$1/Dockerfile"
+# $1: $*_REPO in DDTV_Docker_Release.yml#L28-40
 case $1 in
     ddtv/deps)
         exit 0
@@ -34,7 +30,7 @@ wget --no-verbose https://api.github.com/repos/CHKZL/DDTV/releases/latest       
 mkdir -vp "$1/root/DDTV"
 mv -v "$File_Path"               \
           "$1/root/DDTV_Backups"
-mv -v ./00-checkup.sh            \
+mv -v ./*-checkup.sh             \
           "$1/root/docker-entrypoint.d"
 mv -v ./docker-entrypoint.sh     \
           "$1/root"

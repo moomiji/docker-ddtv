@@ -22,4 +22,4 @@ case $ID in
         ;;
 esac
 
-rm -rf /var/lib/apt/lists/* /var/cache/apk/* /root/.cache /tmp/*
+rm -rf /var/lib/apt/lists/* /var/cache/apk/* /root/.cache /tmp/* "$0"

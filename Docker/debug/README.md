@@ -19,19 +19,27 @@ docker run -it ${与 运行容器 相同的参数&配置文件} --rm --cap-add=S
 
 - CPU 占用异常
 
-当出现 CPU 占用异常时，运行以下命令 20~30 s，`Ctrl+C`停止记录。
+当出现 CPU 占用异常时，运行以下命令 20~30 s，`Ctrl+C`停止 perf 记录。
 
 ```shell
 # docker exec -it --privileged ddtvdebug /bin/bash
 # perf record -p ${DDTV_WEB_Server进程号} -g
-cd /DDTV
 perf record -p $(ps -ef | grep -v "grep" | awk '/DDTV_WEB_Server/{print $1}') -g
+
+# perf record -p ${DDTV_CLI进程号} -g
+perf record -p $(ps -ef | grep -v "grep" | awk '/DDTV_CLI/{print $1}') -g
 ```
 
 ## perf 记录转换为火焰图
 
-```
+```shell
+# DDTV_WEB_Server
 . /etc/os-release
-DDTV_WEB_Server_Version=$(cat DDTV_WEB_Server.deps.json | awk '/DDTV_WEB_Server\//{print $3}' FS='[/"]' | awk 'NR==1')
+DDTV_WEB_Server_Version=$(cat /DDTV/DDTV_WEB_Server.deps.json | awk '/DDTV_WEB_Server\//{print $3}' FS='[/"]' | awk 'NR==1')
 eval "perf script | FlameGraph/stackcollapse-perf.pl | FlameGraph/flamegraph.pl > DDTV.WEB_Server_Ver${DDTV_WEB_Server_Version}.in_${PRETTY_NAME}.svg"
+
+# DDTV_CLI
+. /etc/os-release
+DDTV_CLI_Version=$(cat /DDTV/DDTV_CLI.deps.json | awk '/DDTV_CLI\//{print $3}' FS='[/"]' | awk 'NR==1')
+eval "perf script | FlameGraph/stackcollapse-perf.pl | FlameGraph/flamegraph.pl > DDTV.CLI_Ver${DDTV_CLI_Version}.in_${PRETTY_NAME}.svg"
 ```

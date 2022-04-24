@@ -16,13 +16,14 @@ services:
   DDTV.WEBServer:
     image: ghcr.io/chkzl/ddtv/webserver
     container_name: DDTV_WEBServer
+#   command: ["--no-update", "--verbose"]
     restart: unless-stopped
     environment:
       - "PUID=0"
       - "PGID=0"
       - "WebUserName=ami"
       - "WebPassword=ddtv"
-      - "RoomListConfig_Path=./RoomListConfig.json"
+      - "RoomListConfig=./RoomListConfig.json"
     volumes:
 #     - DDTV_WEBServer:/DDTV
       - DDTV_Rec:/DDTV/Rec
