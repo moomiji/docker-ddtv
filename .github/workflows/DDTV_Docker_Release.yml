@@ -35,7 +35,7 @@ jobs:
       BACK_END_REPO: ddtv/webserver
       FRONT_END_REPO: ddtv/webui
       PLATFORMS: linux/amd64, linux/arm64, linux/arm/v7
-# *_REPO 为仓库名兼路径名，更改后记得修改 文件存放位置、prepare.sh、Docker_Build_Push.yml
+# *_REPO 为仓库名兼路径名，更改后记得修改 文件存放位置、prepare.GitHubActions.sh、Docker_Build_Push.yml
 
 # jobs.<job_id>.with.<with_id>上下文不支持env, 仅支持 github, needs
   WEBUI_nginx-alpine:

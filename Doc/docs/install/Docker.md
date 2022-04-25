@@ -11,18 +11,17 @@
 | ---- | ---- | ---- |
 | DDTV_CLI | ghcr.io/chkzl/ddtv/cli | 重启容器即可更新 DDTV |
 | DDTV_WEB_Server | ghcr.io/chkzl/ddtv/webserver |  重启容器即可更新 DDTV |
-| DDTV_Deps <sup>1</sup> | ghcr.io/chkzl/ddtv/deps | 支持`arm64v8`和`arm32v7`架构 |
-<!-- | DDTV_WEBUI | ghcr.io/chkzl/ddtv/deps | 支持`amd64` `arm64v8` `arm32v7` `386` `arm32v6` `ppc64le` `s390x`架构 | -->
+| DDTV_Deps | ghcr.io/chkzl/ddtv/deps | 只含 DDTV 必须依赖, 支持`arm64v8`和`arm32v7`架构 |
+<!--| DDTV_WEBUI | ghcr.io/chkzl/ddtv/webui | 支持`amd64` `arm64v8` `arm32v7` `386` `arm32v6` `ppc64le` `s390x`架构 |-->
 
 - CLI / WEB_Server 支持的架构及可用标签：
 
 | 系统 \ 架构 | amd64 (x86-64) | arm64v8 | arm32v7 | 可用标签 |
 | :----: | :----: | :----: | :----: | :----: |
-| alpine <sup>2</sup> | ✔ | ✘ | ✘ | `alpine` `3.0-alpine` `3.0.*.*-alpine` |
+| alpine <sup>1</sup> | ✔ | ✘ | ✘ | `alpine` `3.0-alpine` `3.0.*.*-alpine` |
 | debian | ✔ | ✔ | ✔ | `latest` `debian` `3.0` `3.0.*.*` |
 
-<sup>1：`DDTV_Deps`只含 `DDTV_CLI`和`DDTV_WEB_Server`的必须依赖。</sup>
-<sup>2：受 DDTV 依赖的影响，目前 alpine arm 下 DDTV 的`日志功能`、`控制台打印二维码功能`无法使用，并因此存在内存泄露问题；若有需要，可使用`DDTV_Deps`运行 DDTV。</sup>
+<sup>1：受 DDTV 依赖的影响，目前 alpine arm 下 DDTV 的`日志功能`、`控制台打印二维码功能`无法使用，并因此存在内存泄露问题；若有需要，可使用`DDTV_Deps`运行 DDTV。</sup>
 
 ## 最佳实践
 
@@ -128,15 +127,15 @@ sudo docker run -itd -p 11419:11419 \ # \后面不能有字符
 | TZ | `州/城市` | `Asia/Shanghai` | 时区 | `cli` `webserver` <!--`webui`--> |
 | PUID | `num` | `0` | 用户ID | `cli` `webserver` |
 | PGID | `num` | `0` | 用户组ID | `cli` `webserver` |
-| RoomList <sup>4</sup> | `json` | 来自文件 `RoomListConfig.json` | 食用方法：`-e RoomList='{"data":[]}'` | `cli` `webserver` |
-| BiliUser <sup>4</sup> | `ini` | 来自文件 `BiliUser.ini` | 食用方法：`-e BiliUser='cookie \n ExTime \n csrf \n uid'` | `cli` `webserver` |
+| RoomList <sup>2</sup> | `json` | 来自文件 `RoomListConfig.json` | 食用方法：`-e RoomList='{"data":[]}'` | `cli` `webserver` |
+| BiliUser <sup>2</sup> | `ini` | 来自文件 `BiliUser.ini` | 食用方法：`-e BiliUser='cookie \n ExTime \n csrf \n uid'` | `cli` `webserver` |
 
 <!--
 | WEBUI_Path | 路径 | `/DDTV/static` | WEBUI的文件夹路径 | `webui` |
 | PROXY_PASS | `http(s)://you.host:port` | `http://127.0.0.1:11419` | 需要反代的后端地址, apiUrl=false 时 WEBUI 从反代地址联系 WEB_Server | `webui`|
 -->
 
-- CLI / WEB_Server 配置文件常用变量 <sup>4</sup>
+- CLI / WEB_Server 配置文件常用变量 <sup>2</sup>
 
 | 参数名 | 格式 | 默认值 | 说明 |
 | ---- | ---- | ---- | ---- |
@@ -152,7 +151,7 @@ sudo docker run -itd -p 11419:11419 \ # \后面不能有字符
 | WebPassword | `string` | `ddtv` | WEB登陆使用的密码 |
 | Shell | `bool` | `false` | 用于控制下载完成后是否执行对应房间的Shell命令 |
 <!--
-- WEBUI 配置文件变量<sup>5</sup>
+- WEBUI 配置文件变量<sup>3</sup>
 | 参数名 | 格式 | 默认值 | 说明 |
 | ---- | ---- | ---- | ---- |
 | apiUrl | `bool` `http(s)://you.host:port` | `http://127.0.0.1:11419` | 后端地址, 同源也请更换为主机IP, 需要反代请填 false |
@@ -171,8 +170,8 @@ sudo docker run -itd -p 11419:11419 \ # \后面不能有字符
 
 可使用更多的变量，见 [配置说明](/config/) 与 [docker-ddtv.env](https://github.com/CHKZL/DDTV/blob/master/docker-ddtv.env)。
 
-<sup>4：变量只在 `配置文件不存在时` 可用。</sup>
-<sup>5：变量只在 `第一次启动时` 可用。</sup>
+<sup>2：变量只在 `配置文件不存在时` 可用。</sup>
+<!--<sup>3：变量只在 `第一次启动时` 可用。</sup>-->
 
 ## CLI / WEB_Server 可用运行参数
 
