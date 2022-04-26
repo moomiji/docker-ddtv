@@ -1,4 +1,4 @@
-# DDTV Docker版安装教程（CLI/WEB_Server<!--WEBUI-->）
+# DDTV Docker版安装教程（CLI/WEB_Server<!--/WEBUI-->）
 
 ## 先决条件
   - Linux
@@ -18,7 +18,7 @@
 
 | 系统 \ 架构 | amd64 (x86-64) | arm64v8 | arm32v7 | 可用标签 |
 | :----: | :----: | :----: | :----: | :----: |
-| alpine <sup>1</sup> | ✔ | ✘ | ✘ | `alpine` `3.0-alpine` `3.0.*.*-alpine` |
+| alpine <sup>1</sup> | ✔ | ✖ | ✘ | `alpine` `3.0-alpine` `3.0.*.*-alpine` |
 | debian | ✔ | ✔ | ✔ | `latest` `debian` `3.0` `3.0.*.*` |
 
 <sup>1：受 DDTV 依赖的影响，目前 alpine arm 下 DDTV 的`日志功能`、`控制台打印二维码功能`无法使用，并因此存在内存泄露问题；若有需要，可使用`DDTV_Deps`运行 DDTV。</sup>
