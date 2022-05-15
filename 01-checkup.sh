@@ -81,7 +81,7 @@ check_file_RoomListConfig_json() {
 
     if [ ! -e "$File_Path" ]; then
         if [ -n "${RoomList:-}" ]; then
-            echo "$RoomList" > "$File_Path" && echo "已写入 $File_Path 。"
+            echo -e "$RoomList" > "$File_Path" && echo "已写入 $File_Path 。"
 
             say_verbose "$File_Path:\n$(
                 cat "$File_Path"
@@ -99,7 +99,7 @@ check_file_BiliUser_ini() {
     File_Path=$DDTV_Path/BiliUser.ini
     if [ ! -e "$File_Path" ]; then
         if [ -n "${BiliUser:-}" ]; then
-            echo -e "$BiliUser" > $File_Path && echo -e "已写入 $File_Path 。"
+            echo -e "$BiliUser" > $File_Path && echo "已写入 $File_Path 。"
 
             say_verbose "$File_Path:\n$(
                 cat "$File_Path"
