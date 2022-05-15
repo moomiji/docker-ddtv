@@ -57,14 +57,14 @@ sudo docker-compose --env-file ./docker-ddtv.env up
 ```
 -->
 
-- docker run
+- docker cli
 ```
 wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker-ddtv.env
 vi docker-ddtv.env
 sudo docker run --env-file=./docker-ddtv.env ...
 ```
 
-## 命令行运行容器
+## docker cli 运行容器
 
 - 运行 DDTV_WEB_Server
 
@@ -168,7 +168,7 @@ sudo docker run -itd -p 11419:11419 \ # \后面不能有字符
 | GAlink | `string` |  | 公网安备信息跳转链接 |
 -->
 
-可使用更多的变量，见 [配置说明](/config/) 与 [docker-ddtv.env](https://github.com/CHKZL/DDTV/blob/master/docker-ddtv.env)。
+可使用更多的变量，见 [官网配置说明](/config/) 与 [docker-ddtv.env](https://github.com/CHKZL/DDTV/blob/master/docker-ddtv.env)。
 
 <sup>2：变量只在 `配置文件不存在时` 可用。</sup>
 <!--<sup>3：变量只在 `第一次启动时` 可用。</sup>-->
