@@ -8,11 +8,11 @@ git clone --depth 1 https://github.com/CHKZL/DDTV
 DOTNET_VERSION=$(awk '/DOTNET_VERSION: /{print $2;exit}' FS="'" .github/workflows/DDTV_Docker_Release.yml)
 cd ./DDTV/Docker/debug
 # alpine
-docker build --rm -t ddtv/debug:alpine --build-arg IMAGE_TAG=6.0-alpine .
-docker run -it ${与 运行容器 相同的参数&配置文件} --rm --cap-add=SYS_ADMIN --cap-add=SYS_PTRACE --privileged --name ddtvdebug ddtv/debug:alpine
+sudo docker build --rm -t ddtv/debug:alpine --build-arg IMAGE_TAG=6.0-alpine .
+sudo docker run -it ${与 运行容器 相同的参数&配置文件} --rm --cap-add=SYS_ADMIN --cap-add=SYS_PTRACE --privileged --name ddtvdebug ddtv/debug:alpine
 # debian
-docker build --rm -t ddtv/debug:debian --build-arg IMAGE_TAG=6.0 .
-docker run -it ${与 运行容器 相同的参数&配置文件} --rm --cap-add=SYS_ADMIN --cap-add=SYS_PTRACE --privileged --name ddtvdebug ddtv/debug:debian
+sudo docker build --rm -t ddtv/debug:debian --build-arg IMAGE_TAG=6.0 .
+sudo docker run -it ${与 运行容器 相同的参数&配置文件} --rm --cap-add=SYS_ADMIN --cap-add=SYS_PTRACE --privileged --name ddtvdebug ddtv/debug:debian
 ```
 
 ## 性能探测与记录
@@ -22,7 +22,7 @@ docker run -it ${与 运行容器 相同的参数&配置文件} --rm --cap-add=S
 当出现 CPU 占用异常时，运行以下命令 20~30 s，`Ctrl+C`停止 perf 记录。
 
 ```shell
-# docker exec -it --privileged ddtvdebug /bin/bash
+# sudo docker exec -it --privileged ddtvdebug /bin/bash
 # perf record -p ${DDTV_WEB_Server进程号} -g
 perf record -p $(ps -ef | grep -v "grep" | awk '/DDTV_WEB_Server/{print $1}') -g
 
