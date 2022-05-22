@@ -2,7 +2,7 @@
 
 该仓库仅用于测试。
 
-具体内容请查看[github Docker目录](https://github.com/moomiji/docker-ddtv/tree/master/Docker)。
+具体内容请查看[Github Docker目录](https://github.com/moomiji/docker-ddtv/tree/master/Docker)。
 
 使用`ddtv/cli` `ddtv/deps` `ddtv/webserver`镜像请查看[DDTV Docker版安装教程](https://github.com/moomiji/docker-ddtv/blob/master/Doc/docs/install/Docker.md)。
 
