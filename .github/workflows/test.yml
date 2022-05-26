@@ -20,9 +20,11 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '6.0.x'
+    - name: Clone
+      run: git clone https://github.com/CHKZL/DDTV
     - name: Restore dependencies
-      run: cd DDTV_WEB_Server && dotnet restore
+      run: cd DDTV && cd DDTV_WEB_Server && dotnet restore
     - name: Build
-      run: cd DDTV_WEB_Server && dotnet build --no-restore
+      run: cd DDTV && cd DDTV_WEB_Server && dotnet build --no-restore
     - name: Run
-      run: cd DDTV_WEB_Server && cd bin && cd Debug && cd net6.0 && dotnet DDTV_WEB_Server.dll || echo error || cd ..
+      run: cd DDTV && cd DDTV_WEB_Server && cd bin && cd Debug && cd net6.0 && dotnet DDTV_WEB_Server.dll || echo error || cd ..
