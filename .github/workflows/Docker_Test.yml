@@ -1,13 +1,10 @@
 name: DDTV_Test
 
 on:
-  release:
-    types: [released]
-  watch: # 合并删除
-    types: [started]
-  push:
-    branches: 
-      - test
+  workflow_dispatch:
+#  push:
+#    branches: 
+#      - test
 jobs:
   Prepare:
     runs-on: ubuntu-latest
