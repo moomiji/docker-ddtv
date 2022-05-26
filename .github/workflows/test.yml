@@ -1,5 +1,5 @@
 
-name: DDTV_WEB_Server
+name: test
 
 on:
   workflow_dispatch:
