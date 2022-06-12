@@ -1,8 +1,8 @@
-# DDTV Docker版安装教程（CLI/WEB_Server<!--/WEBUI-->）
+# DDTV Docker版安装教程（CLI / WEB_Server<!--/WEBUI-->）
 
 ## 先决条件
   - Linux
-  - Docker-ce 18.03 或更高版本 ([安装教程](https://mirrors.tuna.tsinghua.edu.cn/help/docker-ce/))
+  - 容器引擎，如 Docker-ce 18.03 或更高版本 ([安装教程](https://mirrors.tuna.tsinghua.edu.cn/help/docker-ce/))、Podman 等
 
 <!--
 :::tip DockerHub 镜像源加速方法
@@ -27,8 +27,8 @@
 
 | 系统 \ 架构 | amd64 | arm64v8 | arm32v7 | 可用标签 |
 | :---- | :----: | :----: | :----: | :---- |
-| alpine <sup>1</sup> | ✔ | ✘ | ✘ | `alpine` `3.0-alpine` `3.0.*.*-alpine` |
-| debian | ✔ | ✔ | ✔ | `latest` `debian` `3.0` `3.0.*.*` |
+| alpine <sup>1</sup> | ✅ | ❌ | ❌ | `alpine` `3.0-alpine` `3.0.*.*-alpine` |
+| debian | ✅ | ✅ | ✅ | `latest` `debian` `3.0` `3.0.*.*` |
 
 :::warning Tip 1
 受 DDTV 依赖影响，目前 alpine arm 下 DDTV 的`日志功能`、`控制台打印二维码功能`无法使用，并因此存在内存泄露问题；若有需要，可使用`DDTV_Deps`运行 DDTV。
@@ -130,6 +130,42 @@ sudo docker run -d -p 11419:11419 \ # \后面不能有字符
         --name DDTV_${Project}    \
         ghcr.io/chkzl/ddtv/deps:alpine /bin/bash -c "dotnet /DDTV/DDTV_${Project}.dll"
 ```
+
+## 单独挂载配置文件
+
+#### CLI / WEB_Server
+
+```shell
+-v ${PWD}/DDTV:/DDTV    \ # 可选，持久化 DDTV_CLI 与 配置文件
+
+# 替换成
+
+-v ${PWD}/DDTV/RoomListConfig.json:/DDTV/RoomListConfig.json \
+-v ${PWD}/DDTV/DDTV_Config.ini:/DDTV/DDTV_Config.ini         \
+-v ${PWD}/DDTV/BiliUser.ini:/DDTV/BiliUser.ini               \
+```
+
+::: tip
+变量RoomList、变量BiliUser 和 CLI / WEB_Server 配置文件变量将不可用。
+:::
+
+<!--
+#### WEBUI
+
+```shell
+-v ${PWD}/DDTV:/DDTV    \ # 可选，持久化 DDTV_CLI 与 配置文件
+
+# 替换成
+
+-v ${PWD}/DDTV/RoomListConfig.json:/DDTV/RoomListConfig.json \
+-v ${PWD}/DDTV/DDTV_Config.ini:/DDTV/DDTV_Config.ini         \
+-v ${PWD}/DDTV/BiliUser.ini:/DDTV/BiliUser.ini               \
+```
+
+::: tip
+变量RoomList、变量BiliUser 和 CLI / WEB_Server 配置文件变量将不可用。
+:::
+-->
 
 ## 可用环境变量
 
