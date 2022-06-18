@@ -4,8 +4,8 @@
   - Linux
   - 容器引擎，如 Docker-ce 18.03 或更高版本 ([安装教程](https://mirrors.tuna.tsinghua.edu.cn/help/docker-ce/))、Podman 等
 
-:::tip DockerHub 镜像源加速方法
-[加速教程](https://www.daocloud.io/mirror)
+:::tip DockerHub 更换镜像源方法
+[DockerHub 更换镜像源教程](https://www.daocloud.io/mirror)
 :::
 
 ## 可用镜像

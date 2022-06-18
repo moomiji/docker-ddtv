@@ -10,6 +10,7 @@ on:
     paths:
       - 'Docker/**'
       - '!Docker/**/README.md'
+      - '!Docker/monitor/**'
       - '.github/workflows/Docker_Release.yml'
       - '.github/workflows/Docker_Build_Push.yml'
 
