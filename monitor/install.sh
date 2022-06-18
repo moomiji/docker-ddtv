@@ -35,4 +35,5 @@ dotnet tool install --no-cache --tool-path /tools dotnet-trace
 dotnet tool install --no-cache --tool-path /tools dotnet-stack
 dotnet tool install --no-cache --tool-path /tools dotnet-symbol
 dotnet tool install --no-cache --tool-path /tools dotnet-sos
+dotnet tool install --no-cache --tool-path /tools dotnet-monitor
 echo "dotnet tool 安装完成。"
