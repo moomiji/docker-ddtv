@@ -5,7 +5,7 @@
 ## 构建与运行
 ```shell
 git clone --depth 1 https://github.com/CHKZL/DDTV
-DOTNET_VERSION=$(awk '/DOTNET_VERSION: /{print $2;exit}' FS="'" .github/workflows/DDTV_Docker_Release.yml)
+DOTNET_VERSION=$(awk '/DOTNET_VERSION: /{print $2;exit}' FS="'" .github/workflows/Docker_Release.yml)
 cd ./DDTV/Docker/debug
 # alpine
 sudo docker build --rm -t ddtv/debug:alpine --build-arg IMAGE_TAG=6.0-alpine .

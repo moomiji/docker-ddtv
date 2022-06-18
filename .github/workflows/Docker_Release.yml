@@ -1,4 +1,4 @@
-name: DDTV_Docker_Release
+name: Docker_Release
 
 on:
   release:
@@ -10,7 +10,7 @@ on:
     paths:
       - 'Docker/**'
       - '!Docker/**/README.md'
-      - '.github/workflows/DDTV_Docker_Release.yml'
+      - '.github/workflows/Docker_Release.yml'
       - '.github/workflows/Docker_Build_Push.yml'
 
 jobs:

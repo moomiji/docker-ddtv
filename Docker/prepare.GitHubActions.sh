@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e; set -u
-# $1: $*_REPO in DDTV_Docker_Release.yml#L28-40
+# $1: $*_REPO in Docker_Release.yml#L28-40
 case $1 in
     ddtv/deps)
         exit 0
