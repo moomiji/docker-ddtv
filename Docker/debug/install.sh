@@ -26,7 +26,7 @@ case $ID in
         ;;
 esac
 rm -rf /var/lib/apt/lists/* /var/cache/apk/* /root/.cache /tmp/*
-
+echo "dotnet tool 安装中……"
 dotnet tool install --no-cache --tool-path /tools dotnet-counters
 dotnet tool install --no-cache --tool-path /tools dotnet-coverage
 dotnet tool install --no-cache --tool-path /tools dotnet-dump
