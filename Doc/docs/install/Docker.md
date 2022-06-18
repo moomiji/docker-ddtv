@@ -4,23 +4,32 @@
   - Linux
   - 容器引擎，如 Docker-ce 18.03 或更高版本 ([安装教程](https://mirrors.tuna.tsinghua.edu.cn/help/docker-ce/))、Podman 等
 
-<!--
 :::tip DockerHub 镜像源加速方法
 [加速教程](https://www.daocloud.io/mirror)
 :::
--->
 
 ## 可用镜像
 
+#### 特点
+
+| Docker 项目名 | 特点 |
+| :---- | :---- |
+| DDTV_CLI | 重启容器即可更新 DDTV |
+| DDTV_WEB_Server | 重启容器即可更新 DDTV |
+| DDTV_Deps | 只含 DDTV 必须依赖，<br>支持`arm64v8`和`arm32v7`架构 |
+<!--
+| DDTV_WEBUI | 支持`amd64` `arm64v8` `arm32v7` `386` `arm32v6` `ppc64le` `s390x`架构 |
+-->
+
 #### 镜像名
 
-| Docker 项目名 | GHCR 镜像名 | 特点 |
+| Docker 项目名 | GHCR 镜像名 | Docker Hub 镜像名 |
 | :---- | :---- | :---- |
-| DDTV_CLI | ghcr.io/chkzl/ddtv/cli | 重启容器即可更新 DDTV |
-| DDTV_WEB_Server | ghcr.io/chkzl/ddtv/webserver |  重启容器即可更新 DDTV |
-| DDTV_Deps | ghcr.io/chkzl/ddtv/deps | 只含 DDTV 必须依赖，<br>支持`arm64v8`和`arm32v7`架构 |
+| DDTV_CLI | ghcr.io/chkzl/ddtv/cli | ddtv/cli |
+| DDTV_WEB_Server | ghcr.io/chkzl/ddtv/webserver | ddtv/webserver |
+| DDTV_Deps | ghcr.io/chkzl/ddtv/deps | ddtv/deps |
 <!--
-| DDTV_WEBUI | ghcr.io/chkzl/ddtv/webui | 支持`amd64` `arm64v8` `arm32v7` `386` `arm32v6` `ppc64le` `s390x`架构 |
+| DDTV_WEBUI | ghcr.io/chkzl/ddtv/webui | ddtv/webui |
 -->
 
 #### CLI / WEB_Server 支持的架构及可用标签
