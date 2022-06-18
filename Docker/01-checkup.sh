@@ -117,6 +117,7 @@ check_file_DDTV_Config_ini() {
 
     File_Path=$DDTV_Path/DDTV_Config.ini
     if [ ! -e "$File_Path" ]; then
+# CoreConfigClass.cs Start
         echo "
 [Core]
 ${RoomListConfig:+"RoomListConfig=$RoomListConfig"}
@@ -154,8 +155,7 @@ ${FlvSplitSize:+"FlvSplitSize=$FlvSplitSize"}
 ${DoNotSleepWhileDownloading:+"DoNotSleepWhileDownloading=$DoNotSleepWhileDownloading"}
 ${Shell:+"Shell=$Shell"}
 " > "$File_Path" &&
-    # 22.04.12 更新至 WebHookUrl 新增 1 个
-    # 34-3 个键值 DefaultVolume PlayQuality HideIconState
+# CoreConfigClass.cs End
     echo "已写入 $File_Path 。"
     say_verbose "$File_Path:\n$(
         cat < "$File_Path" | grep -v '^$'
