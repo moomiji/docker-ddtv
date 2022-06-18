@@ -2,7 +2,7 @@
 
 使用`ddtv/cli` `ddtv/deps` `ddtv/webserver`镜像请查看官网详细内容
 
-使用`ddtv/debug`镜像请查看 debug 目录
+使用`ddtv/monitor`镜像请查看 monitor 目录
 
 ## docker常用命令
 
