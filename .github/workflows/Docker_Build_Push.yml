@@ -43,7 +43,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
 # ./prepare.GitHubActions.sh
-# $1: $*_REPO in DDTV_Docker_Release.yml#L28-40
+# $1: $*_REPO in Docker_Release.yml#L28-40
       - name: Prepare
         run: |
           cd "$(shopt -s globstar nullglob && chmod -v +x Docker/**/*.sh | awk '/prepare.GitHubActions.sh/{print $2}' FS="'|prepare.GitHubActions.sh")"
