@@ -1,6 +1,7 @@
 name: Docker_Release
 
 on:
+  workflow_dispatch:
   release:
     types: [released]
   watch: # 合并删除
