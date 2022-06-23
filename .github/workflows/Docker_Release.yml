@@ -52,7 +52,7 @@ jobs:
       platforms:  linux/amd64, linux/arm64, linux/arm/v7, linux/386, linux/arm/v6, linux/ppc64le, linux/s390x
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=nginx:stable-alpine
-      secrets:    inherit
+    secrets:    inherit
 
 # alpine
   Deps_alpine:
@@ -66,7 +66,7 @@ jobs:
       platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=mcr.microsoft.com/dotnet/aspnet:${{ needs.Prepare.outputs.DOTNET_VERSION }}-alpine
-      secrets:    inherit
+    secrets:    inherit
 
   CLI_alpine:
     needs: [Prepare, Deps_alpine]
@@ -79,7 +79,7 @@ jobs:
       platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_REPO }}:alpine
-      secrets:    inherit
+    secrets:    inherit
 
   WEBServer_alpine:
     needs: [Prepare, Deps_alpine]
@@ -92,7 +92,7 @@ jobs:
       platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_REPO }}:alpine
-      secrets:    inherit
+    secrets:    inherit
 
 # debian
   Deps_debian:
@@ -106,7 +106,7 @@ jobs:
       platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=mcr.microsoft.com/dotnet/aspnet:${{ needs.Prepare.outputs.DOTNET_VERSION }}
-      secrets:    inherit
+    secrets:    inherit
 
   CLI_debian:
     needs: [Prepare, Deps_debian]
@@ -119,7 +119,7 @@ jobs:
       platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_REPO }}:debian
-      secrets:    inherit
+    secrets:    inherit
 
   WEBServer_debian:
     needs: [Prepare, Deps_debian]
@@ -132,4 +132,4 @@ jobs:
       platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_REPO }}:debian
-      secrets:    inherit
+    secrets:    inherit
