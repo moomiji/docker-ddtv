@@ -2,45 +2,12 @@ name: Docker_Build_Push
 
 on:
   workflow_call:
-    inputs:
-      docker-dir:
-        required: true
-        type: string
-      repo:
-        required: true
-        type: string
-      os_id:
-        required: true
-        type: string
-      platforms:
-        required: true
-        type: string
-      verall:
-        type: string
-      vertwo:
-        type: string
-      build-args:
-        type: string
 
 jobs:
   Build_and_push:
     runs-on: ubuntu-latest
     steps:
-# ./prepare.sh
-# $1: $*_PROJECT in DDTV_Docker_Release.yml#L16
-# $2: -alpine 或 -focal 等 docker-dotnet 标签系统后缀
-      - run: ${{ inputs.os_id == 'debian' }} || echo "os_id=-${{ inputs.os_id }}" >> $GITHUB_ENV
-      - name: Prepare
-        run: |
-          echo "${{ inputs.context }}"
-          echo "${{ env.os_id }}"
-          echo "${{ inputs.images }}"
-          echo "${{ inputs.platforms }}"
-          echo "${{ inputs.verall }}"
-          echo "${{ inputs.vertwo }}"
-          echo "${{ inputs.build-args }}"
-
      - uses: docker/login-action@v1
-        with:
+       with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
