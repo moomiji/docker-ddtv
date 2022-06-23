@@ -2,8 +2,6 @@ name: Docker_Build_Push
 
 on:
   workflow_call:
-on:
-  workflow_call:
     inputs:
       docker-dir:
         required: true
