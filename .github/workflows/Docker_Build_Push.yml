@@ -2,14 +2,16 @@ name: Docker_Build_Push
 
 on:
   workflow_call:
+on:
+  workflow_call:
     inputs:
-      context:
+      docker-dir:
+        required: true
+        type: string
+      repo:
         required: true
         type: string
       os_id:
-        required: true
-        type: string
-      images:
         required: true
         type: string
       platforms:
