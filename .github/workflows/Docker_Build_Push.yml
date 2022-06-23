@@ -2,6 +2,11 @@ name: Docker_Build_Push
 
 on:
   workflow_call:
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_PASSWORD:
+        required: true
 
 jobs:
   Build_and_push:
