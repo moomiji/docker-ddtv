@@ -24,11 +24,3 @@ jobs:
   Deps_alpine:
     needs: [Prepare]
     uses: ./.github/workflows/Docker_Build_Push.yml
-    with:
-      repo:       alpine
-      os_id:      alpine
-      verall:     alpine
-      vertwo:     alpine
-      platforms:  alpine
-      docker-dir: alpine
-      build-args: alpine
