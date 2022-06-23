@@ -24,3 +24,4 @@ jobs:
   Deps_alpine:
     needs: [Prepare]
     uses: ./.github/workflows/Docker_Build_Push.yml
+    secrets: inherit
