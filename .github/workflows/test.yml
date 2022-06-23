@@ -7,24 +7,11 @@ on:
       - test
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
-
-    runs-on: ${{ matrix.os }}
-
+  Prepare:
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '6.0.x'
-    - name: Clone
-      run: git clone https://github.com/CHKZL/DDTV
-    - name: Restore dependencies
-      run: cd DDTV && cd DDTV_WEB_Server && dotnet restore
-    - name: Build
-      run: cd DDTV && cd DDTV_WEB_Server && dotnet build --no-restore
-    - name: Run
-      run: cd DDTV && cd DDTV_WEB_Server && cd bin && cd Debug && cd net6.0 && dotnet DDTV_WEB_Server.dll || echo error || cd ..
+      - name: Output Version
+        id: version
+        run: |
+          echo ${{ secrets.DOCKERHUB_USERNAME }}
+          echo ${{ secrets.DOCKERHUB_PASSWORD }}
