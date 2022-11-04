@@ -40,6 +40,7 @@ checkup() {
                 check_file_config_js
                 check_file_barinfo_js
             fi
+            chown -R nginx ${DDTV_Path}/
             ;;
         *)
             echo "Error DDTV Docker Project!" && exit 1
