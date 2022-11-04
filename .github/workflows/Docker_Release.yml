@@ -43,8 +43,8 @@ jobs:
     with:
       repo:       ${{ needs.Prepare.outputs.FRONT_END_REPO }}
       os_id:      alpine
-      verall:     ${{ needs.Prepare.outputs.verall }}
-      vertwo:     ${{ needs.Prepare.outputs.vertwo }}
+      verall:     '20221104'
+      vertwo:     test
       platforms:  linux/amd64, linux/arm64, linux/arm/v7, linux/386, linux/arm/v6, linux/ppc64le, linux/s390x
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=nginx:stable-alpine
