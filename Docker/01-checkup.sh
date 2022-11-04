@@ -171,14 +171,14 @@ check_file_config_js() {
     eval "$invocation"
 
     File_Path=$WEBUI_Config_Path/config.js
-    if [ -n "$apiUrl" ]; then
+    if [ -n "${apiUrl:-}" ]; then
         if [[ "$apiUrl" == "false" ]]; then
             sed -i "/apiUrl/s|:.*,|: $apiUrl,|"     "$File_Path"
         else
             sed -i "/apiUrl/s|:.*,|: \"$apiUrl\",|" "$File_Path"
         fi
     fi
-    if [ -n "$mount" ]; then
+    if [ -n "${mount:-}" ]; then
         sed -i "/mount/s|'.*'|'$mount'|" "$File_Path"
     fi
 
@@ -198,25 +198,25 @@ check_file_barinfo_js() {
     eval "$invocation"
 
     File_Path=$WEBUI_Config_Path/barinfo.js
-    if [ -n "$show"     ]; then
+    if [ -n "${show:-}"     ]; then
         sed -i "/    show/s|: .*,|: $show,|"                         "$File_Path" ; fi
-    if [ -n "$infoshow" ]; then
+    if [ -n "${infoshow:-}" ]; then
         sed -i "/info.*show/s|show:.*text|show: $infotext, text|"    "$File_Path" ; fi
-    if [ -n "$infotext" ]; then
+    if [ -n "${infotext:-}" ]; then
         sed -i "/info.*text/s|text.*link|text: \"$infotext\", link|" "$File_Path" ; fi
-    if [ -n "$infolink" ]; then
+    if [ -n "${infolink:-}" ]; then
         sed -i "/info.*link/s|link.*}|link: \"$infolink\" }|"        "$File_Path" ; fi
-    if [ -n "$ICPshow"  ]; then
+    if [ -n "${ICPshow:-}"  ]; then
         sed -i "/ICP.*show/s|show.*text|show: $ICPshow, text|"       "$File_Path" ; fi
-    if [ -n "$ICPtext"  ]; then
+    if [ -n "${ICPtext:-}"  ]; then
         sed -i "/ICP.*show/s|text.*link|show: \"$ICPtext\", link|"   "$File_Path" ; fi
-    if [ -n "$ICPlink"  ]; then
+    if [ -n "${ICPlink:-}"  ]; then
         sed -i "/ICP.*link/s|link.*}|link: \"$ICPlink\" }|"          "$File_Path" ; fi
-    if [ -n "$GAshow"   ]; then
+    if [ -n "${GAshow:-}"   ]; then
         sed -i "/GA.*show/s|show.*text|show: $GAshow, text|"         "$File_Path" ; fi
-    if [ -n "$GAtext"   ]; then
+    if [ -n "${GAtext:-}"   ]; then
         sed -i "/GA.*show/s|text.*link|show: \"$GAtext\", link|"     "$File_Path" ; fi
-    if [ -n "$GAlink"   ]; then
+    if [ -n "${GAlink:-}"   ]; then
         sed -i "/GA.*link/s|link.*}|link: \"$GAlink\" }|"            "$File_Path" ; fi
 
     echo "已写入 $File_Path 。"
