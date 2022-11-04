@@ -6,7 +6,7 @@ set -e; set -u
 
 DDTV_Path=/DDTV
 Backups_Path=/DDTV_Backups
-WEBUI_Config_Path=${WEBUI_Path:-/DDTV}/static/config
+WEBUI_Config_Path=${WEBUI_Path:-/DDTV/static}/config
 RoomListConfig=${RoomListConfig:-"./RoomListConfig.json"}
 
 ARGs="$*"
