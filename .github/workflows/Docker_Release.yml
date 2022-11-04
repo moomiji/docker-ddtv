@@ -2,12 +2,8 @@ name: Docker_Release
 
 on:
   workflow_dispatch:
-  release:
-    types: [released]
-  watch: # 合并删除
-    types: [started]
   push:
-    branches: [master]
+    branches: [webui]
     paths:
       - 'Docker/**'
       - '!Docker/**/README.md'
@@ -41,7 +37,7 @@ jobs:
 
 # jobs.<job_id>.with.<with_id>上下文不支持env, 仅支持 github, needs
   WEBUI_nginx-alpine:
-    if: false
+#    if: false
     needs: [Prepare]
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
@@ -56,6 +52,7 @@ jobs:
 
 # alpine
   Deps_alpine:
+    if: false
     needs: [Prepare]
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
@@ -69,6 +66,7 @@ jobs:
     secrets:    inherit
 
   CLI_alpine:
+    if: false
     needs: [Prepare, Deps_alpine]
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
@@ -82,6 +80,7 @@ jobs:
     secrets:    inherit
 
   WEBServer_alpine:
+    if: false
     needs: [Prepare, Deps_alpine]
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
@@ -96,6 +95,7 @@ jobs:
 
 # debian
   Deps_debian:
+    if: false
     needs: [Prepare]
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
@@ -109,6 +109,7 @@ jobs:
     secrets:    inherit
 
   CLI_debian:
+    if: false
     needs: [Prepare, Deps_debian]
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
@@ -122,6 +123,7 @@ jobs:
     secrets:    inherit
 
   WEBServer_debian:
+    if: false
     needs: [Prepare, Deps_debian]
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
