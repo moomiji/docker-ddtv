@@ -22,8 +22,8 @@ KeyFile=DDTV_Core.dll
 wget --no-verbose https://github.com/moomiji/docker-ddtv/releases/download/edge/webui-20221104.zip
 7z x -bd webui-20221104.zip
 ls -al
-mv -v ./disk ./static
-File_Path=./static
+mv -v disk/ static/
+File_Path=./static/
 
 
 # 转移DDTV
