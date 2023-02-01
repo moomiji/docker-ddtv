@@ -37,3 +37,14 @@ jobs:
       CLI_REPO: ddtv/cli
       BACK_END_REPO: ddtv/webserver
       FRONT_END_REPO: ddtv/webui
+      IMAGES: ${{ inputs.repo }}\nghcr.io/$GITHUB_REPOSITORY_OWNER/${{ inputs.repo }}
+
+  WEBUI_nginx-alpine:
+    needs: [Prepare]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Metadata for images
+        id: metadata
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ needs.Prepare.outputs.IMAGES }}
