@@ -1,0 +1,39 @@
+name: test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [test]
+    paths:
+      - '.github/workflows/test.yml'
+
+jobs:
+  Prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output Version
+        id: version
+        run: |
+          Version=$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4}' FS='["]')
+          Version_major=$(echo "${Version%%.*}" | sed 's/[^0-9]//g')
+          Version_minor=${Version#*.}
+          echo "all=${Version_major}.${Version_minor}" >> $GITHUB_OUTPUT
+          echo "two=${Version_major}.${Version_minor%%.*}" >> $GITHUB_OUTPUT
+          
+          echo "$GITHUB_REPOSITORY_OWNER"
+          
+          GITHUB_REPOSITORY_OWNER=$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[a-z]' '[A-Z]')
+          echo "$GITHUB_REPOSITORY_OWNER"
+          
+          GITHUB_REPOSITORY_OWNER=$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[A-Z]' '[a-z]')
+          echo "$GITHUB_REPOSITORY_OWNER"
+    outputs:
+      verall: ${{ steps.version.outputs.all }} # all="3.0.1.9"
+      vertwo: ${{ steps.version.outputs.two }} # two="3.0"
+      DOTNET_VERSION: '6.0'
+      DOCKER_DIR: ./Docker
+      PLATFORMS: linux/amd64, linux/arm64, linux/arm/v7
+      DEPS_REPO: ddtv/deps
+      CLI_REPO: ddtv/cli
+      BACK_END_REPO: ddtv/webserver
+      FRONT_END_REPO: ddtv/webui
