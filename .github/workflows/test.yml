@@ -15,8 +15,8 @@ jobs:
         id: step_one
         run: |
           echo 'JSON_RESPONSE<<EOF' >> $GITHUB_OUTPUT
-          echo https://example.com >> $GITHUB_OUTPUT
-          echo https://example2.com >> $GITHUB_OUTPUT
+          echo 'https://example.com' >> $GITHUB_OUTPUT
+          echo 'https://example2.com' >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_ENV
           echo $GITHUB_ENV
       - name: Output Version
