@@ -18,7 +18,10 @@ jobs:
           echo 'https://example.com' >> $GITHUB_OUTPUT
           echo 'https://example2.com' >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_ENV
-          echo $GITHUB_ENV
+      - name: Use the value
+        id: step_two
+        run: |
+          echo "${{ env.JSON_RESPONSE }}"
       - name: Output Version
         id: version
         run: |
