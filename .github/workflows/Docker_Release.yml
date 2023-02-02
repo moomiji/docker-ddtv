@@ -27,9 +27,11 @@ jobs:
           Version_minor=${Version#*.}
           echo ::set-output name=all::"${Version_major}.${Version_minor}"
           echo ::set-output name=two::"${Version_major}.${Version_minor%%.*}"
+          echo "owner=${{ github.repository_owner }}" | tr '[A-Z]' '[a-z]' >> $GITHUB_OUTPUT
     outputs:
       verall: ${{ steps.version.outputs.all }} # all="3.0.1.9"
       vertwo: ${{ steps.version.outputs.two }} # two="3.0"
+      owner: ${{ steps.version.outputs.owner }}
       DOTNET_VERSION: '6.0'
       DOCKER_DIR: ./Docker
       PLATFORMS: linux/amd64, linux/arm64, linux/arm/v7
@@ -78,8 +80,8 @@ jobs:
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
-      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_REPO }}:alpine
     secrets:    inherit
+      build-args: REPO=ghcr.io/${{ needs.Prepare.outputs.owner }}/${{ needs.Prepare.outputs.DEPS_REPO }}:alpine
 
   WEBServer_alpine:
     needs: [Prepare, Deps_alpine]
@@ -91,8 +93,8 @@ jobs:
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
-      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_REPO }}:alpine
     secrets:    inherit
+      build-args: REPO=ghcr.io/${{ needs.Prepare.outputs.owner }}/${{ needs.Prepare.outputs.DEPS_REPO }}:alpine
 
 # debian
   Deps_debian:
@@ -118,8 +120,8 @@ jobs:
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
-      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_REPO }}:debian
     secrets:    inherit
+      build-args: REPO=ghcr.io/${{ needs.Prepare.outputs.owner }}/${{ needs.Prepare.outputs.DEPS_REPO }}:debian
 
   WEBServer_debian:
     needs: [Prepare, Deps_debian]
@@ -131,5 +133,5 @@ jobs:
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
-      build-args: REPO=ghcr.io/${{ github.actor }}/${{ needs.Prepare.outputs.DEPS_REPO }}:debian
     secrets:    inherit
+      build-args: REPO=ghcr.io/${{ needs.Prepare.outputs.owner }}/${{ needs.Prepare.outputs.DEPS_REPO }}:debian
