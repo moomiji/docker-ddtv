@@ -25,13 +25,13 @@ jobs:
           Version=$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4}' FS='["]')
           Version_major=$(echo "${Version%%.*}" | sed 's/[^0-9]//g')
           Version_minor=${Version#*.}
-          echo ::set-output name=all::"${Version_major}.${Version_minor}"
-          echo ::set-output name=two::"${Version_major}.${Version_minor%%.*}"
+          echo "verall=${Version_major}.${Version_minor}" >> $GITHUB_OUTPUT
+          echo "vertwo=${Version_major}.${Version_minor%%.*}" >> $GITHUB_OUTPUT
           echo "owner=${{ github.repository_owner }}" | tr '[A-Z]' '[a-z]' >> $GITHUB_OUTPUT
     outputs:
-      verall: ${{ steps.version.outputs.all }} # all="3.0.1.9"
-      vertwo: ${{ steps.version.outputs.two }} # two="3.0"
       owner: ${{ steps.version.outputs.owner }}
+      verall: ${{ steps.version.outputs.verall }} # verall="3.0.1.9"
+      vertwo: ${{ steps.version.outputs.vertwo }} # vertwo="3.0"
       DOTNET_VERSION: '6.0'
       DOCKER_DIR: ./Docker
       PLATFORMS: linux/amd64, linux/arm64, linux/arm/v7
@@ -45,6 +45,7 @@ jobs:
   WEBUI_nginx-alpine:
     if: false
     needs: [Prepare]
+    secrets: inherit
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
       repo:       ${{ needs.Prepare.outputs.FRONT_END_REPO }}
@@ -54,11 +55,11 @@ jobs:
       platforms:  linux/amd64, linux/arm64, linux/arm/v7, linux/386, linux/arm/v6, linux/ppc64le, linux/s390x
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=nginx:stable-alpine
-    secrets:    inherit
 
 # alpine
   Deps_alpine:
     needs: [Prepare]
+    secrets: inherit
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
       repo:       ${{ needs.Prepare.outputs.DEPS_REPO }}
@@ -68,10 +69,10 @@ jobs:
       platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=mcr.microsoft.com/dotnet/aspnet:${{ needs.Prepare.outputs.DOTNET_VERSION }}-alpine
-    secrets:    inherit
 
   CLI_alpine:
     needs: [Prepare, Deps_alpine]
+    secrets: inherit
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
       repo:       ${{ needs.Prepare.outputs.CLI_REPO }}
@@ -80,11 +81,11 @@ jobs:
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
-    secrets:    inherit
       build-args: REPO=ghcr.io/${{ needs.Prepare.outputs.owner }}/${{ needs.Prepare.outputs.DEPS_REPO }}:alpine
 
   WEBServer_alpine:
     needs: [Prepare, Deps_alpine]
+    secrets: inherit
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
       repo:       ${{ needs.Prepare.outputs.BACK_END_REPO }}
@@ -93,12 +94,12 @@ jobs:
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
-    secrets:    inherit
       build-args: REPO=ghcr.io/${{ needs.Prepare.outputs.owner }}/${{ needs.Prepare.outputs.DEPS_REPO }}:alpine
 
 # debian
   Deps_debian:
     needs: [Prepare]
+    secrets: inherit
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
       repo:       ${{ needs.Prepare.outputs.DEPS_REPO }}
@@ -108,10 +109,10 @@ jobs:
       platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=mcr.microsoft.com/dotnet/aspnet:${{ needs.Prepare.outputs.DOTNET_VERSION }}
-    secrets:    inherit
 
   CLI_debian:
     needs: [Prepare, Deps_debian]
+    secrets: inherit
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
       repo:       ${{ needs.Prepare.outputs.CLI_REPO }}
@@ -120,11 +121,11 @@ jobs:
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
-    secrets:    inherit
       build-args: REPO=ghcr.io/${{ needs.Prepare.outputs.owner }}/${{ needs.Prepare.outputs.DEPS_REPO }}:debian
 
   WEBServer_debian:
     needs: [Prepare, Deps_debian]
+    secrets: inherit
     uses: ./.github/workflows/Docker_Build_Push.yml
     with:
       repo:       ${{ needs.Prepare.outputs.BACK_END_REPO }}
@@ -133,5 +134,4 @@ jobs:
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
-    secrets:    inherit
       build-args: REPO=ghcr.io/${{ needs.Prepare.outputs.owner }}/${{ needs.Prepare.outputs.DEPS_REPO }}:debian
