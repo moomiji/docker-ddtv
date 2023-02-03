@@ -62,7 +62,7 @@ jobs:
 
       - name: Metadata for images
         id: metadata
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@${{ inputs.repo }}
         with:
           images: ghcr.io/${{ github.actor }}/${{ inputs.repo }}
           flavor: |
