@@ -21,7 +21,6 @@ checkup() {
         DDTV_CLI)
             check_dir_DDTV
             check_file_BiliUser_ini
-            check_file_DDTV_Config_ini
             check_file_RoomListConfig_json
             ;;
         DDTV_WEB_Server)
@@ -31,7 +30,6 @@ checkup() {
             #    check_file_barinfo_js
             #fi
             check_file_BiliUser_ini
-            check_file_DDTV_Config_ini
             check_file_RoomListConfig_json
             ;;
         DDTV_WEBUI)
@@ -105,61 +103,6 @@ check_file_BiliUser_ini() {
                 cat "$File_Path"
             )"
         fi
-    fi
-}
-
-# 写入 DDTV_Config.ini
-# 可用参数有:
-#   $arg_name 
-#       e.g. ${arg_name:+"arg_name=$arg_name"}
-check_file_DDTV_Config_ini() {
-    eval "$invocation"
-
-    File_Path=$DDTV_Path/DDTV_Config.ini
-    if [ ! -e "$File_Path" ]; then
-# CoreConfigClass.cs Start
-        echo "
-[Core]
-${RoomListConfig:+"RoomListConfig=$RoomListConfig"}
-${GUI_FirstStart:+"GUI_FirstStart=$GUI_FirstStart"}
-${WEB_FirstStart:+"WEB_FirstStart=$WEB_FirstStart"}
-${IsAutoTranscod:+"IsAutoTranscod=$IsAutoTranscod"}
-${TranscodParmetrs:+"TranscodParmetrs=$TranscodParmetrs"}
-${WebHookUrl:+"WebHookUrl=$WebHookUrl"}
-${ClientAID:+"ClientAID=$ClientAID"}
-[WEB_API]
-${WEB_API_SSL:+"WEB_API_SSL=$WEB_API_SSL"}
-${pfxFileName:+"pfxFileName=$pfxFileName"}
-${pfxPasswordFileName:+"pfxPasswordFileName=$pfxPasswordFileName"}
-${WebUserName:+"WebUserName=$WebUserName"}
-${WebPassword:+"WebPassword=$WebPassword"}
-${AccessKeyId:+"AccessKeyId=$AccessKeyId"}
-${AccessKeySecret:+"AccessKeySecret=$AccessKeySecret"}
-${ServerAID:+"ServerAID=$ServerAID"}
-${ServerName:+"ServerName=$ServerName"}
-${AccessControlAllowOrigin:+"AccessControlAllowOrigin=$AccessControlAllowOrigin"}
-${AccessControlAllowCredentials:+"AccessControlAllowCredentials=$AccessControlAllowCredentials"}
-${CookieDomain:+"CookieDomain=$CookieDomain"}
-[Download]
-${DownloadPath:+"DownloadPath=$DownloadPath"}
-${TmpPath:+"TmpPath=$TmpPath"}
-${DownloadDirectoryName:+"DownloadDirectoryName=$DownloadDirectoryName"}
-${DownloadFileName:+"DownloadFileName=$DownloadFileName"}
-${RecQuality:+"RecQuality=$RecQuality"}
-${IsRecDanmu:+"IsRecDanmu=$IsRecDanmu"}
-${IsRecGift:+"IsRecGift=$IsRecGift"}
-${IsRecGuard:+"IsRecGuard=$IsRecGuard"}
-${IsRecSC:+"IsRecSC=$IsRecSC"}
-${IsFlvSplit:+"IsFlvSplit=$IsFlvSplit"}
-${FlvSplitSize:+"FlvSplitSize=$FlvSplitSize"}
-${DoNotSleepWhileDownloading:+"DoNotSleepWhileDownloading=$DoNotSleepWhileDownloading"}
-${Shell:+"Shell=$Shell"}
-" > "$File_Path" &&
-# CoreConfigClass.cs End
-    echo "已写入 $File_Path 。"
-    say_verbose "$File_Path:\n$(
-        cat < "$File_Path" | grep -v '^$'
-    )"
     fi
 }
 
