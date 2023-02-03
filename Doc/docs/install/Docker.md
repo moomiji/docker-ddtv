@@ -10,13 +10,11 @@
 
 ## 可用镜像
 
-#### 特点
-
 | Docker 项目名 | 特点 |
 | :---- | :---- |
 | DDTV_CLI | 重启容器即可更新 DDTV |
 | DDTV_WEB_Server | 重启容器即可更新 DDTV |
-| DDTV_Deps | 只含 DDTV 必须依赖，<br>支持`arm64v8`和`arm32v7`架构 |
+| DDTV_Deps | 只含 DDTV 必须依赖 |
 <!--
 | DDTV_WEBUI | 支持`amd64` `arm64v8` `arm32v7` `386` `arm32v6` `ppc64le` `s390x`架构 |
 -->
@@ -36,11 +34,11 @@
 
 | 系统 \ 架构 | amd64 | arm64v8 | arm32v7 | 可用标签 |
 | :---- | :----: | :----: | :----: | :---- |
-| alpine <sup>1</sup> | ✅ | ❌ | ❌ | `alpine` `3.0-alpine` `3.0.*.*-alpine` |
+| alpine | ✅ | ❓ <sup>1</sup> | ❓ <sup>1</sup> | `alpine` `3.0-alpine` `3.0.*.*-alpine` |
 | debian | ✅ | ✅ | ✅ | `latest` `debian` `3.0` `3.0.*.*` |
 
 :::warning Tip 1
-受 DDTV 依赖影响，目前 alpine arm 下 DDTV 的`日志功能`、`控制台打印二维码功能`无法使用，并因此存在内存泄露问题；若有需要，可使用`DDTV_Deps`运行 DDTV。
+受 DDTV 依赖影响，目前 alpine arm 下 DDTV 的~~日志功能~~、`二维码功能`无法使用，~~并因此存在内存泄露问题~~（日志及其内存泄露问题应该解决了，等个有缘人运行长时间测试.jpg），不建议使用。
 :::
 
 ## 最佳实践
@@ -51,10 +49,10 @@
 
 ```shell
 wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker-ddtv.env
-vi docker-ddtv.env
+nano docker-ddtv.env
 
 wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker-ddtv.env
-vi docker-compose.yml
+nano docker-compose.yml
 > version: '3'
 > services:
 >   DDTV.service_name:
@@ -122,6 +120,7 @@ sudo docker rm -f DDTV_CLI
 sudo docker volume rm DDTV_Rec
 ```
 
+<!--
 #### 在 DDTV_Deps 中运行 CLI 或 WEB_Server
 
 ```shell
@@ -139,6 +138,7 @@ sudo docker run -d -p 11419:11419 \ # \后面不能有字符
         --name DDTV_${Project}    \
         ghcr.io/chkzl/ddtv/deps:alpine /bin/bash -c "dotnet /DDTV/DDTV_${Project}.dll"
 ```
+-->
 
 ## 单独挂载配置文件
 
@@ -205,16 +205,15 @@ sudo docker run -d -p 11419:11419 \ # \后面不能有字符
 | 参数名 | 格式 | 默认值 | 说明 |
 | ---- | ---- | ---- | ---- |
 | RoomListConfig | 路径 | `./RoomListConfig.json` | RoomListConfig.json文件位置 |
-| IsAutoTranscod | `bool` | `false` | 启用自动转码 |
-| IsRecDanmu | `bool` | `true` | 全局弹幕录制开关 |
-| IsRecGift | `bool` | `true` | 全局礼物录制开关 |
-| IsRecGuard | `bool` | `true` | 全局上舰录制开关 |
-| IsRecSC | `bool` | `true` | 全局SC录制开关 |
-| IsFlvSplit | `bool` | `false` | 全局FLV文件按大小切分开关，注：启动后自动合并、自动转码失效 |
-| FlvSplitSize | `longint` | `1073741824` | FLV文件切分的大小(byte) |
+| IsHls | `bool` | `True` | 是否优先使用HLS进行录制 |
+| IsDev | `bool` | `False` | 是否使用开发版更新模式 |
+| IsAutoTranscod | `bool` | `False` | 是否启用自动转码 |
+| IsFlvSplit | `bool` | `False` | 是否启用全局FLV文件按大小切分开关，注：启动后自动合并、自动转码失效 |
+| FlvSplitSize | `longint` | `1073741824` | 文件切分的大小(byte) |
 | WebUserName | `string` | `ami` | WEB登陆使用的用户名 |
 | WebPassword | `string` | `ddtv` | WEB登陆使用的密码 |
-| Shell | `bool` | `false` | 用于控制下载完成后是否执行对应房间的Shell命令 |
+| Shell | `bool` | `False` | 用于控制下载完成后是否执行对应房间的Shell命令 |
+| WebHookUrl | `string` | `string.Empty` | WebHook的目标地址 |
 
 <!--
 #### WEBUI 配置文件变量<sup>3</sup>
@@ -238,7 +237,7 @@ sudo docker run -d -p 11419:11419 \ # \后面不能有字符
 更多可用变量见 [官网配置说明](/config/) 与 [docker-ddtv.env](https://github.com/CHKZL/DDTV/blob/master/docker-ddtv.env)。
 
 :::warning Tip 2
-变量只在 `配置文件不存在时` 可用。
+变量只在 `配置或配置文件不存在时` 可用。
 :::
 
 <!--
@@ -251,6 +250,6 @@ sudo docker run -d -p 11419:11419 \ # \后面不能有字符
 
 ```shell
 sudo docker run ... \
-     --no-update # 容器重启后不更新 DDTV
+     --no-update # 容器重启后不自动更新 DDTV
      --verbose   # 脚本输出更多信息（若服务器多人使用docker，请谨慎使用该参数，因为会将DDTV中的个人信息\配置输出到docker日志中）
 ```

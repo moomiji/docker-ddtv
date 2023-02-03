@@ -2,18 +2,14 @@ name: Docker_Release
 
 on:
   workflow_dispatch:
-  release:
-    types: [released]
-  watch: # 合并删除
+  watch:
     types: [started]
   push:
     branches: [master]
     paths:
-      - 'Docker/**'
-      - '!Docker/**/README.md'
-      - '!Docker/monitor/**'
+      - 'Docker/ddtv'
+      - 'Docker/workflows'
       - '.github/workflows/Docker_Release.yml'
-      - '.github/workflows/Docker_Build_Push.yml'
 
 jobs:
   Prepare:
@@ -46,7 +42,7 @@ jobs:
     if: false
     needs: [Prepare]
     secrets: inherit
-    uses: ./.github/workflows/Docker_Build_Push.yml
+    uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
       repo:       ${{ needs.Prepare.outputs.FRONT_END_REPO }}
       os_id:      alpine
@@ -60,7 +56,7 @@ jobs:
   Deps_alpine:
     needs: [Prepare]
     secrets: inherit
-    uses: ./.github/workflows/Docker_Build_Push.yml
+    uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
       repo:       ${{ needs.Prepare.outputs.DEPS_REPO }}
       os_id:      alpine
@@ -73,26 +69,26 @@ jobs:
   CLI_alpine:
     needs: [Prepare, Deps_alpine]
     secrets: inherit
-    uses: ./.github/workflows/Docker_Build_Push.yml
+    uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
       repo:       ${{ needs.Prepare.outputs.CLI_REPO }}
       os_id:      alpine
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
+      platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=ghcr.io/${{ needs.Prepare.outputs.owner }}/${{ needs.Prepare.outputs.DEPS_REPO }}:alpine
 
   WEBServer_alpine:
     needs: [Prepare, Deps_alpine]
     secrets: inherit
-    uses: ./.github/workflows/Docker_Build_Push.yml
+    uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
       repo:       ${{ needs.Prepare.outputs.BACK_END_REPO }}
       os_id:      alpine
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      platforms:  linux/amd64 # ${{ needs.Prepare.outputs.PLATFORMS }}
+      platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
       docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=ghcr.io/${{ needs.Prepare.outputs.owner }}/${{ needs.Prepare.outputs.DEPS_REPO }}:alpine
 
@@ -100,7 +96,7 @@ jobs:
   Deps_debian:
     needs: [Prepare]
     secrets: inherit
-    uses: ./.github/workflows/Docker_Build_Push.yml
+    uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
       repo:       ${{ needs.Prepare.outputs.DEPS_REPO }}
       os_id:      debian
@@ -113,7 +109,7 @@ jobs:
   CLI_debian:
     needs: [Prepare, Deps_debian]
     secrets: inherit
-    uses: ./.github/workflows/Docker_Build_Push.yml
+    uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
       repo:       ${{ needs.Prepare.outputs.CLI_REPO }}
       os_id:      debian
@@ -126,7 +122,7 @@ jobs:
   WEBServer_debian:
     needs: [Prepare, Deps_debian]
     secrets: inherit
-    uses: ./.github/workflows/Docker_Build_Push.yml
+    uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
       repo:       ${{ needs.Prepare.outputs.BACK_END_REPO }}
       os_id:      debian
