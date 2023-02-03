@@ -11,6 +11,7 @@ jobs:
   Prepare:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Set the value in bash
         id: step_one
         run: |
@@ -18,6 +19,7 @@ jobs:
           echo 'https://example.com' >> $GITHUB_OUTPUT
           echo 'https://example2.com' >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
+          ls
       - name: Output Version
         id: version
         run: |
