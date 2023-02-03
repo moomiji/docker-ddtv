@@ -54,6 +54,6 @@ jobs:
     steps:
       - name: Metadata for images
         id: metadata
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@${{ github.actor }}
         with:
           images: ${{ needs.Prepare.outputs.IMAGES }}
