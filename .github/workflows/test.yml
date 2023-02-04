@@ -54,6 +54,6 @@ jobs:
     steps:
       - name: ${{ needs.Prepare.outputs.FRONT_END_REPO }}
         id: metadata
-        uses: docker/metadata-action@${{ github.actor }}
+        uses: docker/metadata-action@3
         with:
           images: ${{ needs.Prepare.outputs.IMAGES }}
