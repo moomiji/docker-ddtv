@@ -37,7 +37,7 @@ jobs:
           GITHUB_REPOSITORY_OWNER=$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[A-Z]' '[a-z]')
           echo "$GITHUB_REPOSITORY_OWNER"
           header='authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
-          curl -fLOH "$header" -I "https://api.github.com/repos/CHKZL/DDTV/releases/latest"
+          curl -LH "$header" -I "https://api.github.com/repos/CHKZL/DDTV/releases/latest"
           ls -al
 
     outputs:
