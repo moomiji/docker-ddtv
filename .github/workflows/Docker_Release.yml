@@ -7,8 +7,8 @@ on:
   push:
     branches: [master]
     paths:
-      - 'Docker/ddtv'
-      - 'Docker/workflows'
+      - 'Docker/ddtv/**'
+      - 'Docker/.github/workflows/**'
       - '.github/workflows/Docker_Release.yml'
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
           echo "vertwo=${Version_major}.${Version_minor%%.*}" >> $GITHUB_OUTPUT
           echo "owner=${{ github.repository_owner }}" | tr '[A-Z]' '[a-z]' >> $GITHUB_OUTPUT
     outputs:
-      owner: ${{ steps.version.outputs.owner }}
+      owner:  ${{ steps.version.outputs.owner  }}
       verall: ${{ steps.version.outputs.verall }} # verall="3.0.1.9"
       vertwo: ${{ steps.version.outputs.vertwo }} # vertwo="3.0"
       DOTNET_VERSION: '6.0'
