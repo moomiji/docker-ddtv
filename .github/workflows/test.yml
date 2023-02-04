@@ -52,7 +52,7 @@ jobs:
     needs: [Prepare]
     runs-on: ubuntu-latest
     steps:
-      - name: Metadata for images
+      - name: ${{ needs.Prepare.outputs.FRONT_END_REPO }}
         id: metadata
         uses: docker/metadata-action@${{ github.actor }}
         with:
