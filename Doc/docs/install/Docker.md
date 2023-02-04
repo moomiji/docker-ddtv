@@ -1,10 +1,14 @@
-# DDTV Docker版安装教程（CLI / WEB_Server<!--/WEBUI-->）
+# DDTV_Docker版使用教程（Linux）
+
+Docker 镜像在 [Docker Hub](https://hub.docker.com/u/ddtv) 和 [GitHub Container registry](https://github.com/CHKZL?tab=packages&repo_name=DDTV) 上提供。
+
+两个位置提供的镜像完全一样，都是对 DDTV 发行版本的简单包装。
 
 ## 先决条件
   - Linux
   - 容器引擎，如 Docker-ce 18.03 或更高版本 ([安装教程](https://mirrors.tuna.tsinghua.edu.cn/help/docker-ce/))、Podman 等
 
-:::tip DockerHub 更换镜像源方法
+:::tip DockerHub 更换镜像源
 [DockerHub 更换镜像源教程](https://www.daocloud.io/mirror)
 :::
 
@@ -18,6 +22,10 @@
 <!--
 | DDTV_WEBUI | 支持`amd64` `arm64v8` `arm32v7` `386` `arm32v6` `ppc64le` `s390x`架构 |
 -->
+
+:::tip 在容器中更新 DDTV
+重启容器即可，配置`AutoInsallUpdate`目前仅供DDTV_GUI使用。
+:::
 
 #### 镜像名
 
@@ -38,7 +46,7 @@
 | debian | ✅ | ✅ | ✅ | `latest` `debian` `3.0` `3.0.*.*` |
 
 :::warning Tip 1
-受 DDTV 依赖影响，目前 alpine arm 下 DDTV 的~~日志功能~~、`二维码功能`无法使用，~~并因此存在内存泄露问题~~（日志及其内存泄露问题应该解决了，等个有缘人运行长时间测试.jpg），不建议使用。
+受 DDTV 依赖影响，目前 alpine arm 下 DDTV 的~~日志功能~~、`二维码功能`无法使用，~~并因此存在内存泄露问题~~（日志及内存泄露问题应该解决了，等个有缘人测试.jpg），不建议使用。
 :::
 
 ## 最佳实践
@@ -48,10 +56,10 @@
 #### 方法一：修改`docker-compose.yml`后自行运行
 
 ```shell
-wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker-ddtv.env
+wget https://raw.githubusercontent.com/moomiji/docker-ddtv/docker/docker-ddtv.env
 nano docker-ddtv.env
 
-wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker-ddtv.env
+wget https://raw.githubusercontent.com/moomiji/docker-ddtv/docker/docker-compose.yml
 nano docker-compose.yml
 > version: '3'
 > services:
@@ -65,21 +73,21 @@ nano docker-compose.yml
 #### 方法二：使用参数`--env-file`运行
 
 <!--
-看官方文档是提供了的，但实际测试没成功过，有没有会用的来修改下
+看官方文档是提供了的，但实际测试没成功过，有没有佬来修下
 
 - docker-compose
 ```shell
-wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker-ddtv.env
-vi docker-ddtv.env
+wget https://raw.githubusercontent.com/moomiji/docker-ddtv/docker/docker-ddtv.env
+nano docker-ddtv.env
 
-wget https://raw.githubusercontent.com/CHKZL/DDTV/master/docker-compose.yml
+wget https://raw.githubusercontent.com/moomiji/docker-ddtv/docker/docker-compose.yml
 sudo docker-compose --env-file ./docker-ddtv.env up
 ```
 -->
 
 - docker cli
 ```shell
-wget https://raw.githubusercontent.com/CHKZL/DDTV/master/Docker/docker-ddtv.env
+wget https://raw.githubusercontent.com/moomiji/docker-ddtv/docker/docker-ddtv.env
 vi docker-ddtv.env
 sudo docker run --env-file=./docker-ddtv.env ...
 ```
@@ -155,30 +163,12 @@ sudo docker run -d -p 11419:11419 \ # \后面不能有字符
 ```
 
 ::: tip
-变量RoomList、变量BiliUser 和 CLI / WEB_Server 配置文件变量将不可用。
+若单独挂载RoomListConfig.json，环境变量RoomList、变量BiliUser 和 CLI / WEB_Server 配置文件变量将不可用。<sup>2</sup>
 :::
-
-<!--
-#### WEBUI
-
-```shell
--v ${PWD}/DDTV:/DDTV    \ # 可选，持久化 DDTV_CLI 与 配置文件
-
-# 替换成
-
--v ${PWD}/DDTV/RoomListConfig.json:/DDTV/RoomListConfig.json \
--v ${PWD}/DDTV/DDTV_Config.ini:/DDTV/DDTV_Config.ini         \
--v ${PWD}/DDTV/BiliUser.ini:/DDTV/BiliUser.ini               \
-```
-
-::: tip
-变量RoomList、变量BiliUser 和 CLI / WEB_Server 配置文件变量将不可用。
-:::
--->
 
 ## 可用环境变量
 
-#### Docker 版独有变量
+#### Docker 版独有环境变量
 
 | 参数名 | 格式 | 默认值 | 说明 | 可用镜像 |
 | ---- | ---- | ---- | ---- | ---- |
@@ -200,7 +190,9 @@ sudo docker run -d -p 11419:11419 \ # \后面不能有字符
 ```
 :::
 
-#### CLI / WEB_Server 配置文件常用变量 <sup>2</sup>
+#### CLI / WEB_Server 配置文件常用环境变量 <sup>2</sup>
+
+参数名与[DDTV Core通用配置文件](/config/DDTV_Config.html)的配置名完全相同。
 
 | 参数名 | 格式 | 默认值 | 说明 |
 | ---- | ---- | ---- | ---- |
@@ -214,6 +206,16 @@ sudo docker run -d -p 11419:11419 \ # \后面不能有字符
 | WebPassword | `string` | `ddtv` | WEB登陆使用的密码 |
 | Shell | `bool` | `False` | 用于控制下载完成后是否执行对应房间的Shell命令 |
 | WebHookUrl | `string` | `string.Empty` | WebHook的目标地址 |
+
+:::tip 使用dev开发版
+法1：初次启动容器，可设置环境变量`IsDev=True`后启动容器 <sup>2</sup>，在登陆bilibili（即配置文件写入）后关闭容器
+<br>法2：停止容器，修改配置文件DDTV_Config.ini的配置`IsDev=True`
+<br>之后启动容器获取dev更新
+:::
+
+:::warning Tip 2
+变量只在`初次启动`，即`配置或配置文件不存在`时可用。
+:::
 
 <!--
 #### WEBUI 配置文件变量<sup>3</sup>
@@ -234,22 +236,20 @@ sudo docker run -d -p 11419:11419 \ # \后面不能有字符
 | GAlink | `string` | 无 | 公网安备信息跳转链接 |
 -->
 
-更多可用变量见 [官网配置说明](/config/) 与 [docker-ddtv.env](https://github.com/CHKZL/DDTV/blob/master/docker-ddtv.env)。
-
-:::warning Tip 2
-变量只在 `配置或配置文件不存在时` 可用。
-:::
-
 <!--
 :::warning Tip 3
 变量只在 `第一次启动时` 可用。
 :::
 -->
 
+更多可用变量见 [官网配置说明](/config/DDTV_Config.html#配置说明) 与 [docker-ddtv.env](https://github.com/moomiji/docker-ddtv/blob/docker/docker-ddtv.env)。
+
 ## CLI / WEB_Server 可用运行参数
 
 ```shell
-sudo docker run ... \
-     --no-update # 容器重启后不自动更新 DDTV
-     --verbose   # 脚本输出更多信息（若服务器多人使用docker，请谨慎使用该参数，因为会将DDTV中的个人信息\配置输出到docker日志中）
+sudo docker run  \
+     ...         \
+     镜像[:标签] \
+     --no-update \ # 容器重启后不自动更新 DDTV
+     --verbose   \ # 脚本输出更多信息（若服务器多人使用docker，请谨慎使用该参数，因为会将DDTV中的个人信息\配置输出到docker日志中）
 ```
