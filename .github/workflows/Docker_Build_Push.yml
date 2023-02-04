@@ -1,0 +1,107 @@
+name: Call_Docker_Build_Push
+
+on:
+  workflow_call:
+    inputs:
+      docker-dir:
+        required: true
+        type: string
+      repo:
+        required: true
+        type: string
+      os_id:
+        required: true
+        type: string
+      platforms:
+        required: true
+        type: string
+      verall:
+        required: true
+        type: string
+      vertwo:
+        required: true
+        type: string
+      build-args:
+        required: true
+        type: string
+      push:
+        required: false
+        type: boolean
+        default: true
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: false
+      DOCKERHUB_PASSWORD:
+        required: false
+
+jobs:
+  P:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set GITHUB_ENV
+        run: |
+          owner_lower=$(echo "${{ github.repository_owner }}" | tr '[A-Z]' '[a-z]')
+          echo "images<<EOF" >> $GITHUB_ENV
+          if ${{ github.repository_id == '207967312' }}; then
+              echo "${{ inputs.repo }}" >> $GITHUB_ENV
+          fi
+          echo "ghcr.io/$owner_lower/${{ inputs.repo }}" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+          if ${{ inputs.os_id == 'debian' || inputs.repo == 'ddtv/webui' }}; then
+              echo "is_latest=true"              >> $GITHUB_ENV
+          else
+              echo "is_latest=false"             >> $GITHUB_ENV
+              echo "suffix=-${{ inputs.os_id }}" >> $GITHUB_ENV
+          fi
+      
+# ./prepare.GitHubActions.sh
+# $1: $*_REPO in Call_Docker_Release.yml#L28-40
+      - name: Prepare
+        run: |
+          if [[ -n "$(awk '/submodule "Docker"/' .gitmodules)" ]]; then
+              git submodule update --progress --init --remote -- "Docker"
+          fi
+          shopt -s globstar nullglob
+          chmod -v -x Docker/**/*.sh | awk '/prepare.GitHubActions.sh/{print $2}' FS="'"
+          $(chmod -v +x Docker/**/*.sh | awk '/prepare.GitHubActions.sh/{print $2}' FS="'") "${{ inputs.repo }}"
+
+      - uses: docker/setup-qemu-action@v2
+      - uses: docker/setup-buildx-action@v2
+
+      - uses: docker/login-action@v2
+        if: ${{ github.repository_id == '207967312' }}
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Metadata for images
+        id: metadata
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ${{ env.images }}
+          flavor: |
+            latest=${{ env.is_latest }}
+          tags:   |
+            ${{ inputs.verall }}${{ env.suffix }}
+            ${{ inputs.vertwo }}${{ env.suffix }}
+            ${{ inputs.os_id }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: ${{ inputs.docker-dir }}/${{ inputs.repo }}/
+          file:    ${{ inputs.docker-dir }}/${{ inputs.repo }}/Dockerfile
+          push:    ${{ inputs.push }}
+          tags:    ${{ steps.metadata.outputs.tags }}
+          labels:  ${{ steps.metadata.outputs.labels }}
+          platforms:  ${{ inputs.platforms }}
+          build-args: ${{ inputs.build-args }}
