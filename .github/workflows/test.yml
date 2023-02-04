@@ -37,8 +37,8 @@ jobs:
           GITHUB_REPOSITORY_OWNER=$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[A-Z]' '[a-z]')
           echo "$GITHUB_REPOSITORY_OWNER"
           header='authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
-          curl -fvLOH "$header" "https://api.github.com/repos/CHKZL/DDTV/releases/latest"
-          curl -fvLOH "$header" "$(cat < latest | awk '/download_url/{print $4}' FS='"' | grep -i CLI )"
+          curl -fILOH "$header" "https://api.github.com/repos/CHKZL/DDTV/releases/latest"
+          curl -fILOH "$header" "$(cat < latest | awk '/download_url/{print $4}' FS='"' | grep -i CLI )"
           ls -al
 
     outputs:
