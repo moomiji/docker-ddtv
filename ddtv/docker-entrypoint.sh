@@ -27,7 +27,13 @@ case "$ARGs" in
         done
         # 更新 DDTV
         cd /DDTV
-        [[ "$ARGs" == *"--no-update"* ]] || (dotnet DDTV_Update.dll docker || echo "更新失败，请稍候重试！")
+        if [[ "$ARGs" != *"--no-update"* ]]; then
+            if [[ -n "$(awk '/IsDev=True/' IGNORECASE=1 DDTV_Config.ini)" ]]; then
+                dotnet DDTV_Update.dll docker dev || echo "更新失败，请稍候重试！"
+            else
+                dotnet DDTV_Update.dll docker || echo "更新失败，请稍候重试！"
+            fi
+        fi
         ;;
         # 运行测试用命令
     *)  echo "提示：运行参数可能输入错误" && echo "eval $ARGs" && eval "$ARGs" && exit $?
