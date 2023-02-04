@@ -40,6 +40,10 @@ jobs:
                 --url https://api.github.com/repos/CHKZL/DDTV/releases/latest \
                 --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
                 --fail
+          curl -fOH "$header" "https://api.github.com/repos/CHKZL/DDTV/releases/latest"
+          curl -fOH "$header" "$(cat < latest | awk '/download_url/{print $4}' FS='"' | grep -i $Keyword )"
+          ls -al
+
     outputs:
       verall: ${{ steps.version.outputs.all }} # all="3.0.1.9"
       vertwo: ${{ steps.version.outputs.two }} # two="3.0"
