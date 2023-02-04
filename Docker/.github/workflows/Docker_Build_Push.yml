@@ -64,8 +64,7 @@ jobs:
               git submodule update --progress --init --remote -- "Docker"
           fi
           shopt -s globstar nullglob
-          chmod -v -x Docker/**/*.sh | awk '/prepare.GitHubActions.sh/{print $2}' FS="'"
-          $(chmod -v +x Docker/**/*.sh | awk '/prepare.GitHubActions.sh/{print $2}' FS="'") "${{ inputs.repo }}"
+          $(chmod -v +x Docker/**/*.sh | awk '/prepare.GitHubActions.sh/{print $2}' FS="'") "${{ inputs.repo }}" '${{ secrets.GITHUB_TOKEN }}'
 
       - uses: docker/setup-qemu-action@v2
       - uses: docker/setup-buildx-action@v2
