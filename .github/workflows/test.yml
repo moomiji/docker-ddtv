@@ -36,6 +36,7 @@ jobs:
           
           GITHUB_REPOSITORY_OWNER=$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[A-Z]' '[a-z]')
           echo "$GITHUB_REPOSITORY_OWNER"
+          curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest"
     outputs:
       verall: ${{ steps.version.outputs.all }} # all="3.0.1.9"
       vertwo: ${{ steps.version.outputs.two }} # two="3.0"
