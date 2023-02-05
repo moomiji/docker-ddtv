@@ -2,6 +2,11 @@ name: test
 
 on:
   workflow_dispatch:
+    inputs:
+      push:
+        required: true
+        type: boolean
+        default: true
   push:
     branches: [test]
     paths:
@@ -28,18 +33,7 @@ jobs:
           Version_minor=${Version#*.}
           echo "all=${Version_major}.${Version_minor}" >> $GITHUB_OUTPUT
           echo "two=${Version_major}.${Version_minor%%.*}" >> $GITHUB_OUTPUT
-          
-          echo "$GITHUB_REPOSITORY_OWNER"
-          
-          GITHUB_REPOSITORY_OWNER=$(echo "$GITHUB_REPOSITORY_ID" | tr '[a-z]' '[A-Z]')
-          echo "$GITHUB_REPOSITORY_OWNER"
-          
-          GITHUB_REPOSITORY_OWNER=$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[A-Z]' '[a-z]')
-          echo "$GITHUB_REPOSITORY_OWNER"
-          header='authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
-          curl -LH "$header" -I "https://api.github.com/repos/CHKZL/DDTV/releases/latest"
-          ls -al
-
+          echo -- "${{ inputs.push }}" --
     outputs:
       verall: ${{ steps.version.outputs.all }} # all="3.0.1.9"
       vertwo: ${{ steps.version.outputs.two }} # two="3.0"
