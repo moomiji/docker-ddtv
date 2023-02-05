@@ -29,8 +29,6 @@ jobs:
       verall: ${{ steps.version.outputs.verall }} # verall="3.0.1.9"
       vertwo: ${{ steps.version.outputs.vertwo }} # vertwo="3.0"
       DOTNET_VERSION: '6.0'
-      DOCKER_DIR: ./Docker
-      PLATFORMS: linux/amd64, linux/arm64, linux/arm/v7
       DEPS_REPO: ddtv/deps
       CLI_REPO: ddtv/cli
       BACK_END_REPO: ddtv/webserver
@@ -41,7 +39,6 @@ jobs:
   WEBUI_nginx-alpine:
     if: false
     needs: [Prepare]
-    secrets: inherit
     uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
       repo:       ${{ needs.Prepare.outputs.FRONT_END_REPO }}
@@ -49,85 +46,87 @@ jobs:
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
       platforms:  linux/amd64, linux/arm64, linux/arm/v7, linux/386, linux/arm/v6, linux/ppc64le, linux/s390x
-      docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=nginx:stable-alpine
+    secrets:
+      DOCKERHUB_USERNAME: ddtv
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
 # alpine
   Deps_alpine:
     needs: [Prepare]
-    secrets: inherit
     uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
       repo:       ${{ needs.Prepare.outputs.DEPS_REPO }}
       os_id:      alpine
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
-      docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=mcr.microsoft.com/dotnet/aspnet:${{ needs.Prepare.outputs.DOTNET_VERSION }}-alpine
+    secrets:
+      DOCKERHUB_USERNAME: ddtv
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
   CLI_alpine:
     needs: [Prepare, Deps_alpine]
-    secrets: inherit
     uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
       repo:       ${{ needs.Prepare.outputs.CLI_REPO }}
       os_id:      alpine
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
-      docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=ghcr.io/${{ needs.Prepare.outputs.owner }}/${{ needs.Prepare.outputs.DEPS_REPO }}:alpine
+    secrets:
+      DOCKERHUB_USERNAME: ddtv
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
   WEBServer_alpine:
     needs: [Prepare, Deps_alpine]
-    secrets: inherit
     uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
       repo:       ${{ needs.Prepare.outputs.BACK_END_REPO }}
       os_id:      alpine
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
-      docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=ghcr.io/${{ needs.Prepare.outputs.owner }}/${{ needs.Prepare.outputs.DEPS_REPO }}:alpine
+    secrets:
+      DOCKERHUB_USERNAME: ddtv
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
 # debian
   Deps_debian:
     needs: [Prepare]
-    secrets: inherit
     uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
       repo:       ${{ needs.Prepare.outputs.DEPS_REPO }}
       os_id:      debian
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
-      docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=mcr.microsoft.com/dotnet/aspnet:${{ needs.Prepare.outputs.DOTNET_VERSION }}
+    secrets:
+      DOCKERHUB_USERNAME: ddtv
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
   CLI_debian:
     needs: [Prepare, Deps_debian]
-    secrets: inherit
     uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
       repo:       ${{ needs.Prepare.outputs.CLI_REPO }}
       os_id:      debian
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
-      docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=ghcr.io/${{ needs.Prepare.outputs.owner }}/${{ needs.Prepare.outputs.DEPS_REPO }}:debian
+    secrets:
+      DOCKERHUB_USERNAME: ddtv
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
   WEBServer_debian:
     needs: [Prepare, Deps_debian]
-    secrets: inherit
     uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
       repo:       ${{ needs.Prepare.outputs.BACK_END_REPO }}
       os_id:      debian
       verall:     ${{ needs.Prepare.outputs.verall }}
       vertwo:     ${{ needs.Prepare.outputs.vertwo }}
-      platforms:  ${{ needs.Prepare.outputs.PLATFORMS }}
-      docker-dir: ${{ needs.Prepare.outputs.DOCKER_DIR }}
       build-args: REPO=ghcr.io/${{ needs.Prepare.outputs.owner }}/${{ needs.Prepare.outputs.DEPS_REPO }}:debian
+    secrets:
+      DOCKERHUB_USERNAME: ddtv
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}

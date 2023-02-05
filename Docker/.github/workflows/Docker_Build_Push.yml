@@ -1,18 +1,12 @@
-name: Call_Docker_Build_Push
+name: Docker_Build_Push
 
 on:
   workflow_call:
     inputs:
-      docker-dir:
-        required: true
-        type: string
       repo:
         required: true
         type: string
       os_id:
-        required: true
-        type: string
-      platforms:
         required: true
         type: string
       verall:
@@ -24,6 +18,14 @@ on:
       build-args:
         required: true
         type: string
+      docker-dir:
+        required: false
+        type: string
+        default: ./Docker
+      platforms:
+        required: false
+        type: string
+        default: linux/amd64, linux/arm64, linux/arm/v7
       push:
         required: false
         type: boolean
@@ -57,11 +59,11 @@ jobs:
           fi
       
 # ./prepare.GitHubActions.sh
-# $1: $*_REPO in Call_Docker_Release.yml#L28-40
+# $1: $*_REPO in Docker_Release.yml#jobs.Prepare.outputs
       - name: Prepare
         run: |
           if [[ -n "$(awk '/submodule "Docker"/' .gitmodules)" ]]; then
-              git submodule update --progress --init --remote -- "Docker"
+              git submodule update --init --remote -- "Docker"
           fi
           shopt -s globstar nullglob
           $(chmod -v +x Docker/**/*.sh | awk '/prepare.GitHubActions.sh/{print $2}' FS="'") "${{ inputs.repo }}" '${{ secrets.GITHUB_TOKEN }}'

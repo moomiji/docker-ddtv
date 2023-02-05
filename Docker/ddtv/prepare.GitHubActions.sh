@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e; set -u
-# $1: $*_REPO in Docker_Release.yml#L28-40
+# $1: $*_REPO in Docker_Release.yml#jobs.Prepare.outputs
 # $2: ${{ secrets.GITHUB_TOKEN }}
 case $1 in
     ddtv/deps)
