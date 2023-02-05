@@ -2,6 +2,11 @@ name: Docker_Release
 
 on:
   workflow_dispatch:
+    inputs:
+      push:
+        required: true
+        type: boolean
+        default: false
   watch:
     types: [started]
   push:
@@ -35,12 +40,13 @@ jobs:
       FRONT_END_REPO: ddtv/webui
 # *_REPO 为仓库名兼路径名，更改后记得修改 文件存放位置、prepare.GitHubActions.sh、Docker_Build_Push.yml、Update_description_of_container_repo.yml
 
-# jobs.<job_id>.with.<with_id>上下文不支持env, 仅支持 github, needs
+# jobs.<job_id>.with.<with_id>上下文不支持env, 仅支持 github, needs, strategy, matrix, inputs, vars
   WEBUI_nginx-alpine:
     if: false
     needs: [Prepare]
     uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
+      push:       ${{ inputs.push == true || github.event_name != 'workflow_dispatch' }}
       repo:       ${{ needs.Prepare.outputs.FRONT_END_REPO }}
       os_id:      alpine
       verall:     ${{ needs.Prepare.outputs.verall }}
@@ -56,6 +62,7 @@ jobs:
     needs: [Prepare]
     uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
+      push:       ${{ inputs.push == true || github.event_name != 'workflow_dispatch' }}
       repo:       ${{ needs.Prepare.outputs.DEPS_REPO }}
       os_id:      alpine
       verall:     ${{ needs.Prepare.outputs.verall }}
@@ -69,6 +76,7 @@ jobs:
     needs: [Prepare, Deps_alpine]
     uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
+      push:       ${{ inputs.push == true || github.event_name != 'workflow_dispatch' }}
       repo:       ${{ needs.Prepare.outputs.CLI_REPO }}
       os_id:      alpine
       verall:     ${{ needs.Prepare.outputs.verall }}
@@ -82,6 +90,7 @@ jobs:
     needs: [Prepare, Deps_alpine]
     uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
+      push:       ${{ inputs.push == true || github.event_name != 'workflow_dispatch' }}
       repo:       ${{ needs.Prepare.outputs.BACK_END_REPO }}
       os_id:      alpine
       verall:     ${{ needs.Prepare.outputs.verall }}
@@ -96,6 +105,7 @@ jobs:
     needs: [Prepare]
     uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
+      push:       ${{ inputs.push == true || github.event_name != 'workflow_dispatch' }}
       repo:       ${{ needs.Prepare.outputs.DEPS_REPO }}
       os_id:      debian
       verall:     ${{ needs.Prepare.outputs.verall }}
@@ -109,6 +119,7 @@ jobs:
     needs: [Prepare, Deps_debian]
     uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
+      push:       ${{ inputs.push == true || github.event_name != 'workflow_dispatch' }}
       repo:       ${{ needs.Prepare.outputs.CLI_REPO }}
       os_id:      debian
       verall:     ${{ needs.Prepare.outputs.verall }}
@@ -122,6 +133,7 @@ jobs:
     needs: [Prepare, Deps_debian]
     uses: moomiji/docker-ddtv/.github/workflows/Docker_Build_Push.yml@dev
     with:
+      push:       ${{ inputs.push == true || github.event_name != 'workflow_dispatch' }}
       repo:       ${{ needs.Prepare.outputs.BACK_END_REPO }}
       os_id:      debian
       verall:     ${{ needs.Prepare.outputs.verall }}
