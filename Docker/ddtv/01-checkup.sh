@@ -43,13 +43,6 @@ checkup() {
             echo "Error DDTV Docker Project!" && exit 1
             ;;
     esac
-
-    if [ ! -e "/NotIsFirstStart" ]; then
-        touch /NotIsFirstStart
-        echo "IsFirstStart!"
-    else
-        echo "NotFirstStart!"
-    fi
 }
 
 # 检测 DDTV 目录文件是否齐全
