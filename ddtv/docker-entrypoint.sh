@@ -28,7 +28,8 @@ case "$ARGs" in
         # 更新 DDTV
         cd /DDTV
         if [[ "$ARGs" != *"--no-update"* ]]; then
-            if [[ -n "$(awk '/IsDev=True/' IGNORECASE=1 DDTV_Config.ini)" ]]; then
+            if [[ -n "$(awk '/IsDev=True/' IGNORECASE=1 DDTV_Config.ini)" ]] ||
+               [[ ! -e "/NotIsFirstStart" ]] && echo "$IsDev" | grep -qi "True"; then
                 dotnet DDTV_Update.dll docker dev || echo "更新失败，请稍候重试！"
             else
                 dotnet DDTV_Update.dll docker || echo "更新失败，请稍候重试！"
@@ -39,6 +40,13 @@ case "$ARGs" in
     *)  echo "提示：运行参数可能输入错误" && echo "eval $ARGs" && eval "$ARGs" && exit $?
         ;;
 esac
+
+if [ ! -e "/NotIsFirstStart" ]; then
+    touch /NotIsFirstStart
+    echo "DDTV Docker: Is First Start!"
+else
+    echo "DDTV Docker: Not First Start!"
+fi
 
 # 运行 DDTV
 # 可用参数有:
