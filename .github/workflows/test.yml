@@ -20,4 +20,4 @@ jobs:
       - name: Output Version
         id: version
         run: |
-          echo "::warning file=README.md,line=1::Missing semicolon"
+          echo "::warning file=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/$GITHUB_REF_NAME/README.md,line=1::Missing semicolon"
