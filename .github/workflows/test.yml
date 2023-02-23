@@ -20,4 +20,4 @@ jobs:
       - name: Output Version
         id: version
         run: |
-          echo "::warning file=.github/workflows/test.yml,line=1::Missing semicolon"
+          echo "::warning file=./.github/workflows/test.yml,line=1::Missing semicolon"
