@@ -17,41 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set the value in bash
-        id: step_one
-        run: |
-          echo 'JSON_RESPONSE<<EOF' >> $GITHUB_OUTPUT
-          echo 'https://example.com' >> $GITHUB_OUTPUT
-          echo 'https://example2.com' >> $GITHUB_OUTPUT
-          echo 'EOF' >> $GITHUB_OUTPUT
-          ls
       - name: Output Version
         id: version
         run: |
-          Version=$(curl -sX GET "https://api.github.com/repos/CHKZL/DDTV/releases/latest" | awk '/tag_name/{print $4}' FS='["]')
-          Version_major=$(echo "${Version%%.*}" | sed 's/[^0-9]//g')
-          Version_minor=${Version#*.}
-          echo "all=${Version_major}.${Version_minor}" >> $GITHUB_OUTPUT
-          echo "two=${Version_major}.${Version_minor%%.*}" >> $GITHUB_OUTPUT
-          echo -- "${{ inputs.push }}" --
-    outputs:
-      verall: ${{ steps.version.outputs.all }} # all="3.0.1.9"
-      vertwo: ${{ steps.version.outputs.two }} # two="3.0"
-      DOTNET_VERSION: '6.0'
-      DOCKER_DIR: ./Docker
-      PLATFORMS: linux/amd64, linux/arm64, linux/arm/v7
-      DEPS_REPO: ddtv/deps
-      CLI_REPO: ddtv/cli
-      BACK_END_REPO: ddtv/webserver
-      FRONT_END_REPO: ddtv/webui
-      IMAGES: ${{ steps.step_one.outputs.JSON_RESPONSE }}
-
-  WEBUI_nginx-alpine:
-    needs: [Prepare]
-    runs-on: ubuntu-latest
-    steps:
-      - name: ${{ needs.Prepare.outputs.FRONT_END_REPO }}
-        id: metadata
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ needs.Prepare.outputs.IMAGES }}
+          echo "::warning file=.github/workflows/test.yml,line=1::Missing semicolon"
