@@ -43,9 +43,9 @@ esac
 
 if [ ! -e "/NotIsFirstStart" ]; then
     touch /NotIsFirstStart
-    echo "DDTV Docker: Is First Start!"
+    echo "初次启动容器！"
 else
-    echo "DDTV Docker: Not First Start!"
+    echo "非初次启动容器！"
 fi
 
 # 运行 DDTV
