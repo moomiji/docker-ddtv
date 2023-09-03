@@ -25,7 +25,7 @@ jobs:
           echo is_release=$is_release | tee -a $GITHUB_OUTPUT
     outputs:
       tag: ${{ steps.set_tag.outputs.tag }}
-      is_release: ${{ steps.set_tag.outputs.is_release == 'true' }}
+      is_release: ${{ steps.set_tag.outputs.is_release }}
 
   ABC:
     needs: [meta]
