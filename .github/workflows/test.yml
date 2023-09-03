@@ -29,7 +29,7 @@ jobs:
 
   ABC:
     needs: [meta]
-    if: ${{ needs.meta.outputs.is_release == 'fasle' }}
+    if: ${{ needs.meta.outputs.is_release == 'false' }}
     runs-on: ubuntu-latest
     steps:
       - name: Publish Nupkgs
