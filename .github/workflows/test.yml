@@ -13,11 +13,24 @@ on:
       - '.github/workflows/test.yml'
 
 jobs:
-  Prepare:
+  meta:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Output Version
-        id: version
+      - id: set_tag
         run: |
-          echo "::warning file=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/$GITHUB_REF_NAME/README.md,line=1::Missing semicolon"
+          is_release=true
+          tag=v0.3.6
+
+          echo tag=$tag | tee -a $GITHUB_OUTPUT
+          echo is_release=$is_release | tee -a $GITHUB_OUTPUT
+
+  ABC:
+    needs: [meta]
+    if: ${{ needs.meta.outputs.is_release }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish Nupkgs
+        if: ${{ needs.meta.outputs.is_release }}
+        working-directory: pkgs/nupkgs
+        run: |
+          echo ${{ needs.meta.outputs.is_release }}
