@@ -29,11 +29,10 @@ jobs:
 
   ABC:
     needs: [meta]
-    if: ${{ needs.meta.outputs.is_release }}
+    if: ${{ needs.meta.outputs.is_release == 'fasle' }}
     runs-on: ubuntu-latest
     steps:
       - name: Publish Nupkgs
-        if: ${{ needs.meta.outputs.is_release }}
-        working-directory: pkgs/nupkgs
+        if: ${{ needs.meta.outputs.is_release == 'true' }}
         run: |
           echo ${{ needs.meta.outputs.is_release }}
