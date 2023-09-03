@@ -18,11 +18,14 @@ jobs:
     steps:
       - id: set_tag
         run: |
-          is_release=true
+          is_release=false
           tag=v0.3.6
 
           echo tag=$tag | tee -a $GITHUB_OUTPUT
           echo is_release=$is_release | tee -a $GITHUB_OUTPUT
+    outputs:
+      tag: ${{ steps.set_tag.outputs.tag }}
+      is_release: ${{ steps.set_tag.outputs.is_release }}
 
   ABC:
     needs: [meta]
