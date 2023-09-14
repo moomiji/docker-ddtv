@@ -19,20 +19,16 @@ jobs:
       - id: set_tag
         run: |
           is_release=false
-          tag=v0.3.6
+          tag=1.2.3.4-0-222
+          if ! $($is_release) ; then
+            prefix=${tag%-*-*}
+            suffix=${tag#$prefix-}
+            next=${prefix##*.}
+            ((next++))
+            prefix=${prefix%.*}
+            tag="$prefix.$next-Preview.$suffix"
+          fi
 
           echo tag=$tag | tee -a $GITHUB_OUTPUT
+          echo version=${tag#v} | tee -a $GITHUB_OUTPUT
           echo is_release=$is_release | tee -a $GITHUB_OUTPUT
-    outputs:
-      tag: ${{ steps.set_tag.outputs.tag }}
-      is_release: ${{ steps.set_tag.outputs.is_release }}
-
-  ABC:
-    needs: [meta]
-    if: ${{ needs.meta.outputs.is_release == 'false' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Publish Nupkgs
-        if: ${{ needs.meta.outputs.is_release == 'true' }}
-        run: |
-          echo ${{ needs.meta.outputs.is_release }}
