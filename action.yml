@@ -1,0 +1,113 @@
+name: Build And Push DDTV Docker images
+author: moomiji
+description: 'Build And Push DDTV Docker images with build-push-action'
+inputs:
+  repo:
+    description: 'Name of docker image library.'
+    required: true
+  image_id:
+    description: 'Id of image.'
+    required: true
+  version:
+    description: 'Version of DDTV.'
+    required: true
+  path:
+    description: "Path of DDTV build output."
+    required: false
+  runtime:
+    description: "Dotnet runtime identifier"
+    required: true
+  build-args:
+    description: "List of build-time variables"
+    required: true
+  push:
+    description: "Push is a shorthand for --output=type=registry"
+    required: false
+    default: 'true'
+
+runs:
+  using: "composite"
+  steps:
+    - uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ github.token }}
+
+    - name: Set GITHUB_ENV
+      shell: bash
+      run: |
+        owner_lower=${GITHUB_REPOSITORY_OWNER,,}
+        # ^([a-zA-Z]*)(((?:\d*)(?:\.\d*)?)(?:[a-zA-Z\._\d\-+]*))$
+        if [[ "${{ inputs.version }}" =~ ^([a-zA-Z]*)((([0-9]*)(\.[0-9]*)?)([a-zA-Z0-9\._+-]*)).*$ ]]; then
+            echo "::notice title=DDTV Docker::version(${BASH_REMATCH[*]})"
+        else
+            echo "::error title=DDTV Docker::${{ inputs.version }} is not a valid version."
+        fi
+
+        echo "tags<<EOF" >> $GITHUB_ENV
+          if ${{ startsWith(inputs.version, 'dev') }}; then
+            echo "dev" >> $GITHUB_ENV
+          else
+            echo "release"     >> $GITHUB_ENV
+          fi
+            echo "${BASH_REMATCH[2]}"         >> $GITHUB_ENV
+            echo "${BASH_REMATCH[3]}"         >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+
+        echo "flavor<<EOF" >> $GITHUB_ENV
+          if ${{ inputs.image_id == 'debian' && !startsWith(inputs.version, 'dev') }}; then
+            echo "latest=true"      >> $GITHUB_ENV
+          else
+            echo "latest=false"     >> $GITHUB_ENV
+          fi
+        case ${{ matrix.runtime }} in
+          linux*x64)    suffix=-${{ inputs.image_id }}-amd64;   platforms=linux/amd64;  ;;
+          linux*arm64)  suffix=-${{ inputs.image_id }}-arm64v8; platforms=linux/arm64;  ;;
+          linux*arm)    suffix=-${{ inputs.image_id }}-arm32v7; platforms=linux/arm/v7; ;;
+        esac
+        echo "suffix=$suffix"       >> $GITHUB_ENV
+        echo "EOF">> $GITHUB_ENV
+        echo "platforms=$platforms" >> $GITHUB_ENV
+
+        echo "images<<EOF" >> $GITHUB_ENV
+          if ${{ github.repository_id == '207967312' && !startsWith(inputs.version, 'dev') }}; then
+            echo "${{ inputs.repo }}"                     >> $GITHUB_ENV
+          fi
+          echo "ghcr.io/$owner_lower/${{ inputs.repo }}"  >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+
+    - name: Prepare
+      shell: bash
+      run: |
+        shopt -s globstar nullglob
+        cd ${{ github.action_path }}
+        $(chmod -v +x ./**/*.sh | awk '/prepare.GitHubActions.sh/{print $2}' FS="'") \
+            "${{ inputs.repo }}" \
+            "${{ github.token }}" \
+            "${{ inputs.path }}"
+
+    - uses: docker/setup-qemu-action@v3
+    - uses: docker/setup-buildx-action@v3
+
+    - name: Metadata for images
+      id: metadata
+      uses: docker/metadata-action@v5
+      with:
+        images: |
+          ${{ env.images }}
+        flavor: |
+          ${{ env.flavor }}
+        tags:   |
+          ${{ env.tags }}
+
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context: ${{ github.action_path }}/${{ inputs.repo }}/
+        file:    ${{ github.action_path }}/${{ inputs.repo }}/Dockerfile
+        push:    ${{ inputs.push }}
+        tags:    ${{ steps.metadata.outputs.tags }}
+        labels:  ${{ steps.metadata.outputs.labels }}
+        platforms:  ${{ env.platforms }}
+        build-args: ${{ inputs.build-args }}

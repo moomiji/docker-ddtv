@@ -4,7 +4,6 @@ FROM ${REPO}
 ENV DDTV_Docker_Project=DDTV_CLI \
     TZ=Asia/Shanghai
 COPY root/ /
+RUN cd /docker-entrypoint.d && ./install-deps.sh
 WORKDIR /DDTV
-EXPOSE 11419
-VOLUME /DDTV/Rec
 ENTRYPOINT ["/docker-entrypoint.sh"]

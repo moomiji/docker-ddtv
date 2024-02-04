@@ -8,6 +8,8 @@ set -e; set -u
 ARGs="$*"
 say_verbose() { if [[ "$ARGs" == *"--verbose"* ]]; then printf "\n%b\n" "$0: $1"; fi }
 
+cd /DDTV
+
 case "$ARGs" in
     ""|*"--verbose"*|*"--no-update"*)
         # 运行 /docker-entrypoint.d/*.sh
@@ -26,15 +28,14 @@ case "$ARGs" in
             esac
         done
         # 更新 DDTV
-        cd /DDTV
-        if [[ "$ARGs" != *"--no-update"* ]]; then
-            if [[ -n "$(awk '/IsDev=True/' IGNORECASE=1 DDTV_Config.ini)" ]] ||
-               [[ ! -e "/NotIsFirstStart" ]] && echo "$IsDev" | grep -qi "True"; then
-                dotnet DDTV_Update.dll docker dev || echo "更新失败，请稍候重试！"
-            else
-                dotnet DDTV_Update.dll docker || echo "更新失败，请稍候重试！"
-            fi
-        fi
+#        if [[ "$ARGs" != *"--no-update"* ]]; then
+#            if [[ -n "$(awk '/IsDev=True/' IGNORECASE=1 DDTV_Config.ini)" ]] ||
+#               [[ ! -e "/NotIsFirstStart" ]] && echo "$IsDev" | grep -qi "True"; then
+#                dotnet DDTV_Update.dll docker dev || echo "更新失败，请稍候重试！"
+#            else
+#                dotnet DDTV_Update.dll docker || echo "更新失败，请稍候重试！"
+#            fi
+#        fi
         ;;
         # 运行测试用命令
     *)  echo "提示：运行参数可能输入错误" && echo "eval $ARGs" && eval "$ARGs" && exit $?
@@ -44,6 +45,7 @@ esac
 if [ ! -e "/NotIsFirstStart" ]; then
     touch /NotIsFirstStart
     echo "初次启动容器！"
+    chmod +x ./CLI
 else
     echo "非初次启动容器！"
 fi
@@ -61,10 +63,10 @@ chown -R "$PUID:$PGID" /DDTV "$DownloadPath" "$TmpPath"
 
 case $ID in
     alpine)
-        su-exec $PUID:$PGID dotnet "${DDTV_Docker_Project}.dll"
+        su-exec "$PUID:$PGID" ./CLI
         ;;
     debian|ubuntu)
-        gosu $PUID:$PGID dotnet "${DDTV_Docker_Project}.dll"
+        gosu "$PUID:$PGID" ./CLI
         ;;
     *)
         echo "Error OS ID: $ID!" && exit 1
